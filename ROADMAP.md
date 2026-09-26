@@ -1,9 +1,15 @@
 # Roadmap
 
-1. Prototype: compile/run/debug integration and narrow, transparent C/C++ to Python conversion.
-2. Parse C and C++ with Clang tooling, resolve types and symbols, and lower to a typed intermediate representation.
-3. Add semantics helpers for integers, arrays, strings, I/O, loops and control flow; reject undefined or untranslatable behavior explicitly.
-4. Run paired C/C++ and Python programs against fixture and property-based inputs; report output differences in the editor.
-5. Package extension for Windows, macOS and Linux and publish a signed release.
+## Delivered in 0.2 beta
 
-There is no universal guarantee that arbitrary C/C++ can be translated into Python without manual changes. Native libraries, pointer behavior, undefined behavior, concurrency and platform-specific code require special handling.
+Offline Android/Windows/macOS packages, shared editor, real Clang-to-WebAssembly compiler, bundled Python, project files, diagnostics, cancellation, Python breakpoints, optional desktop native debugging and limited offline Python conversion.
+
+## Required before calling this a complete production IDE
+
+- General C/C++ source debugging inside Android's compiled runtime.
+- Modern LLVM toolchain with a maintained, reproducible source-build pipeline.
+- A typed, Clang-AST-based converter with explicit semantic compatibility tests.
+- Native binary export, configurable build systems and package management.
+- Accessibility, large-project performance, recovery history and broader device testing.
+- Stable Android release signing, Windows code signing and macOS notarization using maintainer-controlled credentials.
+- Store submissions and release maintenance policy.

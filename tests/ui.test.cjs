@@ -1,0 +1,20 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
+const {serve}=require('../desktop/server.cjs');
+(async()=>{const hosted=await serve(path.resolve(__dirname,'../app'));const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||undefined,headless:true,args:['--no-sandbox']});try{
+ const page=await browser.newPage({viewport:{width:1280,height:850}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(hosted.url);await page.waitForFunction(()=>typeof execute==='function');
+ await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/3 7 19 42/);
+ await page.evaluate(()=>{project.files=[{name:'main.py',content:'print(6 * 7)\n'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
+ await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);
+ await page.click('#debug');await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Paused'),{},{timeout:120000});await page.click('#step');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:30000});
+ await page.evaluate(()=>{project.files=[{name:'main.c',content:'#include <stdio.h>\nint main(){int x=7;printf("%d\\n",x);return 0;}'}];project.active='main.c';loading=true;editor.setValue(current().content);loading=false;select('main.c');});
+ await page.click('#convert');await page.locator('#modal button[value="ok"]').click();await page.waitForFunction(()=>project.active.endsWith('.py'),{},{timeout:120000});assert.match(await page.evaluate(()=>editor.getValue()),/def main/);
+ // Native C/C++ compile errors must stop before execution.
+ await page.evaluate(()=>{project.files=[{name:'bad.cpp',content:'int main(){this is invalid;}'}];project.active='bad.cpp';loading=true;editor.setValue(current().content);loading=false;select('bad.cpp');});await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Stopped with errors',{},{timeout:120000});assert.match(await page.textContent('#diagnostics'),/error:/);
+ // Terminating a busy worker keeps the editor responsive.
+ await page.evaluate(()=>{project.files=[{name:'loop.py',content:'while True: pass'}];project.active='loop.py';loading=true;editor.setValue(current().content);loading=false;select('loop.py');});await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Running Python…',{},{timeout:120000});await page.click('#stop');assert.equal(await page.textContent('#status'),'Stopped');
+ await page.evaluate(()=>{project.files=[{name:'main.cpp',content:exampleCpp}];project.active='main.cpp';loading=true;editor.setValue(current().content);loading=false;select('main.cpp');});
+ fs.mkdirSync(path.resolve(__dirname,'../.artifacts'),{recursive:true});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/desktop.png')});
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/mobile.png')});
+ assert.deepEqual(errors,[]);console.log('PASS UI: C++, Python, live debugger, conversion, diagnostics, cancellation, responsive layout');
+ }finally{await browser.close();hosted.server.close();}})().catch(e=>{console.error(e);process.exit(1);});

@@ -1,0 +1,75 @@
+{
+  "name": "codebridge-studio",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Offline C, C++ and Python studio for desktop and Android",
+  "author": "CodeBridge contributors",
+  "license": "MIT",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "prepare:assets": "python3 scripts/prepare_assets.py",
+    "start": "electron .",
+    "test": "node tests/runtime.test.cjs",
+    "test:ui": "node tests/ui.test.cjs",
+    "dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "40.8.4",
+    "electron-builder": "26.15.3",
+    "playwright": "1.58.2",
+    "codemirror": "5.65.21",
+    "pyodide": "0.27.7"
+  },
+  "build": {
+    "appId": "com.codebridge.studio",
+    "productName": "CodeBridge",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "desktop/**",
+      "app/**",
+      "package.json",
+      "LICENSE",
+      "build/icon.png"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.developer-tools",
+      "identity": null,
+      "hardenedRuntime": false
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
+    "icon": "build/icon.png",
+    "npmRebuild": false,
+    "artifactName": "${productName}-${version}-${os}-${arch}-${target}.${ext}"
+  }
+}

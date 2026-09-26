@@ -1,33 +1,86 @@
-# CodeBridge (prototype)
+# CodeBridge Studio
 
-A VS Code extension to compile and run a C/C++ file, launch a GDB debugging session, and convert a **documented subset** of C/C++ to Python from the editor's `...` menu.
+**An offline C, C++ and Python workspace for Android, Windows and macOS.**
 
-## Requirements
+[Download builds](https://github.com/syedsuban070/CodeBridge-Convertor/releases) · [Build & test](https://github.com/syedsuban070/CodeBridge-Convertor/actions/workflows/release.yml) · [Supported features](docs/FEATURES.md)
 
-- VS Code 1.85+, Python 3.10+, `python -m pip install -r requirements.txt`.
-- GCC/G++ for compile and run. For debug, install GDB and the Microsoft C/C++ VS Code extension. Set the compiler paths in VS Code's `codebridge.*` settings if needed.
-- Local programs run with your own user privileges. Open and run only code you trust.
+CodeBridge bundles **real Clang + LLD** and **Python**, so supported programs compile and run on the device without an account, server, API key, or separate runtime download. C/C++ programs target WebAssembly. This is the 0.2 beta; it is not a replacement for every capability of a native desktop IDE.
 
-## Install for development
+## What works
 
-Open `vscode-extension` in VS Code and press F5 to launch the Extension Development Host. Open a `.c` or `.cpp` file. Select its editor `...` menu, then **Convert File to Python**, **Compile and Run C/C++ File**, or **Compile and Debug C/C++ File**. Converted output is saved alongside the source as `.py`; replacement asks first.
+- Syntax-highlighted editor with line numbers, bracket completion, search, mobile symbol keys and configurable font size.
+- Project files, C/C++ headers, multiple translation units, tabs, autosave, file import/export and `.cbproj` project exports.
+- Offline C11/C++17 compilation and execution using Clang 8.0.1, LLD, libc and libc++. Includes classes, functions, pointers, arrays, vectors and algorithms supported by the bundled WASI runtime.
+- Offline Python 3.12 and standard-library execution via Pyodide.
+- Compiler diagnostics, prefilled standard input, output panel, cancellation and execution time limits.
+- Python source debugging: breakpoints, paused variables, stack and stepping on platforms exposing shared memory.
+- Desktop native C/C++ debugging through an **installed** Clang/G++ and GDB/LLDB toolchain. Native debugger output appears in Build Log.
+- Conversion of the documented limited C/C++ subset into Python, entirely offline. Unsupported constructs report an error and preserve the original source.
 
-## Conversion scope
+## Install
 
-This initial translator uses `pycparser` to parse a restricted C syntax shared by C and simple C++ programs. It supports one `int main()` or `int main(void)`, local scalar `int`, `float`, `double`, and `char` declarations, assignment, arithmetic and comparison, `if`/`else`, `while`, `for`, basic `printf` (`%d`, `%i`, `%f`, `%s`, `%c`), and basic `std::cout << ... << std::endl`. Integer division and remainder follow C's truncation toward zero. It rejects preprocessor macros, pointers, arrays, structs, user functions, classes, templates, input streams, and other unsupported constructs with a clear error, leaving no partial `.py` output.
+Get a matching package from [Releases](https://github.com/syedsuban070/CodeBridge-Convertor/releases).
 
-Conversion is not equivalent to arbitrary C/C++. Numeric overflow, `printf` formatting details, scope, evaluation order, integer types, and platform APIs can differ. Review and test generated Python against the original executable. The long-term plan is a Clang AST front end, a typed intermediate representation, explicit compatibility helpers, and differential tests.
+| Device | Package | Notes |
+| --- | --- | --- |
+| Android 8+ | `CodeBridge-0.2.0-Android.apk` | Test-signed APK. Use an updated Android System WebView. Older preview installs may need uninstalling if Android reports a signing mismatch; export projects first. |
+| Windows x64 | `…win-x64-nsis.exe` or `…win-x64-portable.exe` | Installer or portable executable. The unsigned beta may trigger Windows reputation prompts. |
+| Mac with Apple silicon | `…mac-arm64.dmg` | Unsigned beta; macOS may require approval under Privacy & Security. |
+| Mac with Intel processor | `…mac-x64.dmg` | Same unsigned-beta limitation. |
 
-## CLI
+The downloads are generated only when compiler, UI and platform tests pass. The release page includes SHA-256 checksums. These builds are not published to Play Store or Microsoft/Mac app stores.
 
-`python converter/transpile.py examples/hello.c -o /tmp/hello.py`
+## Use
 
-Run `python -m unittest discover -s tests -v` from the repository root to compare sample translations with native GCC/G++ output. CI repeats these tests on each push and pull request.
+1. Open CodeBridge and run the included C++ example.
+2. Use **••• → Open files** or create project files with **+**. On desktop, **Open folder** imports a project and **Save project to folder** writes changes back.
+3. Put input in **STDIN** before running programs using `scanf`, `cin`, or Python `input()`.
+4. Use **Build** to check C/C++ code, **Run** to execute, and **Stop** to end a busy program.
+5. Open a Python file, click the gutter for breakpoints, then **Debug**. C/C++ native debugging is desktop-only and needs installed native tools.
+6. Use **→ Python** to try conversion of a supported C/C++ file. Always test the generated code.
 
-## Contributing
+C/C++ source files in a project are linked together. Keep only one `main` in a C/C++ project. Program-created files live in the run's virtual filesystem and are not automatically exported.
 
-See [ROADMAP.md](ROADMAP.md). Focus on explicit diagnostics and behavioral tests before adding syntax. MIT licensed.
+## Limits that matter
 
-## Android app preview
+- The bundled C/C++ toolchain targets WASI/WebAssembly, not native Windows/macOS/Android executables. OS-specific APIs, networking, threads and C++ exceptions are not provided by this runtime. It is Clang 8, not the latest Clang.
+- Android has no arbitrary C/C++ source debugger. **C/C++ learning trace** is a separate, limited interpreter with replayed steps. It is explicitly labeled and never substituted for the real compiler.
+- Python debugging requires `SharedArrayBuffer`. When unavailable in an Android WebView, Python execution still works but live debugging is unavailable.
+- Python packages beyond the bundled runtime/standard library cannot be installed from inside this release.
+- The converter is a conservative prototype, not a guarantee of identical behavior for arbitrary C/C++. See [conversion scope](docs/FEATURES.md).
+- Desktop native debugging executes locally with the current user's privileges. Run code you trust in that mode.
 
-The [`android/`](android/) project builds an installable debug APK. It offers an offline editor, Android file import/export, output, and step-by-step tracing for a small C/C++ **learning subset**. Its execution engine is an interpreter; it does not compile native C/C++ binaries or contain GDB or Python conversion. See [mobile setup and limits](android/README.md). Download test builds from **Actions → Android APK → Artifacts** after a successful run.
+## Build from source
+
+Requirements: Node 22, Python 3.12. Android additionally needs JDK 17, Gradle 8.9, and Android SDK 35. Desktop packaging should run on the target OS.
+
+```sh
+npm ci
+python scripts/prepare_assets.py
+npm test
+npm start
+```
+
+`prepare_assets.py` verifies a pinned Clang toolchain by SHA-256, copies pinned CodeMirror/Pyodide packages, downloads the pinned pure-Python parser wheel and generates Android assets. Downloads occur **at build time**, not on the installed app's first run. Generated runtime binaries are not committed to Git.
+
+```sh
+# Desktop package
+npm run dist
+# Browser UI tests
+npx playwright install chromium
+npm run test:ui
+# Android APK
+cd android
+gradle :app:assembleDebug
+```
+
+## Repository
+
+- `app/`: shared editor and worker runtimes.
+- `desktop/`: Electron shell, local asset server, file dialogs and native debugger bridge.
+- `android/`: Android WebView shell, document-picker bridge and emulator tests.
+- `converter/`, `vscode-extension/`: original converter and optional VS Code integration.
+- `scripts/`: reproducible runtime preparation.
+- `.github/workflows/release.yml`: test, build and publication pipeline.
+
+CodeBridge code is MIT licensed. Bundled dependencies keep their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Compiler binaries are Apache-2.0/LLVM licensed. No telemetry or external source-code upload is implemented.

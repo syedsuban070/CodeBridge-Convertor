@@ -2,14 +2,19 @@ plugins { id 'com.android.application' }
 
 android {
     namespace 'com.codebridge.mobile'
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
     compileSdk 35
     defaultConfig {
         applicationId 'com.codebridge.mobile'
         minSdk 26
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
         targetSdk 35
-        versionCode 1
-        versionName '0.1.0'
+        versionCode 2
+        versionName '0.2.0'
     }
+    androidResources { noCompress += ['wasm', 'tar', 'whl', 'zip'] }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17

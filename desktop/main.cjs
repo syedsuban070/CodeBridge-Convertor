@@ -1,0 +1,23 @@
+const {app,BrowserWindow,ipcMain,dialog}=require('electron');
+const fs=require('node:fs/promises'),path=require('node:path');
+const {serve}=require('./server.cjs'),debug=require('./native-debug.cjs');
+let window,server,origin,selectedRoot;
+const valid=name=>typeof name==='string'&&name.length<180&&!name.includes('..')&&!path.isAbsolute(name)&&/^[\w. /-]+$/.test(name);
+const guard=event=>{if(!event.senderFrame.url.startsWith(origin))throw new Error('Untrusted caller');};
+const safeFiles=files=>{if(!Array.isArray(files)||files.length>200)throw new Error('Maximum 200 files');for(const f of files)if(!valid(f.name)||typeof f.content!=='string'||f.content.length>512000)throw new Error('Invalid or oversized project file');return files;};
+app.whenReady().then(async()=>{
+ const hosted=await serve(path.join(__dirname,'../app'));server=hosted.server;origin=hosted.url;
+ window=new BrowserWindow({width:1300,height:860,minWidth:700,minHeight:540,title:'CodeBridge',backgroundColor:'#0d1423',webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
+ window.webContents.setWindowOpenHandler(()=>({action:'deny'}));
+ window.webContents.on('will-navigate',(event,url)=>{if(!url.startsWith(origin))event.preventDefault();});
+ window.setMenuBarVisibility(false);window.loadURL(origin);
+ ipcMain.handle('open-files',async event=>{guard(event);const result=await dialog.showOpenDialog(window,{properties:['openFile','multiSelections'],filters:[{name:'CodeBridge files',extensions:['c','cpp','cc','h','hpp','py','cbproj','json','txt']}]});if(result.canceled)return null;return Promise.all(result.filePaths.map(async p=>({name:path.basename(p),content:(await fs.readFile(p,'utf8')).slice(0,512000)})));});
+ ipcMain.handle('open-folder',async event=>{guard(event);const result=await dialog.showOpenDialog(window,{properties:['openDirectory']});if(result.canceled)return null;selectedRoot=result.filePaths[0];const files=[];async function walk(dir){for(const e of await fs.readdir(dir,{withFileTypes:true})){if(files.length>=200)break;const p=path.join(dir,e.name);if(e.isDirectory()&&!['node_modules','.git','build','dist'].includes(e.name))await walk(p);else if(e.isFile()&&/\.(c|cc|cpp|cxx|h|hpp|py|txt)$/.test(e.name)){const info=await fs.stat(p);if(info.size<=512000)files.push({name:path.relative(selectedRoot,p).split(path.sep).join('/'),content:await fs.readFile(p,'utf8')});}}}await walk(selectedRoot);return {name:path.basename(selectedRoot),files};});
+ ipcMain.handle('save-file',async(event,data)=>{guard(event);const {name,content}=safeFiles([data])[0];const result=await dialog.showSaveDialog(window,{defaultPath:path.basename(name)});if(result.canceled)return false;await fs.writeFile(result.filePath,content);return true;});
+ ipcMain.handle('save-project',async(event,data)=>{guard(event);const files=safeFiles(data);if(!selectedRoot){const result=await dialog.showOpenDialog(window,{properties:['openDirectory','createDirectory']});if(result.canceled)return false;selectedRoot=result.filePaths[0];}for(const f of files){const dest=path.join(selectedRoot,f.name);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.writeFile(dest,f.content);}return true;});
+ ipcMain.handle('debug-start',async(event,config)=>{guard(event);safeFiles(config.files);if(!valid(config.entry))throw new Error('Invalid entry');return debug.start(config,message=>{if(!window.isDestroyed())window.webContents.send('debug-event',message);});});
+ ipcMain.handle('debug-command',(event,command)=>{guard(event);return debug.command(command);});
+ ipcMain.handle('debug-stop',event=>{guard(event);return debug.stop();});
+});
+app.on('window-all-closed',()=>app.quit());
+app.on('before-quit',()=>{debug.stop();server?.close();});

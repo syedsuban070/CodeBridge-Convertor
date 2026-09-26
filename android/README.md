@@ -1,7 +1,9 @@
-# CodeBridge Mobile Preview
+# CodeBridge Android
 
-This is a real Android application project. It provides offline C/C++ source editing, file import/export through the Android document picker, a bounded **learning subset interpreter**, program output, and execution trace stepping. It does **not** include Clang/GCC, GDB, a Python runtime, or the desktop converter. The interface labels the execution command “Run subset.” Arbitrary C/C++ programs cannot be compiled here.
+The Android shell packages the shared editor and all compiler/Python assets. Compilation and execution do not require a server or runtime download.
 
-Open `android/` in Android Studio and build a debug APK, or download `CodeBridge-Mobile-debug` from the repository's **Actions → Android APK** run. The debug APK is signed with the standard debug key for testing, not a Play Store release key. Install only builds from this repository's Actions page.
+Run `npm ci` and `python scripts/prepare_assets.py` at the repository root, then build this directory with Gradle 8.9 / JDK 17 / Android SDK 35. `gradle :app:assembleDebug` creates a test-signed APK. The release workflow runs actual emulator tests for offline C++ and Python execution before publishing downloads.
 
-The next milestone is to package a licensed offline compiler/runtime and a real debug adapter with resource isolation. Do not present this preview as a full C/C++ compiler or debugger.
+The local HTTPS asset origin is intercepted by Android and served only from APK assets. External URL requests are blocked. The file bridge uses Android's document picker. Android's INTERNET permission enables WebView's local-origin loading; the app has no remote code-execution service.
+
+See the root README for feature limitations. A Play Store release key and store publication are not configured.

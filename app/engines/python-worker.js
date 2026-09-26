@@ -1,0 +1,63 @@
+importScripts('../vendor/pyodide/pyodide.js');
+const send=(event,data={})=>postMessage({event,...data});
+self.onmessage=async ({data})=>{
+  let py;
+  try {
+    send('status',{text:'Loading bundled Python…'});
+    let written=0, input=(data.stdin||'').split('\n'), inputAt=0;
+    py=await loadPyodide({indexURL:new URL('../vendor/pyodide/',self.location.href).href,
+      stdout:text=>{written+=text.length;if(written>200000)throw new Error('Output limit reached');send('stdout',{text:text+'\n'});},
+      stderr:text=>send('diagnostic',{text:text+'\n'})});
+    py.setStdin({stdin:()=>inputAt<input.length?input[inputAt++]:null});
+    py.FS.mkdirTree('/project');
+    for(const file of data.files) {
+      if(file.name.includes('..')||file.name.startsWith('/'))throw new Error('Invalid project path');
+      const path='/project/'+file.name;py.FS.mkdirTree(path.slice(0,path.lastIndexOf('/')));py.FS.writeFile(path,file.content);
+    }
+    py.FS.chdir('/project');
+    if(data.action==='convert') {
+      send('status',{text:'Converting supported C/C++ syntax…'});
+      const root=new URL('../vendor/python/',self.location.href);
+      const wheel=await (await fetch(new URL('pycparser-2.22-py3-none-any.whl',root))).arrayBuffer();
+      py.unpackArchive(wheel,'zip',{extractDir:'/parser'});
+      const converter=await (await fetch(new URL('transpile.py',root))).text();py.FS.writeFile('/parser/transpile.py',converter);
+      py.globals.set('source_code',data.source);
+      const result=py.runPython("import sys\nsys.path.insert(0, '/parser')\nfrom transpile import convert\nconvert(source_code)");
+      send('converted',{text:result}); return;
+    }
+    py.globals.set('entry',data.entry);
+    const isDebug=data.action==='debug';
+    if(isDebug) {
+      if(!data.control)throw new Error('Live Python debugging needs an updated WebView with shared-memory support. Running Python remains available.');
+      const control=new Int32Array(data.control);
+      self.cbPause=(json)=>{
+        Atomics.store(control,0,0);send('paused',JSON.parse(json));
+        Atomics.wait(control,0,0);
+        return Atomics.load(control,0);
+      };
+      py.globals.set('breakpoint_lines',py.toPy(data.breakpoints||[]));
+      py.runPython(`import sys, json
+from js import cbPause
+step_mode = True
+def safe_value(value):
+    try: return repr(value)[:200]
+    except: return '<unprintable>'
+def tracer(frame, event, arg):
+    global step_mode
+    if event == 'line' and frame.f_code.co_filename == '/project/' + entry:
+        if step_mode or frame.f_lineno in breakpoint_lines:
+            stack=[]
+            f=frame
+            while f and len(stack)<12:
+                stack.append(f.f_code.co_name + ':' + str(f.f_lineno)); f=f.f_back
+            command=cbPause(json.dumps({'line':frame.f_lineno, 'vars':{k:safe_value(v) for k,v in frame.f_locals.items() if not k.startswith('__')},'stack':stack}))
+            step_mode=command==1
+    return tracer
+sys.settrace(tracer)`);
+    }
+    send('running');send('status',{text:isDebug?'Python debugger running…':'Running Python…'});
+    await py.runPythonAsync("import sys\nsys.path.insert(0, '/project')\nexec(compile(open(entry).read(), '/project/' + entry, 'exec'), {'__name__':'__main__', '__file__':'/project/'+entry})");
+    if(isDebug)py.runPython('sys.settrace(None)');
+    send('done');
+  } catch(error) {send('error',{text:error.message||String(error)});}
+};

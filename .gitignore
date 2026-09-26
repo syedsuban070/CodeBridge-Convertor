@@ -2,3 +2,8 @@ __pycache__/
 *.pyc
 .vscode-test/
 node_modules/
+app/vendor/
+android/app/src/main/assets/
+dist/
+node_modules/
+.artifacts/
