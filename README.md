@@ -27,3 +27,7 @@ Run `python -m unittest discover -s tests -v` from the repository root to compar
 ## Contributing
 
 See [ROADMAP.md](ROADMAP.md). Focus on explicit diagnostics and behavioral tests before adding syntax. MIT licensed.
+
+## Android app preview
+
+The [`android/`](android/) project builds an installable debug APK. It offers an offline editor, Android file import/export, output, and step-by-step tracing for a small C/C++ **learning subset**. Its execution engine is an interpreter; it does not compile native C/C++ binaries or contain GDB or Python conversion. See [mobile setup and limits](android/README.md). Download test builds from **Actions → Android APK → Artifacts** after a successful run.
