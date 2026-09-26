@@ -1,7 +1,7 @@
 const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const {serve}=require('../desktop/server.cjs');
 (async()=>{const hosted=await serve(path.resolve(__dirname,'../app'));const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||undefined,headless:true,args:['--no-sandbox']});try{
- const page=await browser.newPage({viewport:{width:1280,height:850}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const page=await browser.newPage({viewport:{width:1280,height:850}});global.testPage=page;const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(hosted.url);await page.waitForFunction(()=>typeof execute==='function');
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/3 7 19 42/);
  await page.evaluate(()=>{project.files=[{name:'main.py',content:'print(6 * 7)\n'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
@@ -17,4 +17,4 @@ const {serve}=require('../desktop/server.cjs');
  fs.mkdirSync(path.resolve(__dirname,'../.artifacts'),{recursive:true});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/desktop.png')});
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/mobile.png')});
  assert.deepEqual(errors,[]);console.log('PASS UI: C++, Python, live debugger, conversion, diagnostics, cancellation, responsive layout');
- }finally{await browser.close();hosted.server.close();}})().catch(e=>{console.error(e);process.exit(1);});
+ }finally{if(global.testPage){fs.mkdirSync(path.resolve(__dirname,'../.artifacts'),{recursive:true});await global.testPage.screenshot({path:path.resolve(__dirname,'../.artifacts/final-state.png')});console.log('Final UI status:',await global.testPage.textContent('#status'));console.log('Final build log:',await global.testPage.textContent('#diagnostics'));}await browser.close();hosted.server.close();}})().catch(e=>{console.error(e);process.exit(1);});

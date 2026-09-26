@@ -39,19 +39,25 @@ self.onmessage=async ({data})=>{
       py.runPython(`import sys, json
 from js import cbPause
 step_mode = True
+next_depth = None
 def safe_value(value):
     try: return repr(value)[:200]
     except: return '<unprintable>'
 def tracer(frame, event, arg):
-    global step_mode
+    global step_mode, next_depth
     if event == 'line' and frame.f_code.co_filename == '/project/' + entry:
-        if step_mode or frame.f_lineno in breakpoint_lines:
+        depth=0
+        parent=frame
+        while parent:
+            depth+=1; parent=parent.f_back
+        if (step_mode and (next_depth is None or depth <= next_depth)) or frame.f_lineno in breakpoint_lines:
             stack=[]
             f=frame
             while f and len(stack)<12:
                 stack.append(f.f_code.co_name + ':' + str(f.f_lineno)); f=f.f_back
             command=cbPause(json.dumps({'line':frame.f_lineno, 'vars':{k:safe_value(v) for k,v in frame.f_locals.items() if not k.startswith('__')},'stack':stack}))
-            step_mode=command==1
+            step_mode=command in (1,3)
+            next_depth=depth if command==3 else None
     return tracer
 sys.settrace(tracer)`);
     }

@@ -8,7 +8,7 @@ permissions:
   contents: read
 concurrency:
   group: codebridge-release
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   desktop:
     strategy:
@@ -65,8 +65,10 @@ jobs:
         if: always()
         with:
           name: UI-screenshots
+          include-hidden-files: true
           path: .artifacts/*.png
   android:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

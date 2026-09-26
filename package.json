@@ -52,7 +52,8 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "${productName}-${version}-win-${arch}-setup.${ext}"
     },
     "mac": {
       "target": [
@@ -70,6 +71,9 @@
     },
     "icon": "build/icon.png",
     "npmRebuild": false,
-    "artifactName": "${productName}-${version}-${os}-${arch}-${target}.${ext}"
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "portable": {
+      "artifactName": "${productName}-${version}-win-${arch}-portable.${ext}"
+    }
   }
 }

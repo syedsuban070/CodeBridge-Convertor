@@ -12,7 +12,8 @@ async function start(config,emit){
  const sources=config.files.filter(f=>/\.(c|cc|cpp|cxx)$/.test(f.name)).map(f=>f.name);
  if(!sources.length)throw new Error('No C/C++ source files.');
  const exe=path.join(folder,process.platform==='win32'?'program.exe':'program');
- await run(compiler,['-g','-O0',...sources,'-o',exe],folder);
+ const sourceArgs=sources.flatMap(name=>['-x',name.endsWith('.c')?'c':'c++',name]);
+ await run(compiler,['-g','-O0',...sourceArgs,'-x','none','-o',exe],folder);
  kind=debuggerPath==='gdb'?'gdb':'lldb';
  const proc=spawn(debuggerPath,kind==='gdb'?['--quiet','--interpreter=mi2',exe]:['--no-lldbinit',exe],{cwd:folder,stdio:['pipe','pipe','pipe']});session=proc;
  const receive=chunk=>{const text=String(chunk);emit({event:'diagnostic',text});const line=text.match(/line="(\d+)"/)||text.match(/(?:\.cpp|\.c|\.cc):(\d+)/);if(text.includes('*stopped')||text.includes('stop reason'))emit({event:'native-paused',line:line?Number(line[1]):null});};

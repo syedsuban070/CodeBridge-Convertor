@@ -21,7 +21,7 @@ for(const b of document.querySelectorAll('[data-panel]'))b.onclick=()=>panel(b.d
 function output(text,target='output'){const el=$(target);if(el.textContent.length<220000)el.textContent+=text;el.scrollTop=el.scrollHeight;}
 function activeLine(line){if(debugLine!==null)editor.removeLineClass(debugLine,'background','active-debug-line');debugLine=null;if(line){debugLine=line-1;editor.addLineClass(debugLine,'background','active-debug-line');editor.scrollIntoView({line:debugLine,ch:0},60);}}
 function busy(value){for(const id of ['run','build','debug','convert'])$(id).disabled=value;$('stop').disabled=!value;editor.setOption('readOnly',value);}
-function debugButtons(enabled){for(const id of ['step','next','resume','locals','stack'])$(id).disabled=!enabled;}
+function debugButtons(enabled){for(const id of ['step','next','resume','locals','stack'])$(id).disabled=!enabled;if(mode!=='native'){$('locals').disabled=true;$('stack').disabled=true;}}
 function finish(message){clearTimeout(timer);timer=null;worker?.terminate();worker=null;control=null;busy(false);if(mode!=='trace')debugButtons(false);status(message);}
 function stop(){if(mode==='native')window.Desktop?.debugStop();finish('Stopped');mode=null;activeLine(null);}
 function onWorker(message){
@@ -43,7 +43,7 @@ async function execute(action){
  if(action==='convert'&&python){status('Select a C or C++ file to convert.');return;}
  if(action==='convert'){const yes=await ask('Convert to Python','Conversion supports a limited C/C++ subset. Unsupported syntax produces an error; your source is preserved. Continue?');if(!yes)return;}
  if(action==='debug'&&typeof SharedArrayBuffer==='undefined'){await info('Debugger unavailable','This WebView does not expose shared memory. Python Run works. Update Android System WebView to try live debugging.');return;}
- $('output').textContent='';$('diagnostics').textContent='';panel('output');activeLine(null);mode=action;busy(true);debugButtons(false);
+ $('output').textContent='';$('diagnostics').textContent='';panel('output');activeLine(null);mode=action;busy(true);status('Starting…');debugButtons(false);
  const script=(python||action==='convert')?'python-worker.js':'clang-worker.js';worker=new Worker('engines/'+script);
  worker.onmessage=({data})=>onWorker(data);worker.onerror=e=>{output(e.message+'\n','diagnostics');panel('diagnostics');finish('Runtime failed');};
  control=action==='debug'?new Int32Array(new SharedArrayBuffer(4)):null;
@@ -52,7 +52,7 @@ async function execute(action){
 }
 async function nativeDebug(){sync();$('diagnostics').textContent='';mode='native';busy(true);panel('diagnostics');status('Starting native debugger…');try{await Desktop.debugStart({files:project.files,entry:project.active,breakpoints:project.breakpoints[project.active]||[]});}catch(error){mode=null;finish(error.message);await info('Native debugger',error.message);}}
 window.Desktop?.onDebug(message=>{if(message.event==='diagnostic')output(message.text,'diagnostics');if(message.event==='native-paused'){activeLine(message.line);debugButtons(true);panel('inspector');$('debug-info').textContent='Native debugger paused. Variables and stack appear in Build Log.';}if(message.event==='native-exit'){mode=null;finish('Native debugger exited');}if(message.event==='error'){mode=null;finish(message.text);}});
-function debugCommand(command){if(mode==='native'){Desktop.debugCommand(command).catch(e=>status(e.message));if(command==='locals'||command==='stack')panel('diagnostics');return;}if(mode==='trace'){traceStep(command==='continue');return;}if(control){debugButtons(false);Atomics.store(control,0,command==='continue'?2:1);Atomics.notify(control,0);timer=setTimeout(stop,30000);}}
+function debugCommand(command){if(mode==='native'){Desktop.debugCommand(command).catch(e=>status(e.message));if(command==='locals'||command==='stack')panel('diagnostics');return;}if(mode==='trace'){traceStep(command==='continue');return;}if(control){debugButtons(false);Atomics.store(control,0,command==='continue'?2:command==='next'?3:1);Atomics.notify(control,0);timer=setTimeout(stop,30000);}}
 function traceStep(toEnd=false){if(toEnd)traceCursor=trace.length-1;const step=trace[traceCursor++];if(!step){debugButtons(false);status('Trace complete');return;}activeLine(step.line);$('variables').textContent=JSON.stringify(step.vars,null,2);$('output').textContent=step.output;$('debug-info').textContent=`Learning trace ${traceCursor}/${trace.length} · line ${step.line} (replay)`;}
 async function teachingTrace(){sync();try{const result=CodeBridge.run(current().content);trace=result.trace;traceCursor=0;mode='trace';panel('inspector');debugButtons(true);traceStep();}catch(e){await info('Learning trace supports only a subset',e.message+'\nUse Run for the full bundled C/C++ compiler.');}}
 function modal(title,message,value){return new Promise(resolve=>{$('modal-title').textContent=title;$('modal-message').textContent=message;$('modal-input').hidden=value===undefined;$('modal-input').value=value||'';$('modal').returnValue='';$('modal').showModal();$('modal').onclose=()=>resolve($('modal').returnValue==='ok'?(value===undefined?true:$('modal-input').value):null);if(value!==undefined)$('modal-input').focus();});}

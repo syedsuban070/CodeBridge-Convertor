@@ -24,7 +24,7 @@ Get a matching package from [Releases](https://github.com/syedsuban070/CodeBridg
 | Device | Package | Notes |
 | --- | --- | --- |
 | Android 8+ | `CodeBridge-0.2.0-Android.apk` | Test-signed APK. Use an updated Android System WebView. Older preview installs may need uninstalling if Android reports a signing mismatch; export projects first. |
-| Windows x64 | `…win-x64-nsis.exe` or `…win-x64-portable.exe` | Installer or portable executable. The unsigned beta may trigger Windows reputation prompts. |
+| Windows x64 | `…win-x64-setup.exe` or `…win-x64-portable.exe` | Installer or portable executable. The unsigned beta may trigger Windows reputation prompts. |
 | Mac with Apple silicon | `…mac-arm64.dmg` | Unsigned beta; macOS may require approval under Privacy & Security. |
 | Mac with Intel processor | `…mac-x64.dmg` | Same unsigned-beta limitation. |
 
