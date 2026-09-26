@@ -5,7 +5,7 @@ def main():
     while (i < 5):
         total += i
         i += 1
-    print('Total: {}\n'.format(total), end="")
+    print('Total: %d\n' % (total,), end="")
     return 0
 
 if __name__ == "__main__":
