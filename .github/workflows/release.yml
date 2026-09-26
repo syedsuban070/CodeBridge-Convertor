@@ -155,7 +155,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: v0.2.0-beta.${{ github.run_number }}
-          RELEASE_TAG: v0.2.0-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
