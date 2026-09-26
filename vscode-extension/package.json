@@ -1,0 +1,34 @@
+{
+  "name": "codebridge",
+  "displayName": "CodeBridge C/C++ to Python",
+  "description": "Compile, run, debug, and conservatively convert a documented C/C++ subset to Python.",
+  "version": "0.1.0",
+  "publisher": "codebridge-community",
+  "license": "MIT",
+  "engines": {"vscode": "^1.85.0"},
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:c", "onLanguage:cpp"],
+  "contributes": {
+    "commands": [
+      {"command":"codebridge.convert", "title":"Convert File to Python", "category":"CodeBridge"},
+      {"command":"codebridge.build", "title":"Compile C/C++ File", "category":"CodeBridge"},
+      {"command":"codebridge.run", "title":"Compile and Run C/C++ File", "category":"CodeBridge"},
+      {"command":"codebridge.debug", "title":"Compile and Debug C/C++ File", "category":"CodeBridge"}
+    ],
+    "menus": {
+      "editor/title": [
+        {"command":"codebridge.convert", "when":"resourceExtname == .c || resourceExtname == .cpp || resourceExtname == .cc || resourceExtname == .cxx", "group":"2_codebridge"},
+        {"command":"codebridge.run", "when":"resourceExtname == .c || resourceExtname == .cpp || resourceExtname == .cc || resourceExtname == .cxx", "group":"2_codebridge"},
+        {"command":"codebridge.debug", "when":"resourceExtname == .c || resourceExtname == .cpp || resourceExtname == .cc || resourceExtname == .cxx", "group":"2_codebridge"}
+      ]
+    },
+    "configuration": {
+      "title":"CodeBridge",
+      "properties": {
+        "codebridge.pythonPath":{"type":"string", "default":"python", "description":"Python executable with pycparser installed."},
+        "codebridge.cCompiler":{"type":"string", "default":"gcc", "description":"C compiler executable."},
+        "codebridge.cppCompiler":{"type":"string", "default":"g++", "description":"C++ compiler executable."}
+      }
+    }
+  }
+}
