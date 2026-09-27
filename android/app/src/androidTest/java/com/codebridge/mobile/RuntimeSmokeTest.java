@@ -19,13 +19,20 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         assertTrue(js("document.body.classList.contains('output-mode')").contains("true"));
         js("document.getElementById('back-editor').click();true");
         assertTrue(js("!document.body.classList.contains('output-mode')").contains("true"));
-        setCode("main.py","print(sum([2,3,4]))");js("execute('run');true");waitFor("document.getElementById('status').textContent==='Completed successfully'",120);assertTrue(js("document.getElementById('output').textContent").contains("9"));
+        setCode("main.py","import numpy as np\nprint(int(np.array([2,3,4]).sum()))");js("execute('run');true");waitFor("document.getElementById('status').textContent==='Completed successfully'",120);assertTrue(js("document.getElementById('output').textContent").contains("9"));
 
         js("CodeBridgeAcademy.navigate('home');document.getElementById('daily-reward').click();true");
         assertTrue(js("CodeBridgeAcademy.getProgress().coins>=20").contains("true"));
         js("CodeBridgeAcademy.navigate('learn');CodeBridgeAcademy.openLesson('c-1');document.querySelector('[data-answer=\"0\"]').click();document.querySelector('.lesson-editor .CodeMirror').CodeMirror.setValue(CBCourses[0].lessons[0].solution);document.getElementById('check-lesson').click();true");
         waitFor("document.getElementById('lesson-feedback').classList.contains('success')",180);
         assertTrue(js("CodeBridgeAcademy.getProgress().completed.includes('c-1')").contains("true"));
-        js("CodeBridgeAcademy.navigate('home');true");
+        setCode("main.py","print(1 / 0)");
+        js("CodeBridgeAcademy.navigate('code');BitAI.open();document.getElementById('bit-prompt').value='In Python, why does print(1/0) fail? Give a short explanation.';document.getElementById('bit-ask').click();true");
+        waitFor("!BitAI.isBusy()",240);
+        String answer=js("document.getElementById('bit-ai-result').textContent").toLowerCase();
+        assertFalse("Native model error: "+answer,answer.contains("error:"));
+        assertTrue("No relevant AI answer: "+answer,answer.contains("zero")||answer.contains("division"));
+        js("document.getElementById('bit-close').click();CodeBridgeAcademy.navigate('home');true");
+
     }
 }

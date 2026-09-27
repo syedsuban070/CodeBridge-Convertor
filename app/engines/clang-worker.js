@@ -14,7 +14,13 @@ self.onmessage = async ({data}) => {
       hostWrite:text=>{ written+=text.length; if(written>200000) throw new Error('Output limit reached (200 KB).'); send(phase==='run'?'stdout':'diagnostic',{text:strip(text)}); }});
     api.hostLog=()=>{}; api.hostLogAsync=(_,promise)=>promise;
     await api.ready;
+    api.memfs.addFile('include/cJSON.h',new Uint8Array(await (await fetch('../vendor/cpp/cjson/cJSON.h')).arrayBuffer()));
+    const jsonSource=await (await fetch('../vendor/cpp/cjson/cJSON.c')).text();
     const directories=new Set();
+    const options=data.compiler||{};
+    const cStandard=['c99','c11','c17'].includes(options.cStandard)?options.cStandard:'c11';
+    const cppStandard=['c++11','c++14','c++17'].includes(options.cppStandard)?options.cppStandard:'c++17';
+    const optimization=['O0','O1','O2'].includes(options.optimization)?options.optimization:'O0';
     for(const file of data.files) {
       if(!/^[\w. /-]+$/.test(file.name)||file.name.split('/').some(x=>x==='..'||x==='')||file.name.startsWith('/')) throw new Error('Invalid project path: '+file.name);
       const parts=file.name.split('/'); parts.pop(); let dir='';
@@ -22,12 +28,13 @@ self.onmessage = async ({data}) => {
       api.memfs.addFile(file.name,new TextEncoder().encode(file.content));
     }
     const units=data.files.filter(f=>/\.(c|cc|cpp|cxx)$/.test(f.name));
+    if(data.files.some(f=>f.content.includes('cJSON.h'))){api.memfs.addFile('__cb_cjson.c',jsonSource);units.push({name:'__cb_cjson.c',content:jsonSource});}
     if(!units.length) throw new Error('Project has no C or C++ source files.');
     const clang=await api.getModule('clang'), objects=[];
     for(let i=0;i<units.length;i++) {
       const file=units[i], cpp=!file.name.endsWith('.c'), object=`cb_${i}.o`;
       send('status',{text:'Compiling '+file.name});
-      await api.run(clang,'clang','-cc1','-emit-obj',...api.clangCommonArgs,'-I.','-O0',cpp?'-std=c++17':'-std=c11','-o',object,'-x',cpp?'c++':'c',file.name);
+      await api.run(clang,'clang','-cc1','-emit-obj',...api.clangCommonArgs,'-I.','-Iinclude','-Wall','-Wextra','-'+optimization,'-std='+(cpp?cppStandard:cStandard),'-o',object,'-x',cpp?'c++':'c',file.name);
       objects.push(object);
     }
     send('status',{text:'Linking…'});

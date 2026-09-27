@@ -1,18 +1,14 @@
-# CodeBridge Android 0.4 — your coding space
+# CodeBridge Android 0.5 — offline AI and power tools
 
-## New
-- Full-height coding workspace. Run, Build, Debug, Console and Input open a dedicated console screen; return with the Editor button or Android Back.
-- Persistent settings: four app themes (Midnight, Forest, Violet, Paper), four independent editor palettes (Night, Ocean, Plum, Day), font sizes, indentation, wrapping, line numbers, automatic brackets, and 30/60/120-second workspace limits.
-- Bit, an original SVG coding companion with floating and blinking animation.
-- Celebration particles and optional synthesized reward sounds. Sounds default off; animations respect reduced-motion preferences and can be disabled.
-- Input text persists across restarts. Keyboard-aware navigation makes more room for typing.
-- Android Back closes settings, dialogs, or the console before leaving the app.
+- Real on-device Bit AI: bundled Qwen2.5-Coder 0.5B Q4_K_M running in native llama.cpp. Ask for explanations and small fixes without an account, API key or network connection.
+- Fast rule-based compiler/Python error explanations, jump to error, and optional Roman Urdu roast mode (off by default).
+- Offline NumPy, SymPy and mpmath for Python; cJSON for C++.
+- C/C++ standard and optimization settings, plus compiler warnings.
+- Keyword/current-file identifier suggestions, snippets, A+/A− and pinch zoom.
+- Existing courses, themes, progress, full-screen editor and separate console remain included.
 
-The three offline learning paths, 33 missions, progress backups, daily quests and offline Clang/Python runtimes remain included. Existing workspace and learning data retain their storage keys. This release builds Android only.
+The AI is a small pretrained third-party model—not a model trained by this project—and can be wrong. It proposes text only; review and test suggestions. Long code is truncated, and responses are limited. The model itself is 491 MB, so this APK is substantially larger. First use copies it to private storage. Prefer 4 GB RAM and allow about 1.2 GB free storage for installation/preparation; actual requirements vary. 64-bit Android only (arm64 and x86_64). Beta test-signed APK.
 
-## Compatibility and beta notes
-This is not universal program compatibility. C11/C++17 console programs compile to WebAssembly using the bundled Clang/libc/libc++ toolchain. Native GUI frameworks, OS-specific APIs, threads, arbitrary native libraries and C++ exceptions are outside this runtime. Python 3.12 standard-library programs and local modules work within Pyodide's platform constraints; arbitrary native packages, subprocesses and networking are not generally supported.
+Compiler compatibility is broader, not universal. Native GUI frameworks, arbitrary OS APIs/native libraries, C++ exceptions and threads remain unsupported by the bundled WebAssembly compiler. Python native package support is limited to bundled compatible packages. Input is supplied before Run. General Android C++ source debugging remains unfinished.
 
-Input is supplied before execution. Workspace runs default to 30 seconds (configurable up to 120); lesson checks remain capped at 30 seconds. Generated runtime files are temporary. General Android C++ source debugging and universal conversion to Python remain unfinished. Lesson checks verify sample behavior, not a required algorithm or all possible inputs.
-
-Daily rewards use your device clock. Progress and settings are local. Export code projects and progress backups before uninstalling or clearing data. The APK retains the beta test signing key; it is not a Play Store production release.
+See docs/OFFLINE_AI.md for exact model revision, hashes, licenses, privacy and runtime limits. Existing project/progress keys and the beta signing key are retained.

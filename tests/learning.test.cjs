@@ -13,3 +13,5 @@ for(const c of courses)for(const l of c.lessons){assert.ok(l.options[l.answer]);
 console.log('PASS 33 lesson definitions; daily rollover, duplicate rewards, replay XP, quests, streaks, draft backup validation');
 
 const S=require('../app/settings.js');assert.equal(S.validate({theme:'bogus',fontSize:-1,wrap:'yes'}).theme,'midnight');assert.equal(S.validate({theme:'paper',fontSize:18,wrap:true,timeout:60}).timeout,60);assert.equal(S.validate({indent:2}).indent,2);assert.equal(S.validate(null).sound,false);console.log('PASS settings validation and defaults');
+
+const D=require('../app/assist/diagnostics.js');assert.equal(D.explain('main.cpp:4:2: error: expected semicolon;').line,4);assert.equal(D.explain("NameError: name 'count' is not defined").title,'Unknown name');assert.equal(D.explain('ZeroDivisionError: division by zero').title,'Division by zero');assert.ok(D.roast(2).length>20);assert.equal(S.validate({cppStandard:'c++14',optimization:'O2',roast:true}).optimization,'O2');assert.equal(S.validate({cppStandard:'-shell'}).cppStandard,'c++17');console.log('PASS deterministic diagnostics, roast selection, compiler option allowlists');

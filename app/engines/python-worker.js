@@ -25,6 +25,20 @@ self.onmessage=async ({data})=>{
       const result=py.runPython("import sys\nsys.path.insert(0, '/parser')\nfrom transpile import convert\nconvert(source_code)");
       send('converted',{text:result}); return;
     }
+    // Parse imports without executing user code; load only bundled packages.
+    py.globals.set('user_sources_json',JSON.stringify(data.files.filter(f=>f.name.endsWith('.py')).map(f=>f.content)));
+    const modules=py.runPython(`import ast, json
+modules=set()
+for source in json.loads(user_sources_json):
+    try:
+        tree=ast.parse(source)
+        modules.update(n.name.split('.')[0] for node in ast.walk(tree) if isinstance(node,ast.Import) for n in node.names)
+        modules.update(node.module.split('.')[0] for node in ast.walk(tree) if isinstance(node,ast.ImportFrom) and node.module)
+    except SyntaxError:
+        pass
+json.dumps(sorted(modules & {'numpy','sympy','mpmath'}))`);
+    const packages=JSON.parse(modules);
+    if(packages.length){send('status',{text:'Loading bundled '+packages.join(', ')+'…'});await py.loadPackage(packages);}
     py.globals.set('entry',data.entry);
     const isDebug=data.action==='debug';
     if(isDebug) {

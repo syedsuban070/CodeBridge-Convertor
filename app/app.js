@@ -32,11 +32,12 @@ function onWorker(message){
  if(message.event==='running'){clearTimeout(timer);timer=setTimeout(()=>{stop();status('Stopped after '+CBSettings.get().timeout+' seconds.');},CBSettings.get().timeout*1000);}
  if(message.event==='paused'){clearTimeout(timer);activeLine(message.line);$('debug-info').textContent=`Paused at ${project.active}:${message.line}`;$('variables').textContent=Object.entries(message.vars).map(([k,v])=>`${k} = ${v}`).join('\n')+'\n\nStack\n'+message.stack.join('\n');panel('inspector');debugButtons(true);status('Paused · Step or Continue');}
  if(message.event==='done'){finish('Completed successfully');activeLine(null);}
- if(message.event==='error'){output(message.text+'\n','diagnostics');panel('diagnostics');finish('Stopped with errors');markDiagnostics(message.text);}
+ if(message.event==='error'){output(message.text+'\n','diagnostics');panel('diagnostics');finish('Stopped with errors');markDiagnostics(message.text);window.dispatchEvent(new CustomEvent('cb:code-error',{detail:{text:$('diagnostics').textContent}}));}
  if(message.event==='converted'){finish('Python conversion complete; review and test the result.');const name=project.active.replace(/\.[^.]+$/,'.py');addFileUnique(name,message.text);panel('output');$('output').textContent='Converted using the documented C/C++ subset. Review the Python before relying on it.';}
 }
 function markDiagnostics(){for(const line of errors)editor.removeLineClass(line,'background','compiler-error');errors=[];const text=$('diagnostics').textContent;for(const match of text.matchAll(/(?:^|\n)([^\n:]+):(\d+):\d+:\s+(?:fatal )?error/g)){if(match[1]===project.active){const line=+match[2]-1;errors.push(line);editor.addLineClass(line,'background','compiler-error');}}}
 async function execute(action){
+ if(window.BitAI?.isBusy()){await info('Bit is thinking','Stop the local AI before running a program.');return;}
  if(worker||mode==='native')return;sync();const python=project.active.endsWith('.py');
  if(action==='debug'&&!python){if(window.Desktop){await nativeDebug();return;}await info('C/C++ debugging','The offline Clang compiler supports Build and Run. Source debugging for arbitrary C/C++ is not included on Android yet. The learning trace in the menu supports simple C/C++ statements. Python has live debugging when this WebView supports shared memory.');return;}
  if(action==='build'&&python){await info('Python execution','Python runs directly. Use Run or Debug.');return;}
@@ -47,7 +48,7 @@ async function execute(action){
  const script=(python||action==='convert')?'python-worker.js':'clang-worker.js';worker=new Worker('engines/'+script);
  worker.onmessage=({data})=>onWorker(data);worker.onerror=e=>{output(e.message+'\n','diagnostics');panel('diagnostics');finish('Runtime failed');};
  control=action==='debug'?new Int32Array(new SharedArrayBuffer(4)):null;
- worker.postMessage({action,entry:project.active,files:project.files,source:current().content,stdin:$('stdin').value,breakpoints:project.breakpoints[project.active]||[],control:control?.buffer});
+ worker.postMessage({action,entry:project.active,files:project.files,source:current().content,stdin:$('stdin').value,breakpoints:project.breakpoints[project.active]||[],control:control?.buffer,compiler:CBSettings.get()});
  timer=setTimeout(()=>{stop();status('Stopped: initialization exceeded 2 minutes.');},120000);
 }
 async function nativeDebug(){sync();$('diagnostics').textContent='';mode='native';busy(true);panel('diagnostics');status('Starting native debugger…');try{await Desktop.debugStart({files:project.files,entry:project.active,breakpoints:project.breakpoints[project.active]||[]});}catch(error){mode=null;finish(error.message);await info('Native debugger',error.message);}}
@@ -80,5 +81,5 @@ $('toggle-files').onclick=()=>$('sidebar').classList.toggle('visible');$('menu-t
 for(const b of $('menu').querySelectorAll('button'))b.addEventListener('click',()=>$('menu').hidden=true);
 for(const b of document.querySelectorAll('[data-insert]'))b.onclick=()=>{editor.replaceSelection(b.dataset.insert);editor.focus();};
 $('font-size').onclick=async()=>{const value=await modal('Editor font','Choose a size from 10 to 24.',String(parseInt(editor.getWrapperElement().style.fontSize)||14));const n=Number(value);if(n>=10&&n<=24){editor.getWrapperElement().style.fontSize=n+'px';localStorage.setItem('codebridge.font',n);editor.refresh();}};
-$('about').onclick=()=>info('CodeBridge Android 0.4','OFFLINE\nClang 8.0.1 + LLD: C11 / C++17 → WebAssembly. Standard-library console programs, project files and prefilled stdin. No OS APIs, threads or C++ exceptions.\n\nPython 3.12 via Pyodide. Live Python stepping and breakpoints when shared memory is available.\n\nDesktop native C/C++ debugging uses your installed Clang/G++ and GDB/LLDB. Android C/C++ debugging is a limited learning trace.\n\nPython conversion supports the documented subset only. General C++ conversion is not guaranteed.\n\nCode stays on your device. Open-source notices are bundled under vendor/.');
+$('about').onclick=()=>info('CodeBridge Android 0.5','OFFLINE\nClang 8.0.1 + LLD: C11 / C++17 → WebAssembly. Standard-library console programs, project files and prefilled stdin. No OS APIs, threads or C++ exceptions.\n\nPython 3.12 via Pyodide. Live Python stepping and breakpoints when shared memory is available.\n\nDesktop native C/C++ debugging uses your installed Clang/G++ and GDB/LLDB. Android C/C++ debugging is a limited learning trace.\n\nPython conversion supports the documented subset only. General C++ conversion is not guaranteed.\n\nCode stays on your device. Open-source notices are bundled under vendor/.');
 loading=true;editor.setValue(current().content);loading=false;select(project.active);window.addEventListener('resize',()=>editor.refresh());

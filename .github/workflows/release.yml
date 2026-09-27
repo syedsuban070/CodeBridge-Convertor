@@ -20,6 +20,8 @@ jobs:
         with: {python-version: '3.12'}
       - run: npm ci
       - run: python scripts/prepare_assets.py
+      - run: python scripts/prepare_power.py
+        env: {CODEBRIDGE_SKIP_MODEL: '1'}
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:ui
@@ -33,7 +35,7 @@ jobs:
           include-hidden-files: true
           path: .artifacts/*.png
   android:
-    timeout-minutes: 30
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +47,7 @@ jobs:
         with: {distribution: temurin, java-version: '17'}
       - run: npm ci --ignore-scripts
       - run: python scripts/prepare_assets.py
+      - run: python scripts/prepare_power.py
       - uses: gradle/actions/setup-gradle@v4
         with: {gradle-version: '8.9'}
       - uses: actions/cache@v4
@@ -52,7 +55,7 @@ jobs:
           path: ~/.android/debug.keystore
           key: codebridge-test-signing-v2
       - run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0' 'ndk;27.2.12479018' 'cmake;3.22.1'
       - run: gradle :app:assembleDebug :app:assembleDebugAndroidTest --stacktrace
         working-directory: android
       - name: Enable emulator acceleration
@@ -66,7 +69,7 @@ jobs:
           arch: x86_64
           target: google_apis
           profile: pixel_6
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 4096
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 4096 -partition-size 4096
           disable-animations: true
           script: |
             cd android && gradle :app:connectedDebugAndroidTest --stacktrace
@@ -76,7 +79,7 @@ jobs:
             adb exec-out screencap -p > android-screen.png
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.4.0-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.5.0-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -88,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.4.0-Android.apk
+          path: CodeBridge-0.5.0-Android.apk
           if-no-files-found: error
   publish:
     needs: [android, validation]
@@ -107,10 +110,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.4.0-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.5.0-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge Android 0.4 — your coding space" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge Android 0.5 — offline AI and power tools" --notes-file RELEASE_NOTES.md --prerelease
           fi
