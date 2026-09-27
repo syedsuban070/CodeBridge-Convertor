@@ -31,8 +31,8 @@ function onWorker(message){
  if(message.event==='compiled')status(`Build succeeded · ${(message.bytes/1024).toFixed(1)} KB WebAssembly`);
  if(message.event==='running'){clearTimeout(timer);timer=setTimeout(()=>{stop();status('Stopped after '+CBSettings.get().timeout+' seconds.');},CBSettings.get().timeout*1000);}
  if(message.event==='paused'){clearTimeout(timer);activeLine(message.line);$('debug-info').textContent=`Paused at ${project.active}:${message.line}`;$('variables').textContent=Object.entries(message.vars).map(([k,v])=>`${k} = ${v}`).join('\n')+'\n\nStack\n'+message.stack.join('\n');panel('inspector');debugButtons(true);status('Paused · Step or Continue');}
- if(message.event==='done'){finish('Completed successfully');activeLine(null);}
- if(message.event==='error'){output(message.text+'\n','diagnostics');panel('diagnostics');finish('Stopped with errors');markDiagnostics(message.text);window.dispatchEvent(new CustomEvent('cb:code-error',{detail:{text:$('diagnostics').textContent}}));}
+ if(message.event==='done'){finish('Completed successfully');activeLine(null);window.dispatchEvent(new CustomEvent('cb:run-done'));}
+ if(message.event==='error'){output(message.text+'\n','diagnostics');panel('diagnostics');finish('Stopped with errors');markDiagnostics(message.text);window.dispatchEvent(new CustomEvent('cb:code-error',{detail:{text:$('diagnostics').textContent,phase:message.phase}}));}
  if(message.event==='converted'){finish('Python conversion complete; review and test the result.');const name=project.active.replace(/\.[^.]+$/,'.py');addFileUnique(name,message.text);panel('output');$('output').textContent='Converted using the documented C/C++ subset. Review the Python before relying on it.';}
 }
 function markDiagnostics(){for(const line of errors)editor.removeLineClass(line,'background','compiler-error');errors=[];const text=$('diagnostics').textContent;for(const match of text.matchAll(/(?:^|\n)([^\n:]+):(\d+):\d+:\s+(?:fatal )?error/g)){if(match[1]===project.active){const line=+match[2]-1;errors.push(line);editor.addLineClass(line,'background','compiler-error');}}}

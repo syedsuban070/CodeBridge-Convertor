@@ -1,6 +1,7 @@
 (function(root){
 'use strict';
 const rules=[
+[/Compiler runtime limit/i,'Compiler runtime limit','The bundled compiler exceeded its own WebAssembly limits while building this source. This does not prove your program is wrong. Reduce a very large template/header workload or use a native toolchain for this project.','Try a smaller source file to isolate the compiler limit.'],
 [/expected ['"]?;|expected ';'/i,'Missing semicolon','C and C++ statements usually end with a semicolon. Inspect the reported line and the line immediately above it.','int total = 42;'],
 [/undeclared identifier|was not declared|NameError/i,'Unknown name','This name has not been declared in the current scope. Check spelling, capitalization, imports and where the variable is created.','Declare the variable before using it; check the exact name.'],
 [/IndentationError|TabError|expected an indented block/i,'Indentation mismatch','Python uses indentation to group statements. Use consistent spaces and indent the body after if, for, while, def and class.','if ready:\n    print("Ready")'],
@@ -24,6 +25,6 @@ const roasts=[
 'Bakwas syntax ne compiler ka dimagh paka diya. Neeche wali hint dekh, phir dobara chala.'
 ];
 function explain(text){const line=String(text).match(/(?:^|\n)([^\n:]+):(\d+):(\d+):/)||String(text).match(/File "([^"]+)", line (\d+)/);const match=rules.find(r=>r[0].test(text));return {title:match?.[1]||'Let’s inspect this error',explanation:match?.[2]||'Read the first error before the later ones: one early mistake can cause many follow-up messages. Compare the reported line with your intended behavior.',example:match?.[3]||'Try a smaller input or isolate the failing statement. Then run again.',file:line?.[1]||'',line:line?Number(line[2]):null};}
-function roast(seed=0){return roasts[Math.abs(seed)%roasts.length];}
+function roast(seed=0,title=''){if(title==='Missing semicolon')return roasts[0];if(title==='Division by zero')return 'Zero se divide? Bhai, calculator ko bhi chakkar aa gaye! Pehle divisor check kar.';return roasts[1+Math.abs(seed)%(roasts.length-1)];}
 const api={explain,roast};if(typeof module!=='undefined')module.exports=api;else root.CBDiagnostics=api;
 })(globalThis);

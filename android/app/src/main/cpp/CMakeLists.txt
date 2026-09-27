@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(codebridge_bit LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
+# Optimize inference even while the APK uses the beta/debug signing configuration.
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Native inference build" FORCE)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(GGML_NATIVE OFF CACHE BOOL "" FORCE)
