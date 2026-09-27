@@ -46,6 +46,7 @@ const {serve}=require('../desktop/server.cjs');
  // Customize the app and verify persistent settings affect both editors.
  await page.click('#settings-open');await page.click('[data-setting=theme][data-value=paper]');await page.click('[data-setting=editorTheme][data-value=day]');
  await page.selectOption('select[data-setting=fontSize]','18');await page.selectOption('select[data-setting=indent]','2');await page.check('input[data-setting=wrap]');await page.uncheck('input[data-setting=motion]');
+ await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-settings.png')});
  await page.click('#settings-close');await page.reload();await page.waitForFunction(()=>!!window.CBExperience);
  assert.equal(await page.evaluate(()=>CBSettings.get().theme),'paper');assert.equal(await page.evaluate(()=>CBSettings.get().indent),2);assert.equal(await page.evaluate(()=>editor.getOption('lineWrapping')),true);
  await page.click('[data-view=code]');assert.equal(await page.locator('#console').isVisible(),false);assert.equal(await page.locator('#editor-area').isVisible(),true);
