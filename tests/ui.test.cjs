@@ -15,6 +15,7 @@ const {serve}=require('../desktop/server.cjs');
  // Terminating a busy worker keeps the editor responsive.
  await page.evaluate(()=>{project.files=[{name:'loop.py',content:'while True: pass'}];project.active='loop.py';loading=true;editor.setValue(current().content);loading=false;select('loop.py');});await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Running Python…',{},{timeout:120000});await page.click('#stop');assert.equal(await page.textContent('#status'),'Stopped');
  await page.evaluate(()=>{project.files=[{name:'main.cpp',content:exampleCpp}];project.active='main.cpp';loading=true;editor.setValue(current().content);loading=false;select('main.cpp');});
+ await page.click('#back-editor');
  fs.mkdirSync(path.resolve(__dirname,'../.artifacts'),{recursive:true});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/desktop.png')});
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/mobile.png')});
 
@@ -41,5 +42,22 @@ const {serve}=require('../desktop/server.cjs');
  // Navigation must fit the narrow Android viewport without horizontal overflow.
  for(const view of ['home','learn','quests','profile']){await page.click('[data-view='+view+']');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);}
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-profile.png')});
+
+ // Customize the app and verify persistent settings affect both editors.
+ await page.click('#settings-open');await page.click('[data-setting=theme][data-value=paper]');await page.click('[data-setting=editorTheme][data-value=day]');
+ await page.selectOption('select[data-setting=fontSize]','18');await page.selectOption('select[data-setting=indent]','2');await page.check('input[data-setting=wrap]');await page.uncheck('input[data-setting=motion]');
+ await page.click('#settings-close');await page.reload();await page.waitForFunction(()=>!!window.CBExperience);
+ assert.equal(await page.evaluate(()=>CBSettings.get().theme),'paper');assert.equal(await page.evaluate(()=>CBSettings.get().indent),2);assert.equal(await page.evaluate(()=>editor.getOption('lineWrapping')),true);
+ await page.click('[data-view=code]');assert.equal(await page.locator('#console').isVisible(),false);assert.equal(await page.locator('#editor-area').isVisible(),true);
+ await page.click('#input-open');assert.equal(await page.locator('#editor-area').isVisible(),false);await page.fill('#stdin','12 30');await page.click('#back-editor');
+ await page.evaluate(()=>{project.files=[{name:'main.py',content:'a,b=map(int,input().split())\nprint(a+b)'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
+ await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);assert.equal(await page.locator('#editor-area').isVisible(),false);assert.equal(await page.locator('#console').isVisible(),true);
+ await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-console-paper.png')});
+ await page.click('#back-editor');await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-editor-paper.png')});
+ await page.click('#settings-open');await page.click('[data-setting=theme][data-value=forest]');await page.click('[data-setting=editorTheme][data-value=ocean]');await page.click('#settings-close');await page.click('[data-view=home]');
+ await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-home-forest.png')});
+ await page.click('#settings-open');await page.click('[data-setting=theme][data-value=violet]');await page.click('#settings-close');await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-home-violet.png')});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await page.click('#settings-open');await page.click('#reset-settings');await page.click('#settings-close');
  assert.deepEqual(errors,[]);console.log('PASS UI: C++, Python, live debugger, conversion, diagnostics, cancellation, responsive layout');
  }finally{if(global.testPage){fs.mkdirSync(path.resolve(__dirname,'../.artifacts'),{recursive:true});await global.testPage.screenshot({path:path.resolve(__dirname,'../.artifacts/final-state.png')});console.log('Final UI status:',await global.testPage.textContent('#status'));console.log('Final build log:',await global.testPage.textContent('#diagnostics'));}await browser.close();hosted.server.close();}})().catch(e=>{console.error(e);process.exit(1);});

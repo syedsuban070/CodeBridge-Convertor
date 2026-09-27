@@ -1,20 +1,18 @@
-# CodeBridge Android 0.3 — learning adventures
-
-Android-only update. Existing Windows and macOS 0.2 downloads remain available; this release does not build new desktop packages.
+# CodeBridge Android 0.4 — your coding space
 
 ## New
-- Home dashboard, persistent bottom navigation, redesigned mobile cards and coding workspace.
-- Three offline learning paths: C, C++, Python. 33 missions in Foundations, Explorer and Advanced chapters.
-- Each mission includes an explanation, worked example, conceptual quiz, saved code draft, and real compiler/interpreter checks.
-- Sequential unlocks, XP levels, badges, coins, daily reward, three daily quests, and a rotating practice challenge.
-- Local progress and drafts, with export/restore using .cbprogress backups. Existing coding projects are preserved.
+- Full-height coding workspace. Run, Build, Debug, Console and Input open a dedicated console screen; return with the Editor button or Android Back.
+- Persistent settings: four app themes (Midnight, Forest, Violet, Paper), four independent editor palettes (Night, Ocean, Plum, Day), font sizes, indentation, wrapping, line numbers, automatic brackets, and 30/60/120-second workspace limits.
+- Bit, an original SVG coding companion with floating and blinking animation.
+- Celebration particles and optional synthesized reward sounds. Sounds default off; animations respect reduced-motion preferences and can be disabled.
+- Input text persists across restarts. Keyboard-aware navigation makes more room for typing.
+- Android Back closes settings, dialogs, or the console before leaving the app.
 
-## Runtime
-Real offline Clang C11/C++17 compilation to WebAssembly, bundled Python 3.12, project files, standard input/output, and Python debugging remain available. Course exercises use the same runtimes as the coding workspace.
+The three offline learning paths, 33 missions, progress backups, daily quests and offline Clang/Python runtimes remain included. Existing workspace and learning data retain their storage keys. This release builds Android only.
 
-## Known limits
-This is a beta, not universal program compatibility. Native GUI frameworks, OS-specific APIs, threads, arbitrary native libraries and C++ exceptions are outside the bundled C/C++ runtime. Python native packages, subprocesses and networking are not generally supported. Input is supplied before execution; execution times out after 30 seconds. Runtime-created files are temporary. General Android C++ source debugging and universal conversion to Python remain unfinished.
+## Compatibility and beta notes
+This is not universal program compatibility. C11/C++17 console programs compile to WebAssembly using the bundled Clang/libc/libc++ toolchain. Native GUI frameworks, OS-specific APIs, threads, arbitrary native libraries and C++ exceptions are outside this runtime. Python 3.12 standard-library programs and local modules work within Pyodide's platform constraints; arbitrary native packages, subprocesses and networking are not generally supported.
 
-Exercise checks compare normalized output for specific inputs; they do not enforce a particular algorithm or prove correctness for all inputs. Advanced chapters introduce advanced topics; they are not exhaustive language courses. Reference solutions are intentionally available for learning.
+Input is supplied before execution. Workspace runs default to 30 seconds (configurable up to 120); lesson checks remain capped at 30 seconds. Generated runtime files are temporary. General Android C++ source debugging and universal conversion to Python remain unfinished. Lesson checks verify sample behavior, not a required algorithm or all possible inputs.
 
-Progress and daily rewards use the local device clock, with no online anti-cheat. Coins have no monetary value. Export backups before clearing app data or uninstalling. The APK is test-signed with the retained beta signing key; install over 0.2 to keep data where signatures match.
+Daily rewards use your device clock. Progress and settings are local. Export code projects and progress backups before uninstalling or clearing data. The APK retains the beta test signing key; it is not a Play Store production release.

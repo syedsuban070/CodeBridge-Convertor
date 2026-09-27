@@ -54,6 +54,11 @@ public final class MainActivity extends Activity {
         editor.addJavascriptInterface(new Bridge(),"AndroidFiles");
         root.addView(editor,new FrameLayout.LayoutParams(-1,-1));setContentView(root);editor.loadUrl(ORIGIN);
     }
+    @Override public void onBackPressed() {
+        editor.evaluateJavascript("window.codebridgeBack ? window.codebridgeBack() : false", result -> {
+            if (!"true".equals(result)) super.onBackPressed();
+        });
+    }
     public WebView getEditorForTesting(){return editor;}
     private void send(String function,String...args){StringBuilder js=new StringBuilder(function).append('(');for(int i=0;i<args.length;i++){if(i>0)js.append(',');js.append(JSONObject.quote(args[i]));}editor.evaluateJavascript(js.append(')').toString(),null);}
     private final class Bridge{

@@ -1,5 +1,7 @@
 # CodeBridge Android — Learn, build, explore
 
+**Android 0.4:** full-screen editor and separate console, persistent app/editor themes, coding preferences, animated Bit companion, optional reward sounds, and accessible motion controls. Open Settings from the top-right sliders button. [Release notes](RELEASE_NOTES.md).
+
 Android is the active development target as of 0.3. The new Home, Learn, Code, Quests and Profile sections include 33 offline missions across C, C++ and Python, executable challenges, XP levels, daily rewards, badges, saved drafts and progress backups. [Learning guide](docs/ANDROID_LEARNING.md).
 
 Download the Android APK from [Releases](https://github.com/syedsuban070/CodeBridge-Convertor/releases). Windows and macOS 0.2 remain available as legacy builds; new releases are Android only.

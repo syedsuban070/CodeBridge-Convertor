@@ -11,3 +11,5 @@ p.drafts['c-1']='draft';const restored=P.validate(JSON.parse(JSON.stringify(p)),
 assert.throws(()=>P.validate({...p,xp:-1},ids));assert.throws(()=>P.validate({...p,completed:['missing']},ids));assert.throws(()=>P.validate({...p,drafts:{'c-1':42}},ids));assert.throws(()=>P.validate({...p,days:{bad:{runs:1,lessons:1}}},ids));
 for(const c of courses)for(const l of c.lessons){assert.ok(l.options[l.answer]);assert.ok(l.cases.length);assert.ok(l.solution);assert.ok(l.starter);assert.ok(l.xp>0);}
 console.log('PASS 33 lesson definitions; daily rollover, duplicate rewards, replay XP, quests, streaks, draft backup validation');
+
+const S=require('../app/settings.js');assert.equal(S.validate({theme:'bogus',fontSize:-1,wrap:'yes'}).theme,'midnight');assert.equal(S.validate({theme:'paper',fontSize:18,wrap:true,timeout:60}).timeout,60);assert.equal(S.validate({indent:2}).indent,2);assert.equal(S.validate(null).sound,false);console.log('PASS settings validation and defaults');
