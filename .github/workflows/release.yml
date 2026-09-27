@@ -1,8 +1,8 @@
-name: Build CodeBridge apps
+name: Build CodeBridge Android
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'desktop/**', 'android/**', 'build/**', 'scripts/**', 'package*.json', 'tests/**', '.github/workflows/release.yml']
+    paths: ['app/**', 'android/**', 'build/**', 'scripts/**', 'package*.json', 'tests/**', '.github/workflows/release.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,49 +10,6 @@ concurrency:
   group: codebridge-release
   cancel-in-progress: true
 jobs:
-  desktop:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            platform: win
-            arch: x64
-            executable: dist/win-unpacked/CodeBridge.exe
-          - os: macos-15-intel
-            platform: mac
-            arch: x64
-            executable: dist/mac/CodeBridge.app/Contents/MacOS/CodeBridge
-          - os: macos-15
-            platform: mac
-            arch: arm64
-            executable: dist/mac-arm64/CodeBridge.app/Contents/MacOS/CodeBridge
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: {node-version: '22', cache: npm}
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.12'}
-      - run: npm ci
-      - run: python scripts/prepare_assets.py
-      - run: npm test
-      - run: node tests/electron-smoke.cjs
-      - run: npm run dist -- --${{ matrix.platform }} --${{ matrix.arch }}
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-      - name: Test packaged desktop application
-        run: node tests/electron-smoke.cjs
-        env:
-          CODEBRIDGE_APP: ${{ matrix.executable }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: desktop-${{ matrix.platform }}-${{ matrix.arch }}
-          path: |
-            dist/*.exe
-            dist/*.dmg
-            dist/*.zip
-          if-no-files-found: error
   validation:
     runs-on: ubuntu-latest
     steps:
@@ -66,8 +23,9 @@ jobs:
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:ui
-      - run: sudo apt-get update && sudo apt-get install -y gdb
-      - run: node tests/native-debug.test.cjs
+      - run: node tests/learning.test.cjs
+      - run: node tests/curriculum-wasm.test.cjs
+      - run: python scripts/check_curriculum.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -118,7 +76,7 @@ jobs:
             adb exec-out screencap -p > android-screen.png
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.2.0-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.3.0-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -130,20 +88,15 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.2.0-Android.apk
+          path: CodeBridge-0.3.0-Android.apk
           if-no-files-found: error
   publish:
-    needs: [desktop, android, validation]
+    needs: [android, validation]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: desktop-*
-          path: release-files
-          merge-multiple: true
       - uses: actions/download-artifact@v4
         with:
           name: Android-APK
@@ -154,10 +107,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.2.0-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.3.0-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge Studio 0.2 — offline apps" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge Android 0.3 — learning adventures" --notes-file RELEASE_NOTES.md --prerelease
           fi

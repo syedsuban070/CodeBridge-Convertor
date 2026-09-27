@@ -1,24 +1,20 @@
-## CodeBridge Studio 0.2 beta
+# CodeBridge Android 0.3 — learning adventures
 
-Offline Android, Windows and macOS applications with a shared project editor and bundled C/C++ and Python runtimes.
+Android-only update. Existing Windows and macOS 0.2 downloads remain available; this release does not build new desktop packages.
 
-- Real Clang 8 + LLD compilation to WebAssembly, including standard C/C++ library console programs and prefilled stdin.
-- Python 3.12, source editing, autosave, project import/export, syntax highlighting, diagnostics and cancellation.
-- Live Python debugging where shared memory is available.
-- Desktop native C/C++ debugging through an installed Clang/G++ + GDB/LLDB toolchain.
-- Offline conversion of the documented limited C/C++ subset into Python.
+## New
+- Home dashboard, persistent bottom navigation, redesigned mobile cards and coding workspace.
+- Three offline learning paths: C, C++, Python. 33 missions in Foundations, Explorer and Advanced chapters.
+- Each mission includes an explanation, worked example, conceptual quiz, saved code draft, and real compiler/interpreter checks.
+- Sequential unlocks, XP levels, badges, coins, daily reward, three daily quests, and a rotating practice challenge.
+- Local progress and drafts, with export/restore using .cbprogress backups. Existing coding projects are preserved.
 
-### Choose a download
+## Runtime
+Real offline Clang C11/C++17 compilation to WebAssembly, bundled Python 3.12, project files, standard input/output, and Python debugging remain available. Course exercises use the same runtimes as the coding workspace.
 
-- Android: `CodeBridge-0.2.0-Android.apk`.
-- Windows x64: NSIS installer or portable EXE.
-- Apple silicon Mac: arm64 DMG or ZIP.
-- Intel Mac: x64 DMG or ZIP.
+## Known limits
+This is a beta, not universal program compatibility. Native GUI frameworks, OS-specific APIs, threads, arbitrary native libraries and C++ exceptions are outside the bundled C/C++ runtime. Python native packages, subprocesses and networking are not generally supported. Input is supplied before execution; execution times out after 30 seconds. Runtime-created files are temporary. General Android C++ source debugging and universal conversion to Python remain unfinished.
 
-### Release limits
+Exercise checks compare normalized output for specific inputs; they do not enforce a particular algorithm or prove correctness for all inputs. Advanced chapters introduce advanced topics; they are not exhaustive language courses. Reference solutions are intentionally available for learning.
 
-This is a beta, not a promise of all IDE/compiler features. Android arbitrary C/C++ source debugging, general C++ to Python conversion, package management, C++ exceptions/threads and OS-specific APIs are not implemented. The runtime compiles C/C++ to WebAssembly, not native executables.
-
-Android is test-signed. Windows/macOS packages are unsigned; Apple notarization and trusted publisher certificates are not configured. Export existing projects before uninstalling an older preview when a signing mismatch prevents an Android upgrade.
-
-SHA-256 checksums are included. See the README and feature matrix for setup and exact support.
+Progress and daily rewards use the local device clock, with no online anti-cheat. Coins have no monetary value. Export backups before clearing app data or uninstalling. The APK is test-signed with the retained beta signing key; install over 0.2 to keep data where signatures match.

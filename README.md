@@ -1,3 +1,9 @@
+# CodeBridge Android — Learn, build, explore
+
+Android is the active development target as of 0.3. The new Home, Learn, Code, Quests and Profile sections include 33 offline missions across C, C++ and Python, executable challenges, XP levels, daily rewards, badges, saved drafts and progress backups. [Learning guide](docs/ANDROID_LEARNING.md).
+
+Download the Android APK from [Releases](https://github.com/syedsuban070/CodeBridge-Convertor/releases). Windows and macOS 0.2 remain available as legacy builds; new releases are Android only.
+
 # CodeBridge Studio
 
 **An offline C, C++ and Python workspace for Android, Windows and macOS.**
