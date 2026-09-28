@@ -8,8 +8,8 @@ self.onmessage=async ({data})=>{
     py=await loadPyodide({indexURL:new URL('../vendor/pyodide/',self.location.href).href,
       stdout:text=>{written+=text.length;if(written>200000)throw new Error('Output limit reached');send('stdout',{text:text+'\n'});},
       stderr:text=>send('diagnostic',{text:text+'\n'})});
-    if(data.inputBuffer){
-      const read=createTerminalInput(data.inputBuffer,data.stdin?(data.stdin.endsWith('\n')?data.stdin:data.stdin+'\n'):'');
+    if(data.inputBuffer||data.nativeInput){
+      const read=createTerminalInput(data.inputBuffer,data.stdin?(data.stdin.endsWith('\n')?data.stdin:data.stdin+'\n'):'',data.nativeInput);
       py.setStdin({read:buffer=>{const bytes=read(buffer.length);buffer.set(bytes);return bytes.length;},isatty:false});
     }else py.setStdin({stdin:()=>inputAt<input.length?input[inputAt++]:null});
     const decoder=new TextDecoder();

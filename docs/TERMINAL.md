@@ -4,7 +4,9 @@ Run a program, wait for its prompt, type a line and press Enter or Send. C `scan
 
 EOF closes stdin for the rest of that run. Stop terminates the worker even if it is waiting for input or stuck in a loop. A new run creates a new stream. Up/Down recalls submitted lines; Ctrl+D sends EOF, Ctrl+C stops. Waiting for a human does not consume the execution timeout. Each resumed computation is limited by the configured run limit. Input lines are limited to 16 KB and total program output to 200 KB.
 
-The UI and runtime worker communicate through a shared-memory handshake. Only the worker blocks with Atomics.wait. The UI can still accept input, scroll or stop. The runtime is not restarted to simulate interactive input. The Android shell serves its bundled files with isolation headers needed for SharedArrayBuffer. Updated Android System WebView is required; unavailable shared memory falls back to preloaded input only.
+On Android, the worker makes a synchronous request to the app's private terminal endpoint. The Java input bridge waits for a submitted line on a background request thread and returns UTF-8 JSON; the UI and JavaScript-interface threads stay free. Each run has a random session token. EOF, Stop, a new run and Activity destruction release pending reads. No network server or internet connection is involved. This works when Android WebView does not expose shared memory.
+
+Browser previews use a SharedArrayBuffer/Atomics handshake instead. Only the runtime worker waits. Browser live input requires cross-origin isolation and shared-memory support; otherwise input is preload-only. Python source debugging still requires shared memory on all platforms.
 
 Interactive C/C++ runs link a tiny constructor that makes stdout/stderr unbuffered, so prompts without newlines appear before reads. Python uses a byte writer instead of line-batched stdout. UTF-8 is decoded incrementally.
 

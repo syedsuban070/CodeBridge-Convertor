@@ -25,6 +25,7 @@ import org.json.JSONObject;
 public final class MainActivity extends Activity {
     private static final int OPEN=1, SAVE=2;
     private WebView editor;
+    private final TerminalBridge terminal=new TerminalBridge();
     private String pendingSave;
     private static final String ORIGIN="https://codebridge.local/";
     @Override public void onCreate(Bundle state) {
@@ -42,6 +43,7 @@ public final class MainActivity extends Activity {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){
                 String url=request.getUrl().toString();
                 if(!url.startsWith(ORIGIN))return new WebResourceResponse("text/plain","UTF-8",403,"Forbidden",new HashMap<>(),new ByteArrayInputStream(new byte[0]));
+                if("/__terminal/read".equals(request.getUrl().getPath()))return terminal.read(request.getUrl().getQueryParameter("token"));
                 String path=request.getUrl().getPath();path=path==null||path.equals("/")?"index.html":path.substring(1);
                 if(path.contains(".."))return new WebResourceResponse("text/plain","UTF-8",new ByteArrayInputStream(new byte[0]));
                 String mime=path.endsWith(".html")?"text/html":path.endsWith(".js")?"text/javascript":path.endsWith(".css")?"text/css":path.endsWith(".wasm")?"application/wasm":path.endsWith(".json")?"application/json":"application/octet-stream";
@@ -52,9 +54,11 @@ public final class MainActivity extends Activity {
             }
         });
         editor.addJavascriptInterface(new Bridge(),"AndroidFiles");
+        editor.addJavascriptInterface(terminal,"TerminalNative");
         new java.io.File(getFilesDir(),"bit-qwen-0.5b-q4.gguf").delete();
         root.addView(editor,new FrameLayout.LayoutParams(-1,-1));setContentView(root);editor.loadUrl(ORIGIN);
     }
+    @Override protected void onDestroy(){terminal.close();editor.destroy();super.onDestroy();}
     @Override public void onBackPressed() {
         editor.evaluateJavascript("window.codebridgeBack ? window.codebridgeBack() : false", result -> {
             if (!"true".equals(result)) super.onBackPressed();

@@ -55,7 +55,7 @@ C/C++ source files in a project are linked together. Keep only one `main` in a C
 
 - The bundled C/C++ toolchain targets WASI/WebAssembly, not native Windows/macOS/Android executables. OS-specific APIs, networking, threads and C++ exceptions are not provided by this runtime. It is Clang 8, not the latest Clang.
 - Android has no arbitrary C/C++ source debugger. **C/C++ learning trace** is a separate, limited interpreter with replayed steps. It is explicitly labeled and never substituted for the real compiler.
-- Interactive input and Python debugging require `SharedArrayBuffer` in an updated Android System WebView. If unavailable, only preloaded input is supported.
+- Android live input uses the built-in native input bridge and does not require shared memory. Browser live input and Python source debugging require `SharedArrayBuffer`; otherwise browser input is preload-only.
 - NumPy, SymPy and mpmath are bundled. Arbitrary native Python package installation is not included.
 - The converter is a conservative prototype, not a guarantee of identical behavior for arbitrary C/C++. See [conversion scope](docs/FEATURES.md).
 - Desktop native debugging executes locally with the current user's privileges. Run code you trust in that mode.

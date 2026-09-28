@@ -50,7 +50,7 @@ async function execute(action){
  const script=(python||action==='convert')?'python-worker.js':'clang-worker.js';worker=new Worker('engines/'+script);
  worker.onmessage=({data})=>onWorker(data);worker.onerror=e=>{output(e.message+'\n','diagnostics');panel('diagnostics');finish('Runtime failed');};
  control=action==='debug'?new Int32Array(new SharedArrayBuffer(4)):null;
- worker.postMessage({action,entry:project.active,files:project.files,source:current().content,stdin:$('stdin').value,inputBuffer:action==='convert'||action==='build'?null:CBTerminal.start(),breakpoints:project.breakpoints[project.active]||[],control:control?.buffer,compiler:CBSettings.get()});
+ worker.postMessage({action,entry:project.active,files:project.files,source:current().content,stdin:$('stdin').value,...((action==='convert'||action==='build')?{}:CBTerminal.start()),breakpoints:project.breakpoints[project.active]||[],control:control?.buffer,compiler:CBSettings.get()});
  timer=setTimeout(()=>{stop();status('Stopped: initialization exceeded 2 minutes.');},120000);
 }
 async function nativeDebug(){sync();$('diagnostics').textContent='';mode='native';busy(true);panel('diagnostics');status('Starting native debugger…');try{await Desktop.debugStart({files:project.files,entry:project.active,breakpoints:project.breakpoints[project.active]||[]});}catch(error){mode=null;finish(error.message);await info('Native debugger',error.message);}}

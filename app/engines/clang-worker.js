@@ -30,7 +30,7 @@ self.onmessage = async ({data}) => {
     const units=data.files.filter(f=>/\.(c|cc|cpp|cxx)$/.test(f.name));
     if(data.files.some(f=>f.content.includes('cJSON.h'))){api.memfs.addFile('__cb_cjson.c',jsonSource);units.push({name:'__cb_cjson.c',content:jsonSource});}
     if(!units.length) throw new Error('Project has no C or C++ source files.');
-    if(data.inputBuffer){
+    if(data.inputBuffer||data.nativeInput){
       const source='#include <stdio.h>\n__attribute__((constructor)) static void cb_terminal_init(void){setvbuf(stdout,0,_IONBF,0);setvbuf(stderr,0,_IONBF,0);}';
       api.memfs.addFile('__cb_terminal.c',source);units.push({name:'__cb_terminal.c',content:source});
     }
@@ -48,7 +48,7 @@ self.onmessage = async ({data}) => {
     send('compiled',{bytes:binary.byteLength});
     if(data.action==='build') { send('done'); return; }
     api.memfs.setStdinStr(data.stdin||'');
-    if(data.inputBuffer)api.memfs.readInput=createTerminalInput(data.inputBuffer,data.stdin?(data.stdin.endsWith('\n')?data.stdin:data.stdin+'\n'):'');
+    if(data.inputBuffer||data.nativeInput)api.memfs.readInput=createTerminalInput(data.inputBuffer,data.stdin?(data.stdin.endsWith('\n')?data.stdin:data.stdin+'\n'):'',data.nativeInput);
     phase='run'; written=0;
     send('running'); send('status',{text:'Running…'});
     await api.run(await WebAssembly.compile(binary),'program.wasm');

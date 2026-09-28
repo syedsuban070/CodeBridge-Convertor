@@ -9,6 +9,6 @@
 
 ## Scope
 
-Android 8+ with updated Android System WebView. Test-signed beta. The terminal supports line-oriented program input, not a Linux shell or full VT/curses terminal. Shared memory is required for live input. Clang 8/WASI limits still apply: OS-specific APIs, networking, threads, C++ exceptions and arbitrary native libraries are not provided. Python includes NumPy, SymPy and mpmath. Conversion remains a documented subset.
+Android 8+ with updated Android System WebView. Test-signed beta. The terminal supports line-oriented program input, not a Linux shell or full VT/curses terminal. Android live input uses a native bridge; browser previews require shared memory. Clang 8/WASI limits still apply: OS-specific APIs, networking, threads, C++ exceptions and arbitrary native libraries are not provided. Python includes NumPy, SymPy and mpmath. Conversion remains a documented subset.
 
 Bit is rule-based and scripted, not a trained AI model. No external AI inference or model download is included. See docs/TERMINAL.md for behavior and limits.

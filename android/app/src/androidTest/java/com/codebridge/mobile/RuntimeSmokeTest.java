@@ -39,6 +39,17 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         js("document.getElementById('terminal-line').value='Dost';CBTerminal.submit();true");
         waitFor("document.getElementById('status').textContent==='Completed successfully'",30);
         assertTrue(js("document.getElementById('output').textContent").contains("Hello Dost"));
+        setCode("main.c","#include <stdio.h>\nint main(){int c,n=0;while((c=getchar())!=EOF)n++;printf(\"bytes=%d\",n);}");
+        js("execute('run');true");waitFor("CBTerminal.waiting",150);
+        js("document.getElementById('terminal-line').value='abc';CBTerminal.submit();true");
+        waitFor("CBTerminal.waiting",30);js("CBTerminal.submit(true);true");
+        waitFor("document.getElementById('status').textContent==='Completed successfully'",30);
+        assertTrue(js("document.getElementById('output').textContent").contains("bytes=4"));
+        setCode("main.py","input('Stop here: ')");
+        js("execute('run');true");waitFor("CBTerminal.waiting",120);
+        js("stop();execute('run');true");waitFor("CBTerminal.waiting",120);
+        js("document.getElementById('terminal-line').value='again';CBTerminal.submit();true");
+        waitFor("document.getElementById('status').textContent==='Completed successfully'",30);
         assertEquals("External AI bridge must be absent","true",js("typeof BitNative==='undefined'"));
         js("CodeBridgeAcademy.navigate('home');true");
     }
