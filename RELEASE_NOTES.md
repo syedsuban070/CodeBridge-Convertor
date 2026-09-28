@@ -1,14 +1,14 @@
-# CodeBridge Android 0.5 — offline AI and power tools
+# CodeBridge Android 0.6 — interactive terminal and editor
 
-- Real on-device Bit AI: bundled Qwen2.5-Coder 0.5B Q4_K_M running in native llama.cpp. Ask for explanations and small fixes without an account, API key or network connection.
-- Fast rule-based compiler/Python error explanations, jump to error, and optional Roman Urdu roast mode (off by default).
-- Offline NumPy, SymPy and mpmath for Python; cJSON for C++.
-- C/C++ standard and optimization settings, plus compiler warnings.
-- Keyword/current-file identifier suggestions, snippets, A+/A− and pinch zoom.
-- Existing courses, themes, progress, full-screen editor and separate console remain included.
+- Live line input for C scanf/getchar, C++ cin/getline and Python input(), without restarting the program. Prompts display before reads, including prompts without a newline.
+- Enter/Send, EOF, Stop, input history, streaming UTF-8 output, responsive terminal input bar, and timeout suspension while waiting for input.
+- Touch bracket/quote pairing, brace-block indentation, undo/redo, indent/outdent, reindent, find, select-all and active-line highlighting. Existing zoom and suggestions remain.
+- External AI model and native AI runtime removed. Bit uses original scripted guidance, more Roman Urdu jokes, banter replies and angry/laughing/confused animations. Reactions do not interrupt the terminal with a popup; roast mode is optional.
+- Existing home, courses, quizzes, quests, local progress, themes and offline libraries retained. Same application ID and beta signing-key cache; install over the previous beta to retain local data. Do not uninstall first. Export progress/projects before changing installations.
+- The previous 0.5 release remains unchanged and available separately. An in-place update deletes its obsolete private model copy.
 
-The AI is a small pretrained third-party model—not a model trained by this project—and can be wrong. It proposes text only; review and test suggestions. Long code is truncated, and responses are limited. The model itself is 491 MB, so this APK is substantially larger. First use copies it to private storage. Prefer 4 GB RAM and allow about 1.2 GB free storage for installation/preparation; actual requirements vary. 64-bit Android only (arm64 and x86_64). Beta test-signed APK.
+## Scope
 
-Compiler compatibility is broader, not universal. Native GUI frameworks, arbitrary OS APIs/native libraries, C++ exceptions and threads remain unsupported by the bundled WebAssembly compiler. Python native package support is limited to bundled compatible packages. Input is supplied before Run. General Android C++ source debugging remains unfinished.
+Android 8+ with updated Android System WebView. Test-signed beta. The terminal supports line-oriented program input, not a Linux shell or full VT/curses terminal. Shared memory is required for live input. Clang 8/WASI limits still apply: OS-specific APIs, networking, threads, C++ exceptions and arbitrary native libraries are not provided. Python includes NumPy, SymPy and mpmath. Conversion remains a documented subset.
 
-See docs/OFFLINE_AI.md for exact model revision, hashes, licenses, privacy and runtime limits. Existing project/progress keys and the beta signing key are retained.
+Bit is rule-based and scripted, not a trained AI model. No external AI inference or model download is included. See docs/TERMINAL.md for behavior and limits.

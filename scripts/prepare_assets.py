@@ -20,6 +20,8 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
 # Adapt the upstream API to avoid injecting an extra newline into user output.
 shared = (VENDOR / 'clang/shared.js').read_text()
 shared = shared.replace("    this.hostWrite('\\n');\n    if (this.showTiming)", "    if (this.showTiming)")
+shared = shared.replace('    assert(fd === 0);', '    assert(fd === 0);\n    if (this.readInput) {\n      let size = 0;\n      for (let i = 0; i < iovs_len; i++) {\n        const buf = this.hostMem_.read32(iovs + i * 8);\n        const len = this.hostMem_.read32(iovs + i * 8 + 4);\n        if (!len) continue;\n        const bytes = this.readInput(len);\n        this.hostMem_.write(buf, bytes); size += bytes.length;\n        // One terminal read returns available bytes; never wait to fill all iovecs.\n        break;\n      }\n      this.hostMem_.write32(nread, size);\n      return ESUCCESS;\n    }')
+shared = shared.replace('      str += this.hostMem_.readStr(buf, len);', '      this.decoders ||= {};\n      this.decoders[fd] ||= new TextDecoder();\n      str += this.decoders[fd].decode(new Uint8Array(this.hostMem_.buffer, buf, len), {stream:true});')
 (VENDOR / 'clang/shared-adapted.js').write_text(shared)
 for package in ('codemirror', 'pyodide'):
     source = ROOT / 'node_modules' / package

@@ -6,19 +6,15 @@ android {
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
     compileSdk 35
-    ndkVersion "27.2.12479018"
-    externalNativeBuild { cmake { path file("src/main/cpp/CMakeLists.txt"); version "3.22.1" } }
     defaultConfig {
         applicationId 'com.codebridge.mobile'
         minSdk 26
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
         targetSdk 35
-        ndk { abiFilters "arm64-v8a", "x86_64" }
-        externalNativeBuild { cmake { cppFlags "-std=c++17"; arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON" } }
-        versionCode 5
-        versionName '0.5.0'
+        versionCode 6
+        versionName '0.6.0'
     }
-    androidResources { noCompress += ['wasm', 'tar', 'whl', 'zip', 'gguf'] }
+    androidResources { noCompress += ['wasm', 'tar', 'whl', 'zip'] }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17

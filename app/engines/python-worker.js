@@ -1,4 +1,4 @@
-importScripts('../vendor/pyodide/pyodide.js');
+importScripts('../vendor/pyodide/pyodide.js','terminal-input.js');
 const send=(event,data={})=>postMessage({event,...data});
 self.onmessage=async ({data})=>{
   let py;
@@ -8,7 +8,12 @@ self.onmessage=async ({data})=>{
     py=await loadPyodide({indexURL:new URL('../vendor/pyodide/',self.location.href).href,
       stdout:text=>{written+=text.length;if(written>200000)throw new Error('Output limit reached');send('stdout',{text:text+'\n'});},
       stderr:text=>send('diagnostic',{text:text+'\n'})});
-    py.setStdin({stdin:()=>inputAt<input.length?input[inputAt++]:null});
+    if(data.inputBuffer){
+      const read=createTerminalInput(data.inputBuffer,data.stdin?(data.stdin.endsWith('\n')?data.stdin:data.stdin+'\n'):'');
+      py.setStdin({read:buffer=>{const bytes=read(buffer.length);buffer.set(bytes);return bytes.length;},isatty:false});
+    }else py.setStdin({stdin:()=>inputAt<input.length?input[inputAt++]:null});
+    const decoder=new TextDecoder();
+    py.setStdout({write:bytes=>{written+=bytes.length;if(written>200000)throw new Error('Output limit reached');send('stdout',{text:decoder.decode(bytes,{stream:true})});return bytes.length;},isatty:!!data.inputBuffer});
     py.FS.mkdirTree('/project');
     for(const file of data.files) {
       if(file.name.includes('..')||file.name.startsWith('/'))throw new Error('Invalid project path');
@@ -77,7 +82,8 @@ sys.settrace(tracer)`);
     }
     send('running');send('status',{text:isDebug?'Python debugger running…':'Running Python…'});
     await py.runPythonAsync("import sys\nsys.path.insert(0, '/project')\nexec(compile(open(entry).read(), '/project/' + entry, 'exec'), {'__name__':'__main__', '__file__':'/project/'+entry})");
+    py.runPython('import sys; sys.stdout.flush(); sys.stderr.flush()');
     if(isDebug)py.runPython('sys.settrace(None)');
     send('done');
-  } catch(error) {send('error',{text:error.message||String(error)});}
+  } catch(error) {try{py?.runPython('import sys; sys.stdout.flush(); sys.stderr.flush()');}catch{}send('error',{text:error.message||String(error)});}
 };

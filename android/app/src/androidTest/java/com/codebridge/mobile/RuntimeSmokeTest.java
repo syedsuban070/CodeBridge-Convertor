@@ -26,15 +26,20 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         js("CodeBridgeAcademy.navigate('learn');CodeBridgeAcademy.openLesson('c-1');document.querySelector('[data-answer=\"0\"]').click();document.querySelector('.lesson-editor .CodeMirror').CodeMirror.setValue(CBCourses[0].lessons[0].solution);document.getElementById('check-lesson').click();true");
         waitFor("document.getElementById('lesson-feedback').classList.contains('success')",180);
         assertTrue(js("CodeBridgeAcademy.getProgress().completed.includes('c-1')").contains("true"));
-        setCode("main.py","print(1 / 0)");
-        js("CodeBridgeAcademy.navigate('code');BitAI.open();document.getElementById('bit-prompt').value='In Python, why does print(1/0) fail? Give a short explanation.';document.getElementById('bit-ask').click();true");
-        waitFor("!BitAI.isBusy()",240);
-        String answer=js("document.getElementById('bit-ai-result').textContent").toLowerCase();
-        // Example code may legitimately print "Error:"; check the engine state, not generated prose.
-        assertEquals("Native model did not complete: "+answer,"true",js("document.getElementById('bit-status').textContent.startsWith('Generated locally.')"));
-        assertTrue("Empty AI response",answer.length()>30);
-        assertTrue("No relevant AI answer: "+answer,answer.contains("zero")||answer.contains("division"));
-        js("document.getElementById('bit-close').click();CodeBridgeAcademy.navigate('home');true");
-
+        setCode("main.c","#include <stdio.h>\nint main(){int n;printf(\"Number: \");scanf(\"%d\",&n);printf(\"Result=%d\",n*2);}");
+        js("CodeBridgeAcademy.navigate('code');document.getElementById('stdin').value='';execute('run');true");
+        waitFor("CBTerminal.waiting",150);
+        assertTrue(js("document.getElementById('output').textContent").contains("Number: "));
+        js("document.getElementById('terminal-line').value='21';CBTerminal.submit();true");
+        waitFor("document.getElementById('status').textContent==='Completed successfully'",30);
+        assertTrue(js("document.getElementById('output').textContent").contains("Result=42"));
+        setCode("main.py","name=input('Name: ')\nprint('Hello',name)");
+        js("execute('run');true");waitFor("CBTerminal.waiting",120);
+        assertTrue(js("document.getElementById('output').textContent").contains("Name: "));
+        js("document.getElementById('terminal-line').value='Dost';CBTerminal.submit();true");
+        waitFor("document.getElementById('status').textContent==='Completed successfully'",30);
+        assertTrue(js("document.getElementById('output').textContent").contains("Hello Dost"));
+        assertEquals("External AI bridge must be absent","true",js("typeof BitNative==='undefined'"));
+        js("CodeBridgeAcademy.navigate('home');true");
     }
 }

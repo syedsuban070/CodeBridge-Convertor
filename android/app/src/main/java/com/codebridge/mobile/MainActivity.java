@@ -25,7 +25,6 @@ import org.json.JSONObject;
 public final class MainActivity extends Activity {
     private static final int OPEN=1, SAVE=2;
     private WebView editor;
-    private BitBridge bit;
     private String pendingSave;
     private static final String ORIGIN="https://codebridge.local/";
     @Override public void onCreate(Bundle state) {
@@ -53,10 +52,9 @@ public final class MainActivity extends Activity {
             }
         });
         editor.addJavascriptInterface(new Bridge(),"AndroidFiles");
-        bit=new BitBridge(this,editor);editor.addJavascriptInterface(bit,"BitNative");
+        new java.io.File(getFilesDir(),"bit-qwen-0.5b-q4.gguf").delete();
         root.addView(editor,new FrameLayout.LayoutParams(-1,-1));setContentView(root);editor.loadUrl(ORIGIN);
     }
-    @Override protected void onDestroy(){if(bit!=null)bit.close();super.onDestroy();}
     @Override public void onBackPressed() {
         editor.evaluateJavascript("window.codebridgeBack ? window.codebridgeBack() : false", result -> {
             if (!"true".equals(result)) super.onBackPressed();

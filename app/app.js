@@ -22,9 +22,11 @@ function output(text,target='output'){const el=$(target);if(el.textContent.lengt
 function activeLine(line){if(debugLine!==null)editor.removeLineClass(debugLine,'background','active-debug-line');debugLine=null;if(line){debugLine=line-1;editor.addLineClass(debugLine,'background','active-debug-line');editor.scrollIntoView({line:debugLine,ch:0},60);}}
 function busy(value){for(const id of ['run','build','debug','convert'])$(id).disabled=value;$('stop').disabled=!value;editor.setOption('readOnly',value);}
 function debugButtons(enabled){for(const id of ['step','next','resume','locals','stack'])$(id).disabled=!enabled;if(mode!=='native'){$('locals').disabled=true;$('stack').disabled=true;}}
-function finish(message){clearTimeout(timer);timer=null;worker?.terminate();worker=null;control=null;busy(false);if(mode!=='trace')debugButtons(false);status(message);}
+function finish(message){window.CBTerminal?.end();clearTimeout(timer);timer=null;worker?.terminate();worker=null;control=null;busy(false);if(mode!=='trace')debugButtons(false);status(message);}
 function stop(){if(mode==='native')window.Desktop?.debugStop();finish('Stopped');mode=null;activeLine(null);}
 function onWorker(message){
+ if(message.event==='input-request')CBTerminal.request();
+ if(message.event==='input-resumed'){clearTimeout(timer);timer=setTimeout(()=>{stop();status('Stopped after '+CBSettings.get().timeout+' seconds.');},CBSettings.get().timeout*1000);}
  if(message.event==='status')status(message.text);
  if(message.event==='stdout')output(message.text);
  if(message.event==='diagnostic')output(message.text,'diagnostics');
@@ -48,7 +50,7 @@ async function execute(action){
  const script=(python||action==='convert')?'python-worker.js':'clang-worker.js';worker=new Worker('engines/'+script);
  worker.onmessage=({data})=>onWorker(data);worker.onerror=e=>{output(e.message+'\n','diagnostics');panel('diagnostics');finish('Runtime failed');};
  control=action==='debug'?new Int32Array(new SharedArrayBuffer(4)):null;
- worker.postMessage({action,entry:project.active,files:project.files,source:current().content,stdin:$('stdin').value,breakpoints:project.breakpoints[project.active]||[],control:control?.buffer,compiler:CBSettings.get()});
+ worker.postMessage({action,entry:project.active,files:project.files,source:current().content,stdin:$('stdin').value,inputBuffer:action==='convert'||action==='build'?null:CBTerminal.start(),breakpoints:project.breakpoints[project.active]||[],control:control?.buffer,compiler:CBSettings.get()});
  timer=setTimeout(()=>{stop();status('Stopped: initialization exceeded 2 minutes.');},120000);
 }
 async function nativeDebug(){sync();$('diagnostics').textContent='';mode='native';busy(true);panel('diagnostics');status('Starting native debugger…');try{await Desktop.debugStart({files:project.files,entry:project.active,breakpoints:project.breakpoints[project.active]||[]});}catch(error){mode=null;finish(error.message);await info('Native debugger',error.message);}}
@@ -79,7 +81,7 @@ $('step').onclick=()=>debugCommand('step');$('next').onclick=()=>debugCommand('n
 $('clear').onclick=()=>{$('output').textContent='';$('diagnostics').textContent='';};$('project-name').onchange=()=>{project.name=$('project-name').value;persist();};
 $('toggle-files').onclick=()=>$('sidebar').classList.toggle('visible');$('menu-toggle').onclick=()=>$('menu').hidden=!$('menu').hidden;
 for(const b of $('menu').querySelectorAll('button'))b.addEventListener('click',()=>$('menu').hidden=true);
-for(const b of document.querySelectorAll('[data-insert]'))b.onclick=()=>{editor.replaceSelection(b.dataset.insert);editor.focus();};
+for(const b of document.querySelectorAll('[data-insert]'))b.onclick=()=>window.CBEditor.insert(b.dataset.insert);
 $('font-size').onclick=async()=>{const value=await modal('Editor font','Choose a size from 10 to 24.',String(parseInt(editor.getWrapperElement().style.fontSize)||14));const n=Number(value);if(n>=10&&n<=24){editor.getWrapperElement().style.fontSize=n+'px';localStorage.setItem('codebridge.font',n);editor.refresh();}};
-$('about').onclick=()=>info('CodeBridge Android 0.5','OFFLINE\nClang 8.0.1 + LLD: C11 / C++17 → WebAssembly. Standard-library console programs, project files and prefilled stdin. No OS APIs, threads or C++ exceptions.\n\nPython 3.12 via Pyodide. Live Python stepping and breakpoints when shared memory is available.\n\nDesktop native C/C++ debugging uses your installed Clang/G++ and GDB/LLDB. Android C/C++ debugging is a limited learning trace.\n\nPython conversion supports the documented subset only. General C++ conversion is not guaranteed.\n\nCode stays on your device. Open-source notices are bundled under vendor/.');
+$('about').onclick=()=>info('CodeBridge Android 0.6','OFFLINE\nClang 8.0.1 + LLD: C11 / C++17 → WebAssembly. Standard-library console programs, project files and interactive terminal input. No OS APIs, threads or C++ exceptions.\n\nPython 3.12 via Pyodide. Live Python stepping and breakpoints when shared memory is available.\n\nDesktop native C/C++ debugging uses your installed Clang/G++ and GDB/LLDB. Android C/C++ debugging is a limited learning trace.\n\nPython conversion supports the documented subset only. General C++ conversion is not guaranteed.\n\nCode stays on your device. Open-source notices are bundled under vendor/.');
 loading=true;editor.setValue(current().content);loading=false;select(project.active);window.addEventListener('resize',()=>editor.refresh());
