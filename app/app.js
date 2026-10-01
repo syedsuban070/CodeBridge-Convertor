@@ -4,7 +4,7 @@ const exampleCpp='#include <iostream>\n#include <vector>\n#include <algorithm>\n
 const examplePython='def fibonacci(count):\n    values = []\n    a, b = 0, 1\n    for i in range(count):\n        values.append(a)\n        a, b = b, a + b\n    return values\n\nprint("Hello from Python!")\nprint(fibonacci(10))\n';
 let project={name:'My project',active:'main.cpp',files:[{name:'main.cpp',content:exampleCpp}],breakpoints:{}};
 try {const old=JSON.parse(localStorage.getItem('codebridge.project'));if(old&&Array.isArray(old.files)&&old.files.length)project={...project,...old};}catch{}
-let worker=null,control=null,mode=null,timer=null,trace=[],traceCursor=0,loading=false,debugLine=null,errors=[];
+let executionId=0,worker=null,control=null,mode=null,timer=null,trace=[],traceCursor=0,loading=false,debugLine=null,errors=[];
 const editor=CodeMirror.fromTextArea($('source'),{mode:'text/x-c++src',theme:'material-darker',lineNumbers:true,indentUnit:4,tabSize:4,matchBrackets:true,autoCloseBrackets:true,lineWrapping:false,gutters:['breakpoints','CodeMirror-linenumbers'],extraKeys:{'Ctrl-Enter':()=>execute('run'),'Cmd-Enter':()=>execute('run'),'Ctrl-S':()=>save(),'Cmd-S':()=>save(),Tab:cm=>cm.replaceSelection('    ')}});
 editor.setSize('100%','100%');editor.getWrapperElement().style.fontSize=(localStorage.getItem('codebridge.font')||14)+'px';
 function status(text){$('status').textContent=text;}
@@ -23,14 +23,14 @@ function activeLine(line){if(debugLine!==null)editor.removeLineClass(debugLine,'
 function busy(value){for(const id of ['run','build','debug','convert'])$(id).disabled=value;$('stop').disabled=!value;editor.setOption('readOnly',value);}
 function debugButtons(enabled){for(const id of ['step','next','resume','locals','stack'])$(id).disabled=!enabled;if(mode!=='native'){$('locals').disabled=true;$('stack').disabled=true;}}
 function finish(message){window.CBTerminal?.end();clearTimeout(timer);timer=null;worker?.terminate();worker=null;control=null;busy(false);if(mode!=='trace')debugButtons(false);status(message);}
-function stop(){if(mode==='native')window.Desktop?.debugStop();finish('Stopped');mode=null;activeLine(null);}
+function stop(){window.CBFeedback?.mood('idle');if(mode==='native')window.Desktop?.debugStop();finish('Stopped');mode=null;activeLine(null);}
 function onWorker(message){
  if(message.event==='input-request')CBTerminal.request();
  if(message.event==='input-resumed'){clearTimeout(timer);timer=setTimeout(()=>{stop();status('Stopped after '+CBSettings.get().timeout+' seconds.');},CBSettings.get().timeout*1000);}
  if(message.event==='status')status(message.text);
  if(message.event==='stdout')output(message.text);
  if(message.event==='diagnostic')output(message.text,'diagnostics');
- if(message.event==='compiled')status(`Build succeeded · ${(message.bytes/1024).toFixed(1)} KB WebAssembly`);
+ if(message.event==='compiled'){status(`Build succeeded · ${(message.bytes/1024).toFixed(1)} KB WebAssembly`);window.dispatchEvent(new CustomEvent('cb:build',{detail:{runId:executionId}}));}
  if(message.event==='running'){clearTimeout(timer);timer=setTimeout(()=>{stop();status('Stopped after '+CBSettings.get().timeout+' seconds.');},CBSettings.get().timeout*1000);}
  if(message.event==='paused'){clearTimeout(timer);activeLine(message.line);$('debug-info').textContent=`Paused at ${project.active}:${message.line}`;$('variables').textContent=Object.entries(message.vars).map(([k,v])=>`${k} = ${v}`).join('\n')+'\n\nStack\n'+message.stack.join('\n');panel('inspector');debugButtons(true);status('Paused · Step or Continue');}
  if(message.event==='done'){finish('Completed successfully');activeLine(null);window.dispatchEvent(new CustomEvent('cb:run-done'));}
@@ -39,6 +39,7 @@ function onWorker(message){
 }
 function markDiagnostics(){for(const line of errors)editor.removeLineClass(line,'background','compiler-error');errors=[];const text=$('diagnostics').textContent;for(const match of text.matchAll(/(?:^|\n)([^\n:]+):(\d+):\d+:\s+(?:fatal )?error/g)){if(match[1]===project.active){const line=+match[2]-1;errors.push(line);editor.addLineClass(line,'background','compiler-error');}}}
 async function execute(action){
+ if(window.CBMemory?.isBusy()){status('Stop Memory Lab before running your workspace.');return;}
  if(window.BitAI?.isBusy()){await info('Bit is thinking','Stop the local AI before running a program.');return;}
  if(worker||mode==='native')return;sync();const python=project.active.endsWith('.py');
  if(action==='debug'&&!python){if(window.Desktop){await nativeDebug();return;}await info('C/C++ debugging','The offline Clang compiler supports Build and Run. Source debugging for arbitrary C/C++ is not included on Android yet. The learning trace in the menu supports simple C/C++ statements. Python has live debugging when this WebView supports shared memory.');return;}
@@ -46,7 +47,7 @@ async function execute(action){
  if(action==='convert'&&python){status('Select a C or C++ file to convert.');return;}
  if(action==='convert'){const yes=await ask('Convert to Python','Conversion supports a limited C/C++ subset. Unsupported syntax produces an error; your source is preserved. Continue?');if(!yes)return;}
  if(action==='debug'&&typeof SharedArrayBuffer==='undefined'){await info('Debugger unavailable','This WebView does not expose shared memory. Python Run works. Update Android System WebView to try live debugging.');return;}
- $('output').textContent='';$('diagnostics').textContent='';panel('output');activeLine(null);mode=action;busy(true);status('Starting…');debugButtons(false);
+ $('output').textContent='';$('diagnostics').textContent='';panel('output');activeLine(null);mode=action;executionId++;busy(true);window.dispatchEvent(new CustomEvent('cb:thinking'));status('Starting…');debugButtons(false);
  const script=(python||action==='convert')?'python-worker.js':'clang-worker.js';worker=new Worker('engines/'+script);
  worker.onmessage=({data})=>onWorker(data);worker.onerror=e=>{output(e.message+'\n','diagnostics');panel('diagnostics');finish('Runtime failed');};
  control=action==='debug'?new Int32Array(new SharedArrayBuffer(4)):null;
@@ -83,5 +84,5 @@ $('toggle-files').onclick=()=>$('sidebar').classList.toggle('visible');$('menu-t
 for(const b of $('menu').querySelectorAll('button'))b.addEventListener('click',()=>$('menu').hidden=true);
 for(const b of document.querySelectorAll('[data-insert]'))b.onclick=()=>window.CBEditor.insert(b.dataset.insert);
 $('font-size').onclick=async()=>{const value=await modal('Editor font','Choose a size from 10 to 24.',String(parseInt(editor.getWrapperElement().style.fontSize)||14));const n=Number(value);if(n>=10&&n<=24){editor.getWrapperElement().style.fontSize=n+'px';localStorage.setItem('codebridge.font',n);editor.refresh();}};
-$('about').onclick=()=>info('CodeBridge Android 0.6','OFFLINE\nClang 8.0.1 + LLD: C11 / C++17 → WebAssembly. Standard-library console programs, project files and interactive terminal input. No OS APIs, threads or C++ exceptions.\n\nPython 3.12 via Pyodide. Live Python stepping and breakpoints when shared memory is available.\n\nDesktop native C/C++ debugging uses your installed Clang/G++ and GDB/LLDB. Android C/C++ debugging is a limited learning trace.\n\nPython conversion supports the documented subset only. General C++ conversion is not guaranteed.\n\nCode stays on your device. Open-source notices are bundled under vendor/.');
+$('about').onclick=()=>info('CodeBridge Android 0.7','OFFLINE\nClang 8.0.1 + LLD: C11 / C++17 → WebAssembly. Standard-library console programs, project files and interactive terminal input. No OS APIs, threads or C++ exceptions.\n\nPython 3.12 via Pyodide. Live Python stepping and breakpoints when shared memory is available.\n\nDesktop native C/C++ debugging uses your installed Clang/G++ and GDB/LLDB. Android C/C++ debugging is a limited learning trace.\n\nPython conversion supports the documented subset only. General C++ conversion is not guaranteed.\n\nCode stays on your device. Open-source notices are bundled under vendor/.');
 loading=true;editor.setValue(current().content);loading=false;select(project.active);window.addEventListener('resize',()=>editor.refresh());

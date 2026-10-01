@@ -1,5 +1,7 @@
 # CodeBridge Android — Learn, build, explore
 
+**Android 0.7:** compact Run/Stop dock, four-direction animated Bit, offline developer typography, PCM sound cues, cosmetic store with a transaction ledger, After-Action Reports and an instrumented Memory Lab preset. [Implementation and scope](docs/design/IMPLEMENTATION_0_7.md).
+
 **Android 0.6:** interactive terminal input for `scanf`, `cin`/`getline` and Python `input()`, streamed UTF-8 output, mobile bracket pairing, editor actions, and original scripted Bit reactions. The external AI model and native inference engine have been removed. NumPy, SymPy, mpmath, cJSON, courses, quizzes and local progress remain. [Terminal guide](docs/TERMINAL.md).
 
 **Android 0.4:** full-screen editor and separate console, persistent app/editor themes, coding preferences, animated Bit companion, optional reward sounds, and accessible motion controls. Open Settings from the top-right sliders button. [Release notes](RELEASE_NOTES.md).
@@ -33,7 +35,7 @@ Get a matching package from [Releases](https://github.com/syedsuban070/CodeBridg
 
 | Device | Package | Notes |
 | --- | --- | --- |
-| Android 8+ | `CodeBridge-0.6.0-Android.apk` | Test-signed APK. Use an updated Android System WebView. Older preview installs may need uninstalling if Android reports a signing mismatch; export projects first. |
+| Android 8+ | `CodeBridge-0.7.0-Android.apk` | Test-signed APK. Use an updated Android System WebView. Older preview installs may need uninstalling if Android reports a signing mismatch; export projects first. |
 | Windows x64 | `…win-x64-setup.exe` or `…win-x64-portable.exe` | Installer or portable executable. The unsigned beta may trigger Windows reputation prompts. |
 | Mac with Apple silicon | `…mac-arm64.dmg` | Unsigned beta; macOS may require approval under Privacy & Security. |
 | Mac with Intel processor | `…mac-x64.dmg` | Same unsigned-beta limitation. |
@@ -66,6 +68,7 @@ Requirements: Node 22, Python 3.12. Android additionally needs JDK 17, Gradle 8.
 
 ```sh
 npm ci
+python scripts/prepare_game.py
 python scripts/prepare_assets.py
 python scripts/prepare_power.py
 npm test

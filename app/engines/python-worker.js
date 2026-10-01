@@ -81,9 +81,10 @@ def tracer(frame, event, arg):
 sys.settrace(tracer)`);
     }
     send('running');send('status',{text:isDebug?'Python debugger running…':'Running Python…'});
+    const started=performance.now();
     await py.runPythonAsync("import sys\nsys.path.insert(0, '/project')\nexec(compile(open(entry).read(), '/project/' + entry, 'exec'), {'__name__':'__main__', '__file__':'/project/'+entry})");
     py.runPython('import sys; sys.stdout.flush(); sys.stderr.flush()');
     if(isDebug)py.runPython('sys.settrace(None)');
-    send('done');
+    send('done',{elapsedMs:performance.now()-started});
   } catch(error) {try{py?.runPython('import sys; sys.stdout.flush(); sys.stderr.flush()');}catch{}send('error',{text:error.message||String(error)});}
 };

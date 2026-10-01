@@ -9,3 +9,8 @@ node_modules/
 .artifacts/
 android/app/src/main/cpp/llama/
 android/app/.cxx/
+
+app/game/assets/*.wav
+app/game/assets/*.woff2
+
+app/game/assets/bit-*.svg

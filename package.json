@@ -1,6 +1,6 @@
 {
   "name": "codebridge-studio",
-  "version": "0.2.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Offline C, C++ and Python studio for desktop and Android",
   "author": "CodeBridge contributors",
@@ -14,10 +14,12 @@
     "dist": "electron-builder --publish never"
   },
   "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "codemirror": "5.65.21",
     "electron": "40.8.4",
     "electron-builder": "26.15.3",
     "playwright": "1.58.2",
-    "codemirror": "5.65.21",
     "pyodide": "0.27.7"
   },
   "build": {

@@ -7,9 +7,9 @@ const {serve}=require('../desktop/server.cjs');
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/3 7 19 42/);
  await page.evaluate(()=>{project.files=[{name:'main.py',content:'print(6 * 7)\n'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);
- await page.click('#debug');await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Paused'),{},{timeout:120000});await page.click('#step');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:30000});
+ await page.click('#tools-toggle');await page.click('#debug');await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Paused'),{},{timeout:120000});await page.click('#step');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:30000});
  await page.evaluate(()=>{project.files=[{name:'main.c',content:'#include <stdio.h>\nint main(){int x=7;printf("%d\\n",x);return 0;}'}];project.active='main.c';loading=true;editor.setValue(current().content);loading=false;select('main.c');});
- await page.click('#convert');await page.locator('#modal button[value="ok"]').click();await page.waitForFunction(()=>project.active.endsWith('.py'),{},{timeout:120000});assert.match(await page.evaluate(()=>editor.getValue()),/def main/);
+ await page.click('#menu-toggle');await page.click('#convert');await page.locator('#modal button[value="ok"]').click();await page.waitForFunction(()=>project.active.endsWith('.py'),{},{timeout:120000});assert.match(await page.evaluate(()=>editor.getValue()),/def main/);
  // Native C/C++ compile errors must stop before execution.
  await page.evaluate(()=>{project.files=[{name:'bad.cpp',content:'int main(){this is invalid;}'}];project.active='bad.cpp';loading=true;editor.setValue(current().content);loading=false;select('bad.cpp');});await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Stopped with errors',{},{timeout:120000});assert.match(await page.textContent('#diagnostics'),/error:/);
  // Terminating a busy worker keeps the editor responsive.
@@ -50,7 +50,7 @@ const {serve}=require('../desktop/server.cjs');
  await page.click('#settings-close');await page.reload();await page.waitForFunction(()=>!!window.CBExperience);
  assert.equal(await page.evaluate(()=>CBSettings.get().theme),'paper');assert.equal(await page.evaluate(()=>CBSettings.get().indent),2);assert.equal(await page.evaluate(()=>editor.getOption('lineWrapping')),true);
  await page.click('[data-view=code]');assert.equal(await page.locator('#console').isVisible(),false);assert.equal(await page.locator('#editor-area').isVisible(),true);
- await page.click('#input-open');assert.equal(await page.locator('#editor-area').isVisible(),false);await page.fill('#stdin','12 30');await page.click('#back-editor');
+ await page.click('#tools-toggle');await page.click('#input-open');assert.equal(await page.locator('#editor-area').isVisible(),false);await page.fill('#stdin','12 30');await page.click('#back-editor');
  await page.evaluate(()=>{project.files=[{name:'main.py',content:'a,b=map(int,input().split())\nprint(a+b)'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);assert.equal(await page.locator('#editor-area').isVisible(),false);assert.equal(await page.locator('#console').isVisible(),true);
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-console-paper.png')});

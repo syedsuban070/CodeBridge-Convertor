@@ -1,0 +1,9 @@
+const assert=require('node:assert/strict'),E=require('../app/game/economy.js'),P=require('../app/learning/progress.js'),courses=require('../app/learning/courses.js');
+const ids=courses.flatMap(c=>c.lessons.map(l=>l.id));let old=P.fresh();old.coins=200;old.xp=120;const p=P.validate(JSON.parse(JSON.stringify(old)),ids);assert.equal(p.coins,200);assert.equal(p.economy.transactions.length,1);E.init(p);assert.equal(p.economy.transactions.length,1);
+assert.equal(E.buy(p,'skin-ice'),true);assert.equal(p.coins,20);assert.equal(E.buy(p,'skin-ice'),false);E.equip(p,'skin-ice');assert.equal(p.economy.equipped.bitSkin,'skin-ice');assert.throws(()=>E.buy(p,'palette-neon'));assert.equal(p.coins,20);assert.throws(()=>E.equip(p,'palette-neon'));E.validate(p);
+assert.equal(E.credit(p,'test',40,10,'daily-discovery'),true);assert.equal(E.credit(p,'test',40,10,'daily-discovery'),false);E.buy(p,'palette-neon');E.equip(p,'palette-neon');assert.equal(p.coins,0);assert.deepEqual(P.validate(JSON.parse(JSON.stringify(p)),ids),p);
+const bad=JSON.parse(JSON.stringify(p));bad.coins=999;assert.throws(()=>E.validate(bad));const duplicate=JSON.parse(JSON.stringify(p));duplicate.economy.transactions.push(duplicate.economy.transactions[0]);assert.throws(()=>E.validate(duplicate));
+console.log('PASS migration, no double purchase/reward, insufficient funds, ownership, ledger reconciliation, backup round trip');
+
+require('node:fs').mkdirSync('.artifacts',{recursive:true});require('node:fs').writeFileSync('.artifacts/economy-fixture.json',JSON.stringify(E.snapshot(p)));
+const Ajv=require('ajv/dist/2020').default,formats=require('ajv-formats');const ajv=new Ajv({strict:false,allErrors:true});formats(ajv);const check=ajv.compile(require('../app/game/economy.schema.json'));assert.equal(check(E.snapshot(p)),true,JSON.stringify(check.errors));console.log('PASS expanded economy export validates against JSON Schema 2020-12');

@@ -46,7 +46,7 @@ public final class MainActivity extends Activity {
                 if("/__terminal/read".equals(request.getUrl().getPath()))return terminal.read(request.getUrl().getQueryParameter("token"));
                 String path=request.getUrl().getPath();path=path==null||path.equals("/")?"index.html":path.substring(1);
                 if(path.contains(".."))return new WebResourceResponse("text/plain","UTF-8",new ByteArrayInputStream(new byte[0]));
-                String mime=path.endsWith(".html")?"text/html":path.endsWith(".js")?"text/javascript":path.endsWith(".css")?"text/css":path.endsWith(".wasm")?"application/wasm":path.endsWith(".json")?"application/json":"application/octet-stream";
+                String mime=path.endsWith(".html")?"text/html":path.endsWith(".js")?"text/javascript":path.endsWith(".css")?"text/css":path.endsWith(".wasm")?"application/wasm":path.endsWith(".json")?"application/json":path.endsWith(".svg")?"image/svg+xml":path.endsWith(".woff2")?"font/woff2":path.endsWith(".wav")?"audio/wav":"application/octet-stream";
                 Map<String,String> headers=new HashMap<>();
                 headers.put("Cross-Origin-Opener-Policy","same-origin");headers.put("Cross-Origin-Embedder-Policy","require-corp");headers.put("Cross-Origin-Resource-Policy","same-origin");
                 try{return new WebResourceResponse(mime,"UTF-8",200,"OK",headers,getAssets().open(path));}

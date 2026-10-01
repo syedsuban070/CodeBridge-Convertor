@@ -1,0 +1,27 @@
+'use strict';
+(()=>{
+const reduced=()=>!CBSettings.get().motion||matchMedia('(prefers-reduced-motion: reduce)').matches;
+let context,decoded={},active=0;const unlocked=()=>{if(!CBSettings.get().sound)return;context??=new (window.AudioContext||window.webkitAudioContext)();context.resume().catch(()=>{});};document.addEventListener('pointerdown',unlocked,{passive:true});
+async function sound(name){if(!CBSettings.get().sound)return;try{unlocked();if(!context||context.state!=='running'||active>=2)return;if(!decoded[name])decoded[name]=fetch('game/assets/'+name+'.wav').then(r=>r.arrayBuffer()).then(b=>context.decodeAudioData(b));const data=await decoded[name];if(!CBSettings.get().sound||document.hidden||active>=2)return;const source=context.createBufferSource();source.buffer=data;source.connect(context.destination);active++;source.onended=()=>active--;source.start();}catch{}}
+const canvas=document.createElement('canvas');canvas.id='game-particles';canvas.setAttribute('aria-hidden','true');document.body.append(canvas);const ctx=canvas.getContext('2d');let particles=[],raf=0,last=0;
+function burst(count=12){if(reduced()||document.hidden)return;const width=innerWidth,height=innerHeight;canvas.width=width;canvas.height=height;const rect=document.getElementById('run').getBoundingClientRect();const x=rect.width?rect.x+rect.width/2:width*.5,y=rect.width?rect.y:height*.42;for(let i=0;i<count&&particles.length<64;i++){const angle=Math.random()*Math.PI*2;particles.push({x,y,vx:Math.cos(angle)*(80+Math.random()*130),vy:Math.sin(angle)*180-90,life:.35+Math.random()*.35,max:.7,color:i%2?'#b9ff66':'#f4f7fc'});}if(!raf){last=performance.now();raf=requestAnimationFrame(draw);}}
+function draw(now){raf=0;ctx.clearRect(0,0,canvas.width,canvas.height);if(reduced()||document.hidden){particles=[];return;}const dt=Math.min(.05,(now-last)/1000);last=now;for(const p of particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=280*dt;ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,4,4);}particles=particles.filter(p=>p.life>0);if(particles.length)raf=requestAnimationFrame(draw);}
+let state='idle',until=0,start=performance.now(),direction=0,sprite=null,spriteRaf=0,visible=true;
+function skin(){const p=CodeBridgeAcademy.getProgress();const id=p.economy?.equipped.bitSkin||'skin-default';return CBEconomy.catalog.find(i=>i.id===id)?.assetKey||'bit-lime';}
+function animate(now){spriteRaf=0;if(!sprite?.isConnected||document.hidden||!visible)return;if(until&&now>until){state='idle';until=0;start=now;}const counts={idle:6,thinking:8,celebrate:10},offsets={idle:0,thinking:6,celebrate:14};const frame=reduced()?0:Math.floor((now-start)/1000*(state==='idle'?7:state==='thinking'?10:12))%counts[state];const index=direction*24+offsets[state]+frame;sprite.style.backgroundPosition=`-${index%12*96}px -${Math.floor(index/12)*96}px`;if(!reduced())spriteRaf=requestAnimationFrame(animate);}
+function wake(){if(spriteRaf)cancelAnimationFrame(spriteRaf);spriteRaf=requestAnimationFrame(animate);}
+const observer=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting;wake();});
+function mount(){const old=document.querySelector('.mascot-welcome .bit-mascot');if(old){const stage=document.createElement('div');stage.className='bit-stage';stage.innerHTML='<div class="bit-sprite" role="img" aria-label="Bit: tap to turn"></div>';old.replaceWith(stage);sprite=stage.firstElementChild;sprite.style.backgroundImage=`url("game/assets/${skin()}.svg")`;stage.tabIndex=0;stage.setAttribute('role','button');stage.setAttribute('aria-label','Turn Bit');const turn=()=>{direction=(direction+1)%4;wake();};stage.onclick=turn;stage.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();turn();}};observer.disconnect();observer.observe(stage);wake();}}
+new MutationObserver(mount).observe(document.getElementById('academy'),{childList:true,subtree:true});mount();
+function mood(next,duration=0){state=next;start=performance.now();until=duration?start+duration:0;wake();}
+window.CBFeedback={sound,burst,mood};
+window.addEventListener('cb:thinking',()=>mood('thinking'));
+let lastBuild=null;window.addEventListener('cb:build',e=>{if(lastBuild===e.detail.runId)return;lastBuild=e.detail.runId;sound('build-success');burst(12);mood('celebrate',850);});
+window.addEventListener('cb:run-done',()=>mood('idle'));
+window.addEventListener('cb:code-error',e=>{mood('idle');if(/SyntaxError|expected|undeclared|IndentationError|invalid syntax/i.test(e.detail?.text||''))sound('syntax-error');});
+window.addEventListener('cb:lesson-error',()=>{mood('idle');sound('syntax-error');});
+const seenMissions=new Set();window.addEventListener('cb:mission',e=>{if(seenMissions.has(e.detail.runId))return;seenMissions.add(e.detail.runId);if(seenMissions.size>100)seenMissions.delete(seenMissions.values().next().value);mood('celebrate',850);if(e.detail.first){sound('build-success');burst(36);}});
+window.addEventListener('cb:reward',()=>{sound('coins-claimed');burst(24);mood('celebrate',850);});
+window.addEventListener('cb:economy',()=>{if(sprite)sprite.style.backgroundImage=`url("game/assets/${skin()}.svg")`;wake();});
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',wake);window.addEventListener('cb:settings',wake);document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(spriteRaf);spriteRaf=0;particles=[];}else wake();});
+})();

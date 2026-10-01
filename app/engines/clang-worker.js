@@ -51,7 +51,8 @@ self.onmessage = async ({data}) => {
     if(data.inputBuffer||data.nativeInput)api.memfs.readInput=createTerminalInput(data.inputBuffer,data.stdin?(data.stdin.endsWith('\n')?data.stdin:data.stdin+'\n'):'',data.nativeInput);
     phase='run'; written=0;
     send('running'); send('status',{text:'Running…'});
-    await api.run(await WebAssembly.compile(binary),'program.wasm');
-    send('done');
+    const executable=await WebAssembly.compile(binary),started=performance.now();
+    await api.run(executable,'program.wasm');
+    send('done',{elapsedMs:performance.now()-started});
   } catch(error) { send('error',{text:error.message||String(error),phase}); }
 };

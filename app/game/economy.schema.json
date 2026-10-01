@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CodeBridge Quest and Economy Save",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contentVersion",
+    "quests",
+    "catalog",
+    "player"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "contentVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "quests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/quest"
+      }
+    },
+    "catalog": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "player": {
+      "$ref": "#/$defs/player"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$"
+    },
+    "reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coins",
+        "xp"
+      ],
+      "properties": {
+        "coins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "xp": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "quest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "cadence",
+        "objective",
+        "reward",
+        "prerequisites"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cadence": {
+          "enum": [
+            "once",
+            "daily",
+            "weekly"
+          ]
+        },
+        "objective": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "metric",
+            "target"
+          ],
+          "properties": {
+            "metric": {
+              "enum": [
+                "daily_discovery_claim",
+                "distinct_missions_passed",
+                "distinct_quizzes_passed",
+                "optimization_target_met",
+                "memory_exercise_passed",
+                "first_missions_passed",
+                "successful_exercise_checks"
+              ]
+            },
+            "target": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "courseId": {
+              "$ref": "#/$defs/id"
+            },
+            "missionId": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        },
+        "reward": {
+          "$ref": "#/$defs/reward"
+        },
+        "prerequisites": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "category",
+        "priceCoins",
+        "assetKey"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "editor_palette",
+            "bit_skin",
+            "ui_border"
+          ]
+        },
+        "priceCoins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assetKey": {
+          "$ref": "#/$defs/id"
+        },
+        "requiredMissionId": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "questProgress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questId",
+        "periodKey",
+        "value",
+        "evidenceIds",
+        "claimed"
+      ],
+      "properties": {
+        "questId": {
+          "$ref": "#/$defs/id"
+        },
+        "periodKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidenceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "claimed": {
+          "type": "boolean"
+        },
+        "claimTransactionId": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "claimed": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "claimTransactionId"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "claimTransactionId"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "transaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "idempotencyKey",
+        "kind",
+        "sourceId",
+        "coinsDelta",
+        "xpDelta",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "kind": {
+          "enum": [
+            "reward",
+            "purchase",
+            "migration"
+          ]
+        },
+        "sourceId": {
+          "$ref": "#/$defs/id"
+        },
+        "coinsDelta": {
+          "type": "integer"
+        },
+        "xpDelta": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "purchase"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "coinsDelta": {
+                "maximum": 0
+              },
+              "xpDelta": {
+                "const": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "coinsDelta": {
+                "minimum": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "player": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "coins",
+        "xp",
+        "ownedItemIds",
+        "equipped",
+        "questProgress",
+        "transactions"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "xp": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownedItemIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "equipped": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "editorPalette",
+            "bitSkin",
+            "uiBorder"
+          ],
+          "properties": {
+            "editorPalette": {
+              "$ref": "#/$defs/id"
+            },
+            "bitSkin": {
+              "$ref": "#/$defs/id"
+            },
+            "uiBorder": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        },
+        "questProgress": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/questProgress"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transaction"
+          }
+        }
+      }
+    }
+  }
+}

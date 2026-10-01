@@ -50,6 +50,16 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         js("stop();execute('run');true");waitFor("CBTerminal.waiting",120);
         js("document.getElementById('terminal-line').value='again';CBTerminal.submit();true");
         waitFor("document.getElementById('status').textContent==='Completed successfully'",30);
+        assertEquals("Mission report missing","true",js("!!CodeBridgeAcademy.getProgress().reports['c-1']"));
+        js("CBMemory.open();document.getElementById('memory-start').click();true");
+        waitFor("document.getElementById('memory-status').textContent==='Paused after step 1'",150);
+        js("document.getElementById('memory-continue').click();true");
+        waitFor("document.getElementById('memory-status').textContent.startsWith('Exercise complete')",60);
+        assertTrue(js("document.getElementById('memory-map').textContent").contains("dangling"));
+        js("document.getElementById('memory-close').click();CodeBridgeAcademy.navigate('home');true");
+        waitFor("!!document.querySelector('.bit-sprite')",10);
+        js("window.spriteProbe=new Image();spriteProbe.src='game/assets/bit-lime.svg';true");
+        waitFor("spriteProbe.complete&&spriteProbe.naturalWidth===1152",20);
         assertEquals("External AI bridge must be absent","true",js("typeof BitNative==='undefined'"));
         js("CodeBridgeAcademy.navigate('home');true");
     }

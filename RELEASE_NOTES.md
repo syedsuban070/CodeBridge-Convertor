@@ -1,14 +1,15 @@
-# CodeBridge Android 0.6 — interactive terminal and editor
+# CodeBridge Android 0.7 — animated studio and cosmetic progression
 
-- Live line input for C scanf/getchar, C++ cin/getline and Python input(), without restarting the program. Prompts display before reads, including prompts without a newline.
-- Enter/Send, EOF, Stop, input history, streaming UTF-8 output, responsive terminal input bar, and timeout suspension while waiting for input.
-- Touch bracket/quote pairing, brace-block indentation, undo/redo, indent/outdent, reindent, find, select-all and active-line highlighting. Existing zoom and suggestions remain.
-- External AI model and native AI runtime removed. Bit uses original scripted guidance, more Roman Urdu jokes, banter replies and angry/laughing/confused animations. Reactions do not interrupt the terminal with a popup; roast mode is optional.
-- Existing home, courses, quizzes, quests, local progress, themes and offline libraries retained. Same application ID and beta signing-key cache; install over the previous beta to retain local data. Do not uninstall first. Export progress/projects before changing installations.
-- The previous 0.5 release remains unchanged and available separately. An in-place update deletes its obsolete private model copy.
+- Compact execution dock: Run becomes Stop while active. Build, Debug, Console, Input and Memory Lab sit in an expandable tool menu with a bottom-sheet fallback on small screens. Save and conversion move into the file menu.
+- Offline JetBrains Mono font, Midnight/Night styling and lime accents. Editor, terminal and touch input retain the 0.6 functionality.
+- Original four-direction Bit sprite atlases with idle, thinking and celebration clips. Three colour skins, capped canvas particles, and 22,050 Hz 16-bit mono PCM cues for syntax failures, builds and coin claims. Sound remains opt-in; reduced motion is respected.
+- Cosmetic store: editor palettes (60 coins), border (100), Bit skins (180). Preview cards, permanent ownership and free switching. No coding tools are paywalled.
+- Transaction ledger, idempotent purchases/rewards, pre-migration backup, and atomic balance/ownership saves. Existing missions, drafts, coins and XP are preserved. Economy JSON export and schema included.
+- After-Action Reports: first warm-up then three measured executions per test case, with correctness, execution medians and comparisons tied to this installation/runtime/test suite. Compilation and loading excluded. No unsupported Big-O grades; operation counting for general mission code is not implemented.
+- Memory Lab prototype: a real compiled C/C++ preset with array cells, pointer writes, heap allocation, free and live stepping. Shows actual Wasm offsets and explicitly identified uninitialized/freed values. Completing the exercise unlocks a daily memory quest.
 
-## Scope
+## Scope and upgrade
 
-Android 8+ with updated Android System WebView. Test-signed beta. The terminal supports line-oriented program input, not a Linux shell or full VT/curses terminal. Android live input uses a native bridge; browser previews require shared memory. Clang 8/WASI limits still apply: OS-specific APIs, networking, threads, C++ exceptions and arbitrary native libraries are not provided. Python includes NumPy, SymPy and mpmath. Conversion remains a documented subset.
+Memory Lab supports its bundled instrumented exercise only. Arbitrary user-source instrumentation, C++ object lifetime tracing and general C/C++ source debugging remain future work. The underlying Clang 8/WASI runtime limits from 0.6 remain. Bit is scripted; no external AI model is bundled.
 
-Bit is rule-based and scripted, not a trained AI model. No external AI inference or model download is included. See docs/TERMINAL.md for behavior and limits.
+Install over the previous beta to retain local data. Do not uninstall first; export projects/progress as a backup. The application ID and beta signing-key cache are unchanged. Old releases remain available. This is a test-signed beta, not a Play Store release.
