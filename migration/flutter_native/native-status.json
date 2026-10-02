@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "ui": "not-implemented",
+  "runtimes": {
+    "clang": {"requiredVersion": "8.0.1", "artifacts": []},
+    "python": {"requiredVersion": "3.12", "artifacts": []}
+  },
+  "assets": {"rive": [], "lottie": [], "fonts": [], "localization": ["i18n/en.json", "i18n/ur.json", "i18n/zh-Hans.json"]},
+  "deviceTests": "not-run",
+  "apk": null,
+  "note": "Existing app uses WebAssembly/Pyodide. It does not satisfy the requested native Flutter runtime. This manifest must never be used to claim a new APK exists."
+}

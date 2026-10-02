@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "status": "authoring-contract-not-a-riv-file",
+  "asset": "assets/rive/bit.riv",
+  "artboard": "Bit",
+  "stateMachine": "BitMentor",
+  "inputs": {
+    "visible": {
+      "type": "bool",
+      "default": true
+    },
+    "reducedMotion": {
+      "type": "bool",
+      "default": false
+    },
+    "direction": {
+      "type": "number",
+      "default": 0,
+      "enum": {
+        "front": 0,
+        "left": 1,
+        "right": 2,
+        "back": 3
+      }
+    },
+    "severity": {
+      "type": "number",
+      "default": 0
+    },
+    "pythonSyntax": {
+      "type": "trigger"
+    },
+    "compileFailed": {
+      "type": "trigger"
+    },
+    "success": {
+      "type": "trigger"
+    },
+    "memoryWarning": {
+      "type": "trigger"
+    },
+    "bossPass": {
+      "type": "trigger"
+    },
+    "bossFail": {
+      "type": "trigger"
+    }
+  },
+  "states": {
+    "IdleOnPath": {
+      "durationMs": 1800,
+      "loop": true,
+      "motion": "foot tap; eyes track current node"
+    },
+    "PythonSyntaxError": {
+      "durationMs": 1000,
+      "loop": false,
+      "motion": "facepalm; scaleX 1.10/0.94/1.0, reciprocal scaleY; damped elastic settle"
+    },
+    "CppCompileFailed": {
+      "durationMs": 1100,
+      "loop": false,
+      "motion": "head lowers 6 degrees; eye glow red at 140ms"
+    },
+    "Success": {
+      "durationMs": 1000,
+      "loop": false,
+      "motion": "surprise 240ms, hold 160ms, reluctant nod 400ms, settle 200ms"
+    },
+    "MemoryLabWarning": {
+      "durationMs": 1300,
+      "loop": false,
+      "motion": "raises one finger; amber eyes"
+    },
+    "BossPass": {
+      "durationMs": 1500,
+      "loop": false,
+      "motion": "two triumphant hops; brief grin"
+    },
+    "BossFailRoast": {
+      "durationMs": 1300,
+      "loop": false,
+      "motion": "arms crossed; single head shake"
+    }
+  },
+  "transitions": [
+    {
+      "from": "Any",
+      "to": "PythonSyntaxError",
+      "trigger": "pythonSyntax",
+      "mixMs": 120,
+      "priority": 60,
+      "guard": "visible && currentRunId matches && eventId unseen"
+    },
+    {
+      "from": "Any",
+      "to": "CppCompileFailed",
+      "trigger": "compileFailed",
+      "mixMs": 120,
+      "priority": 60,
+      "guard": "visible && currentRunId matches && eventId unseen"
+    },
+    {
+      "from": "Any",
+      "to": "Success",
+      "trigger": "success",
+      "mixMs": 120,
+      "priority": 20,
+      "guard": "visible && currentRunId matches && eventId unseen"
+    },
+    {
+      "from": "Any",
+      "to": "MemoryLabWarning",
+      "trigger": "memoryWarning",
+      "mixMs": 120,
+      "priority": 70,
+      "guard": "visible && currentRunId matches && eventId unseen"
+    },
+    {
+      "from": "Any",
+      "to": "BossPass",
+      "trigger": "bossPass",
+      "mixMs": 120,
+      "priority": 90,
+      "guard": "visible && currentRunId matches && eventId unseen"
+    },
+    {
+      "from": "Any",
+      "to": "BossFailRoast",
+      "trigger": "bossFail",
+      "mixMs": 120,
+      "priority": 90,
+      "guard": "visible && currentRunId matches && eventId unseen"
+    },
+    {
+      "from": "PythonSyntaxError",
+      "to": "IdleOnPath",
+      "condition": "animationComplete",
+      "mixMs": 160
+    },
+    {
+      "from": "CppCompileFailed",
+      "to": "IdleOnPath",
+      "condition": "animationComplete",
+      "mixMs": 160
+    },
+    {
+      "from": "Success",
+      "to": "IdleOnPath",
+      "condition": "animationComplete",
+      "mixMs": 160
+    },
+    {
+      "from": "MemoryLabWarning",
+      "to": "IdleOnPath",
+      "condition": "animationComplete",
+      "mixMs": 160
+    },
+    {
+      "from": "BossPass",
+      "to": "IdleOnPath",
+      "condition": "animationComplete",
+      "mixMs": 160
+    },
+    {
+      "from": "BossFailRoast",
+      "to": "IdleOnPath",
+      "condition": "animationComplete",
+      "mixMs": 160
+    }
+  ],
+  "hostRules": {
+    "eventDeduplication": "runId:eventType; terminal result overrides earlier build success",
+    "priority": "boss result > warning > error > success; queue one latest event only",
+    "hidden": "pause animation clock; discard stale run events on resume",
+    "reducedMotion": "freeze representative frame; show dialogue without transitions",
+    "dialogue": "Flutter overlay; localized JSON; persist last line ID per state and locale; exclude immediate repeat",
+    "memoryFault": "reuse CppCompileFailed animation with MemoryFault dialogue ONLY for run-phase SIGSEGV",
+    "pythonColon": "use first PythonSyntaxError line ONLY for expected-colon diagnostic; exclude it for other syntax errors",
+    "authoring": "JSON describes behavior; Rive editor must author/export binary and binding tests must verify inputs"
+  }
+}
