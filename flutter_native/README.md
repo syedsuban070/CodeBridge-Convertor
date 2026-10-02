@@ -17,10 +17,12 @@ and bundled terminal, syntax, and Bit tint assets.
 
 ## Preview limitations — not a completed 0.8 release
 
-- Graded Memory Lab bosses/leak checks, chest/unlock Lottie VFX,
-  vector splash, live terminal input, and full curriculum translation remain.
+- Live terminal input and full curriculum translation remain.
+- Memory Lab bosses check only the explicitly documented cb_* arena API. This is
+  not ASan/LSan: arbitrary raw-pointer accesses and malloc/new leaks are not graded.
 - Debug currently builds unoptimized code with symbols; no interactive debugger.
-- Memory Lab toolbar currently presents mentor warning; practice exercises remain.
+- The Memory Lab toolbar opens ungraded practice; stage-final boss submissions
+  record attempts and award XP and badges only after all local cases pass.
 - Pinch gestures, keyboard transitions and low-end 60 fps need device profiling.
 - Existing WebView progress import and release signing are not implemented. This
   preview has a separate application ID and does not overwrite the 0.7 app.
@@ -32,3 +34,7 @@ and bundled terminal, syntax, and Bit tint assets.
   can prevent tampering by a rooted user; wall-clock jumps never mint coins.
 
 Never label this preview as satisfying every final-release requirement.
+
+Bundled stroke-draw splash, one-shot Lottie reward effects, and six checked-arena
+Memory Lab bosses are included in the source update. These additions require
+Flutter CI and device verification before being described as release-ready.

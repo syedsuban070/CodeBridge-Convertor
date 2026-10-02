@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/store.dart';
 import 'core/runtime.dart';
 import 'core/editor.dart';
 import 'core/bit.dart';
 import 'core/shop.dart';
+import 'core/splash.dart';
 import 'package:rive/rive.dart' show RiveFile;
 
 const green = Color(0xFF9DFF52), background = Color(0xFF080C12);
@@ -28,6 +30,7 @@ Future<void> main() async {
     courses = jsonDecode(
       await rootBundle.loadString('assets/data/courses.json'),
     );
+    await db.seedProgression(courses);
     runApp(CodeBridge(first: settings['onboarding_step'] != 'done'));
   } catch (e) {
     runApp(
@@ -86,7 +89,7 @@ class _CodeBridgeState extends State<CodeBridge> {
       fontFamilyFallback: const ['NotoSansSC', 'NotoSans'],
       useMaterial3: true,
     ),
-    home: first
+    home: Splash(child: first
         ? Scaffold(
             body: SafeArea(
               child: Padding(
@@ -134,7 +137,7 @@ class _CodeBridgeState extends State<CodeBridge> {
               ),
             ),
           )
-        : LevelMap(onLocale: () => setState(() => first = true)),
+        : LevelMap(onLocale: () => setState(() => first = true))),
   );
 }
 
@@ -148,6 +151,7 @@ class LevelMap extends StatefulWidget {
 class _LevelMapState extends State<LevelMap>
     with SingleTickerProviderStateMixin {
   int track = 0;
+  bool loaded=false,burst=false;
   Set<String> mastered = {};
   Map<String, dynamic> wallet = {'coins': 0, 'xp': 0};
   final scroll = ScrollController();
@@ -159,6 +163,9 @@ class _LevelMapState extends State<LevelMap>
     final m = await db.mastered(), w = await db.wallet();
     if (mounted)
       setState(() {
+        burst=loaded&&m.length>mastered.length;
+        loaded=true;
+        if(burst){Future.delayed(const Duration(milliseconds:1100),(){if(mounted)setState(()=>burst=false);});}
         mastered = m;
         wallet = w;
       });
@@ -354,6 +361,7 @@ class _LevelMapState extends State<LevelMap>
                                 Positioned.fill(
                                   child: CustomPaint(painter: PathSegment(i)),
                                 ),
+                                if(ready&&!done)Positioned(top:35,left:i.isEven?null:8,right:i.isEven?8:null,width:100,child:const Bit(dialogue:'')),
                                 Align(
                                   alignment: Alignment(
                                     i.isEven ? -.38 : .38,
@@ -461,6 +469,7 @@ class _LevelMapState extends State<LevelMap>
                 ),
               ],
             ),
+            if(burst&&!MediaQuery.disableAnimationsOf(context))Positioned.fill(child:IgnorePointer(child:Center(child:Lottie.asset('assets/animations/unlock.json',width:260,repeat:false)))),
             Positioned(
               bottom: 14,
               right: 16,
@@ -630,8 +639,10 @@ class _EditorState extends State<Editor> {
       var passed = true;
       for (var i = 0; i < cases.length; i++) {
         final test = cases[i] as Map;
+        final memory=widget.lesson?['kind']=='memory_boss'||widget.lesson?['kind']=='memory_practice';
+        final compiledSource=memory?'${await rootBundle.loadString('assets/data/memory_harness.h')}\n${code.text}\n${await rootBundle.loadString('assets/data/memory_entry.c')}':code.text;
         final r = await Runtime.run(
-          source: code.text,
+          source: compiledSource,
           language: widget.language,
           input: test['input'] as String? ?? '',
           mode: mode,
@@ -665,10 +676,13 @@ class _EditorState extends State<Editor> {
           break;
         }
       }
+      if(grade&&widget.lesson?['kind']!='memory_practice'){await db.recordAttempt(id,passed:passed,boss:widget.lesson?['kind']=='memory_boss');}
+      if(!passed&&grade&&widget.lesson?['kind']=='memory_boss'){await react('BossFailRoast','bossFail');}
       if (passed) {
         await react('Success', 'success');
         if (grade) {
-          await db.passed(id, (widget.lesson!['xp'] as num).toInt());
+          if(widget.lesson?['kind']!='memory_practice'){await db.passed(id, (widget.lesson!['xp'] as num).toInt());}
+          if(widget.lesson?['kind']=='memory_boss'){await react('BossPass','bossPass');}
           if (mounted)
             setState(
               () => terminal += '\nLesson mastered. Rewards saved offline.\n',
@@ -694,6 +708,7 @@ class _EditorState extends State<Editor> {
           controller: controller,
           padding: const EdgeInsets.all(20),
           children: [
+            if(reaction=='bossPass'&&!MediaQuery.disableAnimationsOf(context))Lottie.asset('assets/animations/chest.json',height:150,repeat:false),
             ColorFiltered(colorFilter:ColorFilter.mode(bitTint,BlendMode.modulate),child:Bit(reaction: reaction, dialogue: dialogue)),
             Text('OUTPUT', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 12),
@@ -898,7 +913,7 @@ class _EditorState extends State<Editor> {
                       for (final action in [
                         ('build', Icons.build, tr('build')),
                         ('debug', Icons.bug_report, tr('debug')),
-                        ('memory', Icons.memory, tr('memoryLab')),
+                        if(widget.language!='python')('memory', Icons.memory, tr('memoryLab')),
                       ])
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10),
@@ -906,11 +921,12 @@ class _EditorState extends State<Editor> {
                             heroTag: action.$1,
                             onPressed: () async {
                               if (action.$1 == 'memory') {
-                                await react(
-                                  'MemoryLabWarning',
-                                  'memoryWarning',
-                                );
-                                await console();
+                                await react('MemoryLabWarning','memoryWarning');
+                                if(!context.mounted)return;
+                                final course=courses.firstWhere((c)=>c['id']==widget.language);
+                                final boss=(course['lessons'] as List).firstWhere((l)=>l['kind']=='memory_boss') as Map;
+                                await Navigator.push(context,MaterialPageRoute(builder:(_)=>Editor(language:widget.language,lesson:{...boss,'id':'practice:${widget.language}','kind':'memory_practice'})));
+                                if(mounted)setState(()=>tools=false);
                               } else {
                                 await run(action.$1);
                                 await console();

@@ -178,4 +178,34 @@ class Store extends GeneratedDatabase {
     return {for(final r in rows)r.read<String>('type'):r.read<String>('asset_ref')};
   }
 
+  Future<void> seedProgression(List courses)=>transaction(()async{
+    for(final course in courses){
+      final track=course['id']=='py'?'python':course['id'];
+      final stageNames=<String>[];String? previous;
+      final ordinals=<String,int>{};
+      for(final lesson in course['lessons']){
+        final stage=lesson['stage'] as String;
+        if(!stageNames.contains(stage))stageNames.add(stage);
+        final stageId='$track:${stageNames.indexOf(stage)}';
+        await customStatement('INSERT OR IGNORE INTO stages(id,track,ordinal,title_key,content_version) VALUES(?,?,?,?,1)',[stageId,track,stageNames.indexOf(stage),stage]);
+        final id=lesson['id'] as String,kind=lesson['kind'] as String? ?? 'lesson';
+        final ordinal=ordinals[stageId]??0;ordinals[stageId]=ordinal+1;
+        await customStatement('INSERT OR IGNORE INTO nodes(id,stage_id,ordinal,kind,title_key,content_asset,grading_asset,content_version) VALUES(?,?,?,?,?,?,?,1)',[id,stageId,ordinal,kind,lesson['title'],'assets/data/courses.json','assets/data/courses.json']);
+        await customStatement('INSERT OR IGNORE INTO progression(node_id,state,unlocked_at_ms) VALUES(?,?,?)',[id,previous==null?'unlocked':'locked',previous==null?DateTime.now().millisecondsSinceEpoch:null]);
+        if(previous!=null)await customStatement('INSERT OR IGNORE INTO prerequisites VALUES(?,?)',[id,previous]);
+        if(kind=='memory_boss')await customStatement('INSERT OR IGNORE INTO badges VALUES(?,?,?,?)',['badge:$id','Arena keeper','assets/data/badge.svg',id]);
+        previous=id;
+      }
+    }
+  });
+  Future<void> recordAttempt(String id,{required bool passed,required bool boss})=>transaction(()async{
+    final now=DateTime.now().millisecondsSinceEpoch,attempt='$id:$now';
+    await customStatement('INSERT INTO attempts VALUES(?,?,1,1,?,?,?,NULL,?)',[attempt,id,'Bundled native runtime; checked arena v1',passed?'passed':'failed',passed?100:0,now]);
+    if(passed){
+      await customStatement("UPDATE progression SET state='mastered',unlocked_at_ms=COALESCE(unlocked_at_ms,?),mastered_at_ms=?,mastered_content_version=1 WHERE node_id=?",[now,now,id]);
+      await customStatement("UPDATE progression SET state='unlocked',unlocked_at_ms=? WHERE state='locked' AND node_id IN (SELECT node_id FROM prerequisites WHERE prerequisite_id=?)",[now,id]);
+      if(boss)await customStatement('INSERT OR IGNORE INTO earned_badges VALUES(?,?,?)',['badge:$id',attempt,now]);
+    }
+  });
+
 }
