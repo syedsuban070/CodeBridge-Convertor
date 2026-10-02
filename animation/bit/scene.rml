@@ -1,0 +1,311 @@
+<Rive version="1" kind="fragment"><Artboard name="Bit" id="0:1" width="320" height="320" defaultStateMachineId="0:100"><Node name="Mentor" id="0:10" x="160" y="172">
+<Shape name="Part 11" id="0:11" x="-28" y="-36"><Rectangle width="23" height="8" cornerRadiusTL="2.6666666666666665"/><Fill><SolidColor colorValue="FF9DFF52"/></Fill></Shape>
+<Shape name="Part 12" id="0:12" x="28" y="-36"><Rectangle width="23" height="8" cornerRadiusTL="2.6666666666666665"/><Fill><SolidColor colorValue="FF9DFF52"/></Fill></Shape>
+<Shape name="Part 13" id="0:13" x="0" y="-5"><Rectangle width="28" height="5" cornerRadiusTL="1.6666666666666667"/><Fill><SolidColor colorValue="FF7D8797"/></Fill></Shape>
+<Shape name="Part 14" id="0:14" x="0" y="-30"><Rectangle width="105" height="63" cornerRadiusTL="14"/><Fill><SolidColor colorValue="FF0B1016"/></Fill></Shape>
+<Shape name="Part 15" id="0:15" x="0" y="-30"><Rectangle width="139" height="96" cornerRadiusTL="14"/><Fill><SolidColor colorValue="FF69788C"/></Fill></Shape>
+<Shape name="Part 16" id="0:16" x="4" y="-22"><Rectangle width="144" height="98" cornerRadiusTL="14"/><Fill><SolidColor colorValue="FF1B2533"/></Fill></Shape>
+<Shape name="Part 17" id="0:17" x="0" y="52"><Rectangle width="26" height="8" cornerRadiusTL="2.6666666666666665"/><Fill><SolidColor colorValue="FF9DFF52"/></Fill></Shape>
+<Shape name="Part 18" id="0:18" x="0" y="54"><Rectangle width="84" height="57" cornerRadiusTL="14"/><Fill><SolidColor colorValue="FF3B4758"/></Fill></Shape>
+<Shape name="Part 19" id="0:19" x="-63" y="49"><Rectangle width="23" height="45" cornerRadiusTL="14"/><Fill><SolidColor colorValue="FF69788C"/></Fill></Shape>
+<Shape name="Part 20" id="0:20" x="63" y="49"><Rectangle width="23" height="45" cornerRadiusTL="14"/><Fill><SolidColor colorValue="FF69788C"/></Fill></Shape>
+<Shape name="Part 21" id="0:21" x="-27" y="98"><Rectangle width="34" height="20" cornerRadiusTL="6.666666666666667"/><Fill><SolidColor colorValue="FF2A3544"/></Fill></Shape>
+<Shape name="Part 22" id="0:22" x="27" y="98"><Rectangle width="34" height="20" cornerRadiusTL="6.666666666666667"/><Fill><SolidColor colorValue="FF2A3544"/></Fill></Shape>
+<Shape name="Part 23" id="0:23" x="0" y="-99"><Rectangle width="13" height="13" cornerRadiusTL="4.333333333333333"/><Fill><SolidColor colorValue="FF9DFF52"/></Fill></Shape>
+<Shape name="Part 24" id="0:24" x="0" y="-83"><Rectangle width="5" height="24" cornerRadiusTL="8.0"/><Fill><SolidColor colorValue="FF69788C"/></Fill></Shape>
+</Node><StateMachine name="BitMentor" id="0:100">
+<StateMachineTrigger name="pythonSyntax" id="0:110"/>
+<StateMachineTrigger name="compileFailed" id="0:111"/>
+<StateMachineTrigger name="success" id="0:112"/>
+<StateMachineTrigger name="memoryWarning" id="0:113"/>
+<StateMachineTrigger name="bossPass" id="0:114"/>
+<StateMachineTrigger name="bossFail" id="0:115"/>
+<StateMachineLayer name="Reactions"><AnyState x="0" y="-180">
+<StateTransition stateToId="0:201" duration="80"><TransitionTriggerCondition inputId="0:110"/></StateTransition>
+<StateTransition stateToId="0:202" duration="80"><TransitionTriggerCondition inputId="0:111"/></StateTransition>
+<StateTransition stateToId="0:203" duration="80"><TransitionTriggerCondition inputId="0:112"/></StateTransition>
+<StateTransition stateToId="0:204" duration="80"><TransitionTriggerCondition inputId="0:113"/></StateTransition>
+<StateTransition stateToId="0:205" duration="80"><TransitionTriggerCondition inputId="0:114"/></StateTransition>
+<StateTransition stateToId="0:206" duration="80"><TransitionTriggerCondition inputId="0:115"/></StateTransition>
+</AnyState><ExitState x="900" y="-180"/><EntryState x="-200" y="0"><StateTransition stateToId="0:200"/></EntryState>
+<AnimationState id="0:200" animationId="0:300" x="0" y="0" reset="true">
+</AnimationState>
+<AnimationState id="0:201" animationId="0:301" x="180" y="180" reset="true">
+<StateTransition stateToId="0:200" duration="120" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+</AnimationState>
+<AnimationState id="0:202" animationId="0:302" x="360" y="0" reset="true">
+<StateTransition stateToId="0:200" duration="120" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+</AnimationState>
+<AnimationState id="0:203" animationId="0:303" x="540" y="180" reset="true">
+<StateTransition stateToId="0:200" duration="120" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+</AnimationState>
+<AnimationState id="0:204" animationId="0:304" x="720" y="0" reset="true">
+<StateTransition stateToId="0:200" duration="120" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+</AnimationState>
+<AnimationState id="0:205" animationId="0:305" x="900" y="180" reset="true">
+<StateTransition stateToId="0:200" duration="120" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+</AnimationState>
+<AnimationState id="0:206" animationId="0:306" x="1080" y="0" reset="true">
+<StateTransition stateToId="0:200" duration="120" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+</AnimationState>
+</StateMachineLayer></StateMachine>
+<LinearAnimation id="0:300" name="IdleOnPath" duration="108" fps="60" loopValue="loop">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="36" value="175" interpolationType="linear"/>
+<KeyFrameDouble frame="72" value="170" interpolationType="linear"/>
+<KeyFrameDouble frame="108" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="36" value="-0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="72" value="0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="108" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="36" value="1.02" interpolationType="linear"/>
+<KeyFrameDouble frame="72" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="108" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="36" value="0.98" interpolationType="linear"/>
+<KeyFrameDouble frame="72" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="108" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="36" value="40" interpolationType="linear"/>
+<KeyFrameDouble frame="72" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="108" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="54" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="108" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+<LinearAnimation id="0:301" name="PythonSyntaxError" duration="60" fps="60" loopValue="oneShot">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="175" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="170" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="0.07" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="1.14" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="0.93" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="0.86" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="1.08" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="-32" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="-25" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+<LinearAnimation id="0:302" name="CppCompileFailed" duration="66" fps="60" loopValue="oneShot">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="22" value="175" interpolationType="linear"/>
+<KeyFrameDouble frame="44" value="170" interpolationType="linear"/>
+<KeyFrameDouble frame="66" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="22" value="-0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="44" value="0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="66" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="22" value="1.02" interpolationType="linear"/>
+<KeyFrameDouble frame="44" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="66" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="22" value="0.98" interpolationType="linear"/>
+<KeyFrameDouble frame="44" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="66" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="22" value="40" interpolationType="linear"/>
+<KeyFrameDouble frame="44" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="66" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="33" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="66" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+<LinearAnimation id="0:303" name="Success" duration="60" fps="60" loopValue="oneShot">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="175" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="170" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="-0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="1.02" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="0.98" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="20" value="40" interpolationType="linear"/>
+<KeyFrameDouble frame="40" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+<LinearAnimation id="0:304" name="MemoryLabWarning" duration="78" fps="60" loopValue="oneShot">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="175" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="170" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="-0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="1.02" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="0.98" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="40" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="39" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+<LinearAnimation id="0:305" name="BossPass" duration="90" fps="60" loopValue="oneShot">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="154" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="163" interpolationType="linear"/>
+<KeyFrameDouble frame="90" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="-0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="0.03" interpolationType="linear"/>
+<KeyFrameDouble frame="90" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="1.02" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="90" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="0.98" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="90" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="30" value="40" interpolationType="linear"/>
+<KeyFrameDouble frame="60" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="90" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="45" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="90" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+<LinearAnimation id="0:306" name="BossFailRoast" duration="78" fps="60" loopValue="oneShot">
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="172" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="175" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="170" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="172" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="15">
+<KeyFrameDouble frame="0" value="0" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="0.07" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="-0.07" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="0" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="16">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="1.02" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:10"><KeyedProperty propertyKey="17">
+<KeyFrameDouble frame="0" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="0.98" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="1" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="1" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:19"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="26" value="40" interpolationType="linear"/>
+<KeyFrameDouble frame="52" value="49" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="49" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+<KeyedObject objectId="0:21"><KeyedProperty propertyKey="14">
+<KeyFrameDouble frame="0" value="98" interpolationType="linear"/>
+<KeyFrameDouble frame="39" value="94" interpolationType="linear"/>
+<KeyFrameDouble frame="78" value="98" interpolationType="linear"/>
+</KeyedProperty></KeyedObject>
+</LinearAnimation>
+</Artboard></Rive>
