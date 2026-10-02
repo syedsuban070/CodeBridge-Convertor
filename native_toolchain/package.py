@@ -14,6 +14,9 @@ for abi,triple,arch in [('arm64-v8a','aarch64-linux-android','aarch64'),('x86_64
     for name,digest in json.loads((src/'SHA256.json').read_text()).items():
         if hashlib.sha256((src/name).read_bytes()).hexdigest()!=digest: raise RuntimeError(name+' checksum mismatch')
         shutil.copy2(src/name,libs/name)
+        # Strip only the packaged copy; retain the verified source artifact.
+        subprocess.run([str(tool/"bin/llvm-strip"),"--strip-unneeded",str(libs/name)],check=True)
+        print(f"Packaged {abi}/{name}: {(libs/name).stat().st_size} bytes",flush=True)
     cpp=a.ndk/'sources/cxx-stl/llvm-libc++/libs'/abi/'libc++_shared.so'
     shutil.copy2(cpp,libs/cpp.name)
     subprocess.run([str(tool/'bin'/f'{triple}26-clang'),'-fPIE','-pie','-O2',str(Path(__file__).with_name('runner.c')),'-ldl','-o',str(libs/'libcb_runner.so')],check=True)

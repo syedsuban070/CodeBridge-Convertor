@@ -5,11 +5,11 @@ Chaquopy Python 3.12. Build downloads are confined to CI; installed app has
 no INTERNET permission. Native programs run in child processes of a separate
 Android runtime service. This is crash separation, not a hostile-code sandbox.
 
-## Verified before publishing
+## Release validation gates
 
-`flutter analyze`, `flutter test`, package contents/permissions, Android
+The initial APK passed `flutter analyze`, `flutter test`, and package contents/permissions checks. Android
 instrumentation exercising Python 3.12, C compiled by Clang 8, and C++17 optional
-and vector. Source archives and fonts retain licenses. Native binaries are
+and vector remains a required gate; the first attempt was blocked by a test-library version conflict. Source archives and fonts retain licenses. Native binaries are
 built from pinned LLVM release hashes and checked against artifact hashes.
 
 ## Preview limitations — not a completed 0.8 release
