@@ -21,10 +21,17 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import zipfile
+          import zipfile, subprocess
           apk=next(Path('apk').glob('*.apk'))
           with zipfile.ZipFile(apk) as z:
               entries=sorted(z.infolist(),key=lambda x:x.compress_size,reverse=True)
               for e in entries[:40]:
                   print(f'{e.compress_size:12d} compressed {e.file_size:12d} raw {e.filename}')
+              binary=Path('clang8-inspect.so')
+              with z.open('lib/x86_64/libclang8.so') as src, binary.open('wb') as dst:
+                  import shutil
+                  shutil.copyfileobj(src,dst)
+              subprocess.run(['readelf','-SW',str(binary)],check=True)
+              subprocess.run(['strip','--strip-debug',str(binary)],check=True)
+              print('AFTER_EXPLICIT_DEBUG_STRIP_BYTES',binary.stat().st_size)
           PY
