@@ -8,6 +8,7 @@ import 'core/store.dart';
 import 'core/runtime.dart';
 import 'core/editor.dart';
 import 'core/bit.dart';
+import 'core/shop.dart';
 import 'package:rive/rive.dart' show RiveFile;
 
 const green = Color(0xFF9DFF52), background = Color(0xFF080C12);
@@ -275,7 +276,9 @@ class _LevelMapState extends State<LevelMap>
                       ),
                       PopupMenuButton<String>(
                         onSelected: (value) async {
-                          if (value == 'language') {
+                          if (value == 'shop') {
+ await Navigator.push(context,MaterialPageRoute(builder:(_)=>const Shop())); await refresh();
+ } else if (value == 'language') {
                             widget.onLocale();
                           } else if (value == 'daily') {
                             final clock = await Runtime.method.invokeMapMethod(
@@ -296,6 +299,7 @@ class _LevelMapState extends State<LevelMap>
                           }
                         },
                         itemBuilder: (_) => [
+                          const PopupMenuItem(value:'shop',child:Text('Cosmetics')),
                           const PopupMenuItem(
                             value: 'daily',
                             child: Text('Daily reward'),
@@ -545,6 +549,7 @@ class _EditorState extends State<Editor> {
   Timer? saveTimer;
   double font = 15, startFont = 15, startDistance = 1;
   bool tools = false, busy = false;
+  Color terminalColor=background,bitTint=Colors.white;
   String reaction = 'idle',
       dialogue = 'The compiler is ready. Is the code?',
       terminal = '';
@@ -565,6 +570,10 @@ class _EditorState extends State<Editor> {
   Future<void> load() async {
     final s = await db.settings();
     final saved = await db.document(id);
+    final cosmetic=await db.cosmetics();
+    if(cosmetic["bit_skin"]!=null){final data=jsonDecode(await rootBundle.loadString(cosmetic["bit_skin"]!));bitTint=Color(data["tint"] as int);}
+    if(cosmetic["terminal_theme"]!=null){final data=jsonDecode(await rootBundle.loadString(cosmetic["terminal_theme"]!));terminalColor=Color(data["background"] as int);}
+    if(cosmetic["syntax_palette"]!=null){final data=jsonDecode(await rootBundle.loadString(cosmetic["syntax_palette"]!));code.keyword=Color(data["keyword"] as int);code.string=Color(data["string"] as int);code.comment=Color(data["comment"] as int);}
     if (!mounted) return;
     code.text = saved ?? widget.lesson?['starter'] as String? ?? starter;
     setState(() => font = (s['font_size'] as num).toDouble());
@@ -685,7 +694,7 @@ class _EditorState extends State<Editor> {
           controller: controller,
           padding: const EdgeInsets.all(20),
           children: [
-            Bit(reaction: reaction, dialogue: dialogue),
+            ColorFiltered(colorFilter:ColorFilter.mode(bitTint,BlendMode.modulate),child:Bit(reaction: reaction, dialogue: dialogue)),
             Text('OUTPUT', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 12),
             Directionality(
@@ -726,6 +735,7 @@ class _EditorState extends State<Editor> {
     return PopScope(
       canPop: !busy,
       child: Scaffold(
+        backgroundColor:terminalColor,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Stack(

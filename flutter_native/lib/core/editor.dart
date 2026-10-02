@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CodeController extends TextEditingController {
   CodeController({super.text});
+  Color keyword=const Color(0xFFAA99FF),string=const Color(0xFF9DFF52),comment=const Color(0xFF71829A);
   void insert(String value) {
     final s = selection.isValid
         ? selection
@@ -60,10 +61,10 @@ class CodeController extends TextEditingController {
           text: t,
           style: TextStyle(
             color: t.startsWith('//') || t.startsWith('#')
-                ? const Color(0xFF71829A)
+                ? comment
                 : t.startsWith('"') || t.startsWith("'")
-                ? const Color(0xFF9DFF52)
-                : const Color(0xFFAA99FF),
+                ? string
+                : keyword,
           ),
         ),
       );

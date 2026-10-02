@@ -151,4 +151,31 @@ class Store extends GeneratedDatabase {
     );
     return line['text'] as String;
   });
+  Future<List<Map<String,dynamic>>> catalog() async {
+    final catalog=jsonDecode(await rootBundle.loadString('assets/data/store.json'));
+    final items=(catalog['items'] as List).cast<Map<String,dynamic>>();
+    await transaction(()async {
+      for(final item in items){
+        await customStatement('INSERT OR IGNORE INTO store_items(id,type,name_key,price,rarity,asset_ref,catalog_version) VALUES(?,?,?,?,?,?,1)',[item['id'],item['type'],item['name_key'],item['price'],item['rarity'],item['asset_ref']]);
+      }
+    });
+    final owned=(await customSelect('SELECT item_id FROM ownership').get()).map((r)=>r.read<String>('item_id')).toSet();
+    final equippedItems=(await customSelect('SELECT item_id FROM equipped').get()).map((r)=>r.read<String>('item_id')).toSet();
+    return items.map((item)=>{...item,'owned':owned.contains(item['id']),'equipped':equippedItems.contains(item['id'])}).toList();
+  }
+  Future<void> buy(String id)=>transaction(()async {
+    final item=await customSelect('SELECT * FROM store_items WHERE id=?',variables:[Variable(id)]).getSingle();
+    final owned=await customSelect('SELECT item_id FROM ownership WHERE item_id=?',variables:[Variable(id)]).getSingleOrNull();
+    if(owned==null){
+      final key='purchase:$id';final now=DateTime.now().millisecondsSinceEpoch;
+      await customStatement("INSERT INTO ledger VALUES(?,?,'purchase',?, ?,0,?)",[key,key,id,-item.read<int>('price'),now]);
+      await customStatement('INSERT INTO ownership VALUES(?,?,?)',[id,key,now]);
+    }
+    await customStatement('INSERT INTO equipped VALUES(?,?) ON CONFLICT(type) DO UPDATE SET item_id=excluded.item_id',[item.read<String>('type'),id]);
+  });
+  Future<Map<String,String>> cosmetics()async {
+    final rows=await customSelect('SELECT store_items.type,store_items.asset_ref FROM equipped JOIN store_items ON store_items.id=equipped.item_id').get();
+    return {for(final r in rows)r.read<String>('type'):r.read<String>('asset_ref')};
+  }
+
 }

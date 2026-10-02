@@ -12,9 +12,12 @@ instrumentation exercising Python 3.12, C compiled by Clang 8, and C++17 optiona
 and vector remains a required gate; the first attempt was blocked by a test-library version conflict. Source archives and fonts retain licenses. Native binaries are
 built from pinned LLVM release hashes and checked against artifact hashes.
 
+Cosmetics now have transactional purchase/equip controls, localized catalog names,
+and bundled terminal, syntax, and Bit tint assets.
+
 ## Preview limitations — not a completed 0.8 release
 
-- Storefront, graded Memory Lab bosses/leak checks, chest/unlock Lottie VFX,
+- Graded Memory Lab bosses/leak checks, chest/unlock Lottie VFX,
   vector splash, live terminal input, and full curriculum translation remain.
 - Debug currently builds unoptimized code with symbols; no interactive debugger.
 - Memory Lab toolbar currently presents mentor warning; practice exercises remain.
