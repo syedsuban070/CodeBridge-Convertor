@@ -61,6 +61,7 @@ jobs:
           api-level: 29
           arch: x86_64
           profile: pixel_2
+          disk-size: 8G
           disable-animations: true
           script: cd flutter_native/android && ./gradlew app:connectedDebugAndroidTest
       - name: Preserve device test reports

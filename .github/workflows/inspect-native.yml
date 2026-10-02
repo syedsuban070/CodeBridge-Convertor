@@ -1,0 +1,30 @@
+name: Inspect native APK size
+on:
+  push:
+    branches: [migration/flutter-native-foundation]
+    paths: ['.github/workflows/inspect-native.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 37040241834
+          name: codebridge-native-preview
+          path: apk
+      - name: Report package contents
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          apk=next(Path('apk').glob('*.apk'))
+          with zipfile.ZipFile(apk) as z:
+              entries=sorted(z.infolist(),key=lambda x:x.compress_size,reverse=True)
+              for e in entries[:40]:
+                  print(f'{e.compress_size:12d} compressed {e.file_size:12d} raw {e.filename}')
+          PY
