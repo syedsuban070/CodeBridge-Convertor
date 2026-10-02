@@ -12,8 +12,14 @@ class RuntimeService:Service(){
     private var client:Messenger?=null
     @Volatile private var busy=false
     private val handler=Handler(Looper.getMainLooper())
+    @Volatile private var childPid=0
+    fun child(pid:Int){childPid=pid}
     private val deadline=Runnable { terminate() }
-    private fun terminate(){try{if(Python.isStarted()) Python.getInstance().getModule("runner").callAttr("stop")}finally{android.os.Process.killProcess(android.os.Process.myPid())}}
+    private fun terminate(){
+        val pid=childPid
+        if(pid>0)try{android.system.Os.kill(-pid,android.system.OsConstants.SIGKILL)}catch(_:Exception){}
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
     private val messenger=Messenger(Handler(Looper.getMainLooper()){m ->
         if(m.what==2){terminate();return@Handler true}
         if(m.what==1 && !busy){

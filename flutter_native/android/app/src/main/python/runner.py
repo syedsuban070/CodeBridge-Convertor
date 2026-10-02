@@ -62,7 +62,8 @@ def execute(source, language, stdin, native_dir, work_dir, abi, mode, callback):
         native=pathlib.Path(native_dir)
         def process(args, input_text=''):
             global _active
-            _active=subprocess.Popen(list(map(str,args)),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+            _active=subprocess.Popen(list(map(str,args)),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env={**os.environ,"LD_LIBRARY_PATH":str(native)})
+            callback.child(_active.pid)
             def reader(pipe,kind):
                 import codecs
                 decoder=codecs.getincrementaldecoder('utf-8')('replace')
@@ -82,6 +83,7 @@ def execute(source, language, stdin, native_dir, work_dir, abi, mode, callback):
             finally:
                 for t in threads:t.join(timeout=2)
                 _active=None
+                callback.child(0)
             return rc
         command=[native/'libclang8.so','-target',triple+'26','--sysroot='+str(root/'sysroot'),'-resource-dir',root/'resource','-fPIC','-fno-color-diagnostics','-Wall','-Wextra','-std=c++17' if ext=='cpp' else '-std=c17']
         if ext=='cpp':command+=['-nostdinc++','-isystem',root/'include/c++/v1']

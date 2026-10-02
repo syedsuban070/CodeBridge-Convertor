@@ -68,5 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-device-test-reports
-          path: flutter_native/android/app/build/reports/androidTests
+          path: |
+            flutter_native/build/app/reports/androidTests
+            flutter_native/build/app/outputs/androidTest-results
           if-no-files-found: ignore
