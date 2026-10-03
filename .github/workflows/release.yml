@@ -100,7 +100,7 @@ jobs:
             adb shell run-as com.codebridge.mobile touch files/upgrade-sentinel.txt
             adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
             adb shell run-as com.codebridge.mobile ls files/upgrade-sentinel.txt
-            cd android && gradle :app:connectedDebugAndroidTest --stacktrace
+            gradle -p android :app:connectedDebugAndroidTest --stacktrace
             adb pull /sdcard/Download/codebridge-keyboard.png android-keyboard.png
             adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
             adb shell am start -n com.codebridge.mobile/.MainActivity
