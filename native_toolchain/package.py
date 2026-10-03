@@ -1,5 +1,5 @@
 """Bundle already-built Clang and the matching NDK sysroot; build-host only."""
-import argparse, hashlib, json, shutil, subprocess, zipfile
+import argparse, hashlib, json, shutil, subprocess, tempfile, zipfile
 from pathlib import Path
 p=argparse.ArgumentParser()
 p.add_argument('--ndk',type=Path,required=True)
@@ -43,8 +43,19 @@ for abi,triple,arch in [('arm64-v8a','aarch64-linux-android','aarch64'),('x86_64
         if not gcc.is_file(): raise RuntimeError('Missing NDK unwinder: '+str(gcc))
         # libgcc.a may be a linker script referencing libgcc_real/atomic.
         # Preserve its same-directory companion archives and resolve with -L.
-        for archive in gcc.parent.glob('*.a'):
-            z.write(archive,archive.name)
+        with tempfile.TemporaryDirectory() as staging:
+            for archive in gcc.parent.glob('*.a'):
+                copy=Path(staging)/archive.name
+                shutil.copy2(archive,copy)
+                with copy.open('rb') as f: is_archive=f.read(8)==b'!<arch>\n'
+                if is_archive:
+                    # LLD 8 is built without zlib. NDK archives contain compressed
+                    # DWARF; remove that build-only data without dropping symbols.
+                    subprocess.run([str(tool/'bin/llvm-strip'),'--strip-debug',str(copy)],check=True)
+                    sections=subprocess.check_output(['readelf','-SW',str(copy)],text=True)
+                    if '.debug_' in sections or '.zdebug_' in sections:
+                        raise RuntimeError('Archive debug sections remain: '+archive.name)
+                z.write(copy,archive.name)
         z.write(src/'LLVM-LICENSE.txt','LLVM-LICENSE.txt')
         for name in ['NOTICE','NOTICE.toolchain']:
             if (a.ndk/name).exists(): z.write(a.ndk/name,name)
