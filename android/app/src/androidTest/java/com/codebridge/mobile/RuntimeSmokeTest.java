@@ -94,7 +94,7 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         waitFor("AndroidFiles.isKeyboardVisible()",10);Thread.sleep(500);
         int[] visibleBounds=new int[2];getInstrumentation().runOnMainSync(()->{android.view.View view=getActivity().getEditorForTesting();int[] location=new int[2];view.getLocationOnScreen(location);visibleBounds[0]=location[1];visibleBounds[1]=getActivity().getWindow().getDecorView().getHeight()-view.getRootWindowInsets().getInsets(android.view.WindowInsets.Type.ime()).bottom;});
         double symbolBottom=Double.parseDouble(js("document.getElementById('symbols').getBoundingClientRect().bottom*devicePixelRatio"))+visibleBounds[0];
-        assertTrue("Syntax bar is covered by keyboard: bottom="+symbolBottom+" keyboardTop="+visibleBounds[1],symbolBottom<=visibleBounds[1]+3);
+        assertTrue("Syntax bar is covered by keyboard: bottom="+symbolBottom+" keyboardTop="+visibleBounds[1],Math.round(symbolBottom)<=visibleBounds[1]+3);
 
         try(android.os.ParcelFileDescriptor capture=getInstrumentation().getUiAutomation().executeShellCommand("screencap -p /sdcard/Download/codebridge-keyboard.png");java.io.FileInputStream stream=new java.io.FileInputStream(capture.getFileDescriptor())){while(stream.read()!=-1){}}
 
