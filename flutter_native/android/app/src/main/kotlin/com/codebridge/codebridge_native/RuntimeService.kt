@@ -32,7 +32,7 @@ class RuntimeService:Service(){
                     val abi=if(Build.SUPPORTED_ABIS.contains("arm64-v8a")) "arm64-v8a" else "x86_64"
                     val root=File(filesDir,"toolchain-$abi")
                     val marker=File(root,".complete")
-                    if(!marker.exists() || marker.readText()!="2"){
+                    if(!marker.exists() || marker.readText()!="3"){
                         output("Preparing bundled compiler…\n","status")
                         root.mkdirs()
                         ZipInputStream(assets.open("toolchain-$abi.zip")).use { zip ->
@@ -44,7 +44,7 @@ class RuntimeService:Service(){
                                 zip.closeEntry();entry=zip.nextEntry
                             }
                         }
-                        marker.writeText("2")
+                        marker.writeText("3")
                     }
                     code=Python.getInstance().getModule("runner").callAttr("execute",b.getString("source"),b.getString("language"),b.getString("stdin"),applicationInfo.nativeLibraryDir,filesDir.absolutePath,abi,b.getString("mode"),this).toInt()
                 }catch(e:Throwable){output(e.toString()+"\n","stderr")}

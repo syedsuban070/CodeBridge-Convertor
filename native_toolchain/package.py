@@ -41,7 +41,10 @@ for abi,triple,arch in [('arm64-v8a','aarch64-linux-android','aarch64'),('x86_64
         # NDK r20 uses libgcc's unwinder for both supported 64-bit ABIs.
         gcc=tool/'lib/gcc'/triple/'4.9.x/libgcc.a'
         if not gcc.is_file(): raise RuntimeError('Missing NDK unwinder: '+str(gcc))
-        z.write(gcc,'libgcc.a')
+        # libgcc.a may be a linker script referencing libgcc_real/atomic.
+        # Preserve its same-directory companion archives and resolve with -L.
+        for archive in gcc.parent.glob('*.a'):
+            z.write(archive,archive.name)
         z.write(src/'LLVM-LICENSE.txt','LLVM-LICENSE.txt')
         for name in ['NOTICE','NOTICE.toolchain']:
             if (a.ndk/name).exists(): z.write(a.ndk/name,name)
