@@ -28,3 +28,6 @@ Unified overlay lifecycle and app Back routing; keyboard-aware, preview-driven t
 
 ### v0.8 M2 — editor and recovery
 Upgraded the existing local CodeMirror editor with lazy-loaded commands and folding, language snippets and identifiers, safe find/replace, per-file undo histories, real diagnostic gutters and squiggles, indentation guides, whitespace settings, mobile symbol arrows and crash recovery journaling. Safe formatting preserves tokens; Python formatting trims trailing whitespace outside strings.
+
+### v0.8 M3 — Bit and effects
+Layered SVG Bit replaces sprite sheets, with eleven interruptible/queued states, eye tracking, speech, adaptive transform/opacity effects and Mascot Lab. Reduced-motion uses static feedback. Cosmetic ownership is retained.
