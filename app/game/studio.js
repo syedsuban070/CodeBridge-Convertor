@@ -8,9 +8,7 @@ const memory=document.createElement('button');memory.id='memory-open';memory.tex
 dock.append($('run'),$('stop'),tools);app.querySelector('.workspace').append(dock);
 for(const id of ['save','convert'])$('menu').prepend($(id));
 $('run').setAttribute('aria-label','Run program');$('stop').setAttribute('aria-label','Stop program');
-$('tools-toggle').onclick=()=>{tools.hidden=!tools.hidden;$('tools-toggle').setAttribute('aria-expanded',String(!tools.hidden));};
+$('tools-toggle').onclick=()=>{CBOverlays.toggle(tools);$('tools-toggle').setAttribute('aria-expanded',String(!tools.hidden));};
 tools.addEventListener('click',e=>{if(e.target.closest('button')){tools.hidden=true;$('tools-toggle').setAttribute('aria-expanded','false');}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){tools.hidden=true;$('tools-toggle').setAttribute('aria-expanded','false');}});
 const refresh=()=>{$('run').hidden=$('run').disabled;$('stop').hidden=$('stop').disabled;$('dock-label').textContent=$('run').disabled?'PROGRAM ACTIVE':'READY TO BUILD';};new MutationObserver(refresh).observe($('run'),{attributes:true,attributeFilter:['disabled']});refresh();
-const back=window.codebridgeBack;window.codebridgeBack=()=>{if(!tools.hidden){tools.hidden=true;$('tools-toggle').setAttribute('aria-expanded','false');return true;}return back();};
 })();

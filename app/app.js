@@ -85,7 +85,7 @@ async function loadExample(name,content){if(!await ask('Load example','Open a ne
 $('example-cpp').onclick=()=>loadExample('main.cpp',exampleCpp);$('example-python').onclick=()=>loadExample('main.py',examplePython);$('trace-c').onclick=teachingTrace;
 $('step').onclick=()=>debugCommand('step');$('next').onclick=()=>debugCommand('next');$('resume').onclick=()=>debugCommand('continue');$('locals').onclick=()=>debugCommand('locals');$('stack').onclick=()=>debugCommand('stack');
 $('clear').onclick=()=>{$('output').textContent='';$('diagnostics').textContent='';};$('project-name').onchange=()=>{project.name=$('project-name').value;persist();};
-$('toggle-files').onclick=()=>$('sidebar').classList.toggle('visible');$('menu-toggle').onclick=()=>$('menu').hidden=!$('menu').hidden;
+$('toggle-files').onclick=()=>CBOverlays.toggle('sidebar');$('menu-toggle').onclick=()=>CBOverlays.toggle('menu');
 for(const b of $('menu').querySelectorAll('button'))b.addEventListener('click',()=>$('menu').hidden=true);
 for(const b of document.querySelectorAll('[data-insert]'))b.onclick=()=>window.CBEditor.insert(b.dataset.insert);
 $('font-size').onclick=async()=>{const value=await modal('Editor font','Choose a size from 10 to 24.',String(parseInt(editor.getWrapperElement().style.fontSize)||14));const n=Number(value);if(n>=10&&n<=24){editor.getWrapperElement().style.fontSize=n+'px';localStorage.setItem('codebridge.font',n);editor.refresh();}};

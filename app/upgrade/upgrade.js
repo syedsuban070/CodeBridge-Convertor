@@ -28,7 +28,6 @@
  for(const [label,command] of [['↶','undo'],['↷','redo']]){const b=document.createElement('button');b.textContent=label;b.setAttribute('aria-label',command);b.onclick=()=>{editor.focus();editor.execCommand(command);};symbols.append(b);}
  symbols.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault();});
  const close=document.createElement('button');close.id='drawer-close';close.textContent='Close files ✕';close.onclick=()=>$('sidebar').classList.remove('visible');$('sidebar').prepend(close);
- const previousBack=window.codebridgeBack;window.codebridgeBack=()=>{if($('sidebar').classList.contains('visible')){$('sidebar').classList.remove('visible');return true;}if(!$('menu').hidden){$('menu').hidden=true;return true;}return previousBack();};
  // Locally selected, non-repeating dialogue; never diagnoses a compile error as a segfault.
  const status=document.createElement('p');status.id='bit-status';status.setAttribute('role','status');status.dataset.noTranslate='';$('execution-dock').before(status);
  function reaction(kind){const pool=locales[locale].dialogue[kind]||locales[locale].dialogue.idle;const key=locale+':'+kind;let i=Math.floor(Math.random()*pool.length);if(i===lastLines[key])i=(i+1)%pool.length;lastLines[key]=i;status.textContent=pool[i];status.dataset.reaction=kind;window.CBFeedback?.mood(kind==='success'||kind==='bossPass'?'celebrate':kind==='memoryWarning'?'thinking':'idle',900);}
@@ -44,7 +43,6 @@
  }
  new MutationObserver(()=>{decorate();schedule();}).observe($('academy'),{childList:true});
  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true});
- const back=window.codebridgeBack;window.codebridgeBack=()=>{if(chest.open){chest.close();return true;}if(document.body.classList.contains('focus-editor')&&!$('app').classList.contains('academy-mode')){setFocus(false);return true;}return back();};
  // Observe clock across app sessions without making wall-clock jumps reward time.
  const observeClock=()=>CodeBridgeAcademy.transact(p=>CBRewardClock.observe(p));
  setInterval(observeClock,60000);document.addEventListener('visibilitychange',()=>{if(document.hidden)observeClock();});

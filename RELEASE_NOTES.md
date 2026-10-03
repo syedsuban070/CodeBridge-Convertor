@@ -21,3 +21,7 @@ The scrollable bracket/operator/semicolon/quote bar follows Android keyboard vis
 ## Installation
 
 Uses the same cached beta signing certificate as 0.7.2–0.7.4. Build checks cover signatures, alignment, Android 16 installation over 0.7.2 with retained private data, real C/C++ and Python execution, and project regressions before publishing. Export a backup outside the app to protect local work.
+
+## v0.8 development — M1
+
+Unified overlay lifecycle and app Back routing; keyboard-aware, preview-driven two-tap project creation, inline validation, 48px controls, larger text and pseudo-locale coverage. All 32 visual configurations and original project/editor regressions pass. See docs/V0_8_AUDIT.md and docs/V0_8_M1.md for scope and measurement assumptions.

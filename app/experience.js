@@ -38,5 +38,4 @@ function keyboard(){
 window.visualViewport?.addEventListener('resize',keyboard);window.addEventListener('resize',keyboard);document.addEventListener('focusin',keyboard);document.addEventListener('focusout',()=>setTimeout(keyboard,80));window.addEventListener('orientationchange',()=>{fullHeight=innerHeight;keyboard();});
 window.CBExperience={showSettings,celebrate,apply,nativeKeyboard};
 try{nativeIme=!!window.AndroidFiles?.isKeyboardVisible();}catch{}keyboard();
-window.codebridgeBack=()=>{if(dialog.open){dialog.close();return true;}if($('modal').open){$('modal').close();return true;}if(document.body.classList.contains('output-mode')){$('back-editor').click();return true;}if(document.querySelector('[data-view=home]')?.getAttribute('aria-current')!=='page'){CodeBridgeAcademy.navigate('home');return true;}return false;};
 })();
