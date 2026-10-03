@@ -93,9 +93,10 @@ jobs:
             adb shell am start -n com.codebridge.mobile/.MainActivity
             sleep 3
             adb shell am force-stop com.codebridge.mobile
-            adb shell run-as com.codebridge.mobile sh -c 'echo retained > files/upgrade-sentinel.txt'
+            adb shell run-as com.codebridge.mobile mkdir -p files
+            adb shell run-as com.codebridge.mobile touch files/upgrade-sentinel.txt
             adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
-            adb shell run-as com.codebridge.mobile cat files/upgrade-sentinel.txt | grep -q retained
+            adb shell run-as com.codebridge.mobile ls files/upgrade-sentinel.txt
             cd android && gradle :app:connectedDebugAndroidTest --stacktrace
             adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
             adb shell am start -n com.codebridge.mobile/.MainActivity
