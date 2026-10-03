@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": 1,
+  "status": "asset-references-are-planned-not-bundled",
+  "items": [
+    {
+      "id": "skin-default",
+      "type": "bit_skin",
+      "names": {
+        "en": "Original Bit",
+        "ur": "اصل بٹ",
+        "zh-Hans": "初始 Bit"
+      },
+      "priceCoins": 0,
+      "rarity": "common",
+      "assetRef": "assets/rive/bit.riv",
+      "unlockRule": {
+        "kind": "default"
+      },
+      "defaultOwned": true
+    },
+    {
+      "id": "skin-iron",
+      "type": "bit_skin",
+      "names": {
+        "en": "Iron Glare",
+        "ur": "آہنی نگاہ",
+        "zh-Hans": "钢铁怒目"
+      },
+      "priceCoins": 180,
+      "rarity": "epic",
+      "assetRef": "assets/rive/bit-iron.riv",
+      "unlockRule": {
+        "kind": "purchase"
+      },
+      "defaultOwned": false
+    },
+    {
+      "id": "terminal-night",
+      "type": "terminal_theme",
+      "names": {
+        "en": "Night Terminal",
+        "ur": "رات کا ٹرمینل",
+        "zh-Hans": "夜色终端"
+      },
+      "priceCoins": 0,
+      "rarity": "common",
+      "assetRef": "assets/themes/night.json",
+      "unlockRule": {
+        "kind": "default"
+      },
+      "defaultOwned": true
+    },
+    {
+      "id": "terminal-abyss",
+      "type": "terminal_theme",
+      "names": {
+        "en": "Abyss Terminal",
+        "ur": "گہرا ٹرمینل",
+        "zh-Hans": "深渊终端"
+      },
+      "priceCoins": 80,
+      "rarity": "rare",
+      "assetRef": "assets/themes/abyss.json",
+      "unlockRule": {
+        "kind": "purchase"
+      },
+      "defaultOwned": false
+    },
+    {
+      "id": "syntax-lime",
+      "type": "syntax_palette",
+      "names": {
+        "en": "Lime Circuit",
+        "ur": "لائم سرکٹ",
+        "zh-Hans": "青柠电路"
+      },
+      "priceCoins": 0,
+      "rarity": "common",
+      "assetRef": "assets/palettes/lime.json",
+      "unlockRule": {
+        "kind": "default"
+      },
+      "defaultOwned": true
+    },
+    {
+      "id": "syntax-ember",
+      "type": "syntax_palette",
+      "names": {
+        "en": "Ember Syntax",
+        "ur": "انگارے کی نحو",
+        "zh-Hans": "余烬语法"
+      },
+      "priceCoins": 60,
+      "rarity": "rare",
+      "assetRef": "assets/palettes/ember.json",
+      "unlockRule": {
+        "kind": "purchase"
+      },
+      "defaultOwned": false
+    }
+  ],
+  "unlockStatePolicy": "derive locked/available/owned/equipped from prerequisites, ownership and equipped tables; never trust a catalog ownership flag"
+}

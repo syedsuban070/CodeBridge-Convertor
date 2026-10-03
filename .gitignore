@@ -14,3 +14,7 @@ app/game/assets/*.wav
 app/game/assets/*.woff2
 
 app/game/assets/bit-*.svg
+
+.native-artifacts/
+flutter_native/android/app/src/main/assets/toolchain-*.zip
+flutter_native/android/app/src/main/jniLibs/

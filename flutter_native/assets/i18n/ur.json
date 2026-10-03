@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "locale": "ur",
+  "direction": "rtl",
+  "fontFamily": "NotoNastaliqUrdu",
+  "strings": {
+    "language": "اپنی زبان منتخب کریں",
+    "continue": "آگے بڑھیں",
+    "memoryAlley": "میموری کی گلی",
+    "pointerPeak": "پوائنٹر کی چوٹی",
+    "locked": "مقفل",
+    "unlocked": "شروع کرنے کے لیے تیار",
+    "mastered": "مہارت حاصل",
+    "run": "چلائیں",
+    "build": "بلڈ",
+    "debug": "ڈی بگ",
+    "memoryLab": "میموری لیب",
+    "save": "محفوظ کریں",
+    "snippets": "کوڈ کے نمونے",
+    "undo": "واپس کریں",
+    "redo": "دوبارہ کریں",
+    "indent": "انڈینٹ بڑھائیں",
+    "outdent": "انڈینٹ کم کریں"
+  },
+  "dialogue": {
+    "IdleOnPath": [
+      {
+        "id": "IdleOnPath.0",
+        "text": "اگلا سوال خود حل نہیں ہو گا۔"
+      },
+      {
+        "id": "IdleOnPath.1",
+        "text": "کمپائلر تیار ہے۔ کوڈ بھی تیار ہے؟"
+      },
+      {
+        "id": "IdleOnPath.2",
+        "text": "چھوٹا سا پروگرام، نحو میں کوئی بہانہ نہیں۔"
+      }
+    ],
+    "PythonSyntaxError": [
+      {
+        "id": "PythonSyntaxError.0",
+        "text": "کولن پھر بھول گیا؟"
+      },
+      {
+        "id": "PythonSyntaxError.1",
+        "text": "اس نحو کو ایک بار پھر دیکھو۔"
+      },
+      {
+        "id": "PythonSyntaxError.2",
+        "text": "پائتھن کو درست ساخت چاہیے، معما نہیں۔"
+      }
+    ],
+    "CppCompileFailed": [
+      {
+        "id": "CppCompileFailed.0",
+        "text": "کمپائلر نے اس نحو کو مسترد کر دیا۔ ٹھیک ہی کیا۔"
+      },
+      {
+        "id": "CppCompileFailed.1",
+        "text": "اس تعریف سے کوئی کام نہیں بن رہا۔"
+      },
+      {
+        "id": "CppCompileFailed.2",
+        "text": "بلڈ رک گیا۔ پہلی خرابی سے شروع کرو۔"
+      }
+    ],
+    "MemoryFault": [
+      {
+        "id": "MemoryFault.0",
+        "text": "سیگمنٹیشن فالٹ؟ پوائنٹر نقشے سے باہر نکل گیا۔"
+      },
+      {
+        "id": "MemoryFault.1",
+        "text": "اس میموری تک رسائی کی اجازت نہیں۔"
+      },
+      {
+        "id": "MemoryFault.2",
+        "text": "پروگرام اپنی میموری کی حد بھول گیا۔"
+      }
+    ],
+    "Success": [
+      {
+        "id": "Success.0",
+        "text": "کمپائل ہو گیا۔ اسے سر پر مت چڑھاؤ۔"
+      },
+      {
+        "id": "Success.1",
+        "text": "ٹیسٹ پاس ہو گئے۔ کچھ زیادہ ہی صاف کام ہے۔"
+      },
+      {
+        "id": "Success.2",
+        "text": "اس کوڈ پر ایک ہلکی سی داد بنتی ہے۔"
+      }
+    ],
+    "MemoryLabWarning": [
+      {
+        "id": "MemoryLabWarning.0",
+        "text": "ہر میموری الاٹمنٹ کی واپسی کا راستہ ہونا چاہیے۔"
+      },
+      {
+        "id": "MemoryLabWarning.1",
+        "text": "ہیپ حساب رکھتا ہے۔ اپنی میموری آزاد کرو۔"
+      },
+      {
+        "id": "MemoryLabWarning.2",
+        "text": "پوائنٹر ہر جگہ ہاتھ ڈالنے کی اجازت نہیں۔"
+      }
+    ],
+    "BossPass": [
+      {
+        "id": "BossPass.0",
+        "text": "نہ لیک، نہ غلط رسائی۔ قابل قبول۔"
+      },
+      {
+        "id": "BossPass.1",
+        "text": "ٹیسٹوں کے پاس اب کوئی شکایت نہیں۔"
+      },
+      {
+        "id": "BossPass.2",
+        "text": "میموری صاف ہے۔ صندوق کھولو۔"
+      }
+    ],
+    "BossFailRoast": [
+      {
+        "id": "BossFailRoast.0",
+        "text": "یہ ہیپ ویران گودام لگ رہا ہے۔"
+      },
+      {
+        "id": "BossFailRoast.1",
+        "text": "ٹیسٹوں نے شارٹ کٹ پکڑ لیا۔ راستہ بند تھا۔"
+      },
+      {
+        "id": "BossFailRoast.2",
+        "text": "الاٹمنٹ بھاگ گئی۔ واپس لاؤ اور پھر کوشش کرو۔"
+      }
+    ]
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "locale": "zh-Hans",
+  "direction": "ltr",
+  "fontFamily": "NotoSansSC",
+  "strings": {
+    "language": "选择语言",
+    "continue": "继续",
+    "memoryAlley": "内存巷",
+    "pointerPeak": "指针峰",
+    "locked": "未解锁",
+    "unlocked": "可以开始",
+    "mastered": "已掌握",
+    "run": "运行",
+    "build": "构建",
+    "debug": "调试",
+    "memoryLab": "内存实验室",
+    "save": "保存",
+    "snippets": "代码片段",
+    "undo": "撤销",
+    "redo": "重做",
+    "indent": "增加缩进",
+    "outdent": "减少缩进"
+  },
+  "dialogue": {
+    "IdleOnPath": [
+      {
+        "id": "IdleOnPath.0",
+        "text": "下一关可不会自己完成。"
+      },
+      {
+        "id": "IdleOnPath.1",
+        "text": "编译器准备好了，代码呢？"
+      },
+      {
+        "id": "IdleOnPath.2",
+        "text": "程序虽小，语法不能糊弄。"
+      }
+    ],
+    "PythonSyntaxError": [
+      {
+        "id": "PythonSyntaxError.0",
+        "text": "又忘了冒号。"
+      },
+      {
+        "id": "PythonSyntaxError.1",
+        "text": "这段语法还得再检查一遍。"
+      },
+      {
+        "id": "PythonSyntaxError.2",
+        "text": "Python 要的是结构，不是悬念。"
+      }
+    ],
+    "CppCompileFailed": [
+      {
+        "id": "CppCompileFailed.0",
+        "text": "编译器拒绝了这段语法。很合理。"
+      },
+      {
+        "id": "CppCompileFailed.1",
+        "text": "这个声明没干成正事。"
+      },
+      {
+        "id": "CppCompileFailed.2",
+        "text": "构建停了。先看第一条诊断。"
+      }
+    ],
+    "MemoryFault": [
+      {
+        "id": "MemoryFault.0",
+        "text": "段错误？这个指针走出了地图。"
+      },
+      {
+        "id": "MemoryFault.1",
+        "text": "这次内存访问没有通行证。"
+      },
+      {
+        "id": "MemoryFault.2",
+        "text": "程序忘了内存的边界。"
+      }
+    ],
+    "Success": [
+      {
+        "id": "Success.0",
+        "text": "编译成功了。别得意。"
+      },
+      {
+        "id": "Success.1",
+        "text": "测试通过了。整齐得有点可疑。"
+      },
+      {
+        "id": "Success.2",
+        "text": "这段代码勉强值得点个头。"
+      }
+    ],
+    "MemoryLabWarning": [
+      {
+        "id": "MemoryLabWarning.0",
+        "text": "每次分配都需要退出方案。"
+      },
+      {
+        "id": "MemoryLabWarning.1",
+        "text": "堆会记账。释放你拥有的内存。"
+      },
+      {
+        "id": "MemoryLabWarning.2",
+        "text": "指针不是随意访问内存的许可证。"
+      }
+    ],
+    "BossPass": [
+      {
+        "id": "BossPass.0",
+        "text": "没有泄漏，也没有非法访问。合格。"
+      },
+      {
+        "id": "BossPass.1",
+        "text": "测试集终于没话说了。"
+      },
+      {
+        "id": "BossPass.2",
+        "text": "内存干净。打开宝箱吧。"
+      }
+    ],
+    "BossFailRoast": [
+      {
+        "id": "BossFailRoast.0",
+        "text": "这块堆像个废弃仓库。"
+      },
+      {
+        "id": "BossFailRoast.1",
+        "text": "测试找到了捷径，可惜是死路。"
+      },
+      {
+        "id": "BossFailRoast.2",
+        "text": "分配的内存跑了。找回来再试。"
+      }
+    ]
+  }
+}

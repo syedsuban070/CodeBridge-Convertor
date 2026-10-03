@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "locale": "en",
+  "direction": "ltr",
+  "fontFamily": "NotoSans",
+  "strings": {
+    "language": "Choose your language",
+    "continue": "Continue",
+    "memoryAlley": "Memory Alley",
+    "pointerPeak": "Pointer Peak",
+    "locked": "Locked",
+    "unlocked": "Ready to start",
+    "mastered": "Mastered",
+    "run": "Run",
+    "build": "Build",
+    "debug": "Debug",
+    "memoryLab": "Memory Lab",
+    "save": "Save",
+    "snippets": "Snippets",
+    "undo": "Undo",
+    "redo": "Redo",
+    "indent": "Indent",
+    "outdent": "Outdent"
+  },
+  "dialogue": {
+    "IdleOnPath": [
+      {
+        "id": "IdleOnPath.0",
+        "text": "The next node is not going to solve itself."
+      },
+      {
+        "id": "IdleOnPath.1",
+        "text": "The compiler is ready. Is the code?"
+      },
+      {
+        "id": "IdleOnPath.2",
+        "text": "One small program. Zero excuses in the syntax."
+      }
+    ],
+    "PythonSyntaxError": [
+      {
+        "id": "PythonSyntaxError.0",
+        "text": "You forgot the colon. Again."
+      },
+      {
+        "id": "PythonSyntaxError.1",
+        "text": "That syntax needs another pass."
+      },
+      {
+        "id": "PythonSyntaxError.2",
+        "text": "Python expects structure, not suspense."
+      }
+    ],
+    "CppCompileFailed": [
+      {
+        "id": "CppCompileFailed.0",
+        "text": "The compiler rejected that syntax. Fair."
+      },
+      {
+        "id": "CppCompileFailed.1",
+        "text": "That declaration is doing no useful work."
+      },
+      {
+        "id": "CppCompileFailed.2",
+        "text": "The build stopped. Start with the first diagnostic."
+      }
+    ],
+    "MemoryFault": [
+      {
+        "id": "MemoryFault.0",
+        "text": "A segmentation fault? That pointer walked off the map."
+      },
+      {
+        "id": "MemoryFault.1",
+        "text": "That memory access has no invitation."
+      },
+      {
+        "id": "MemoryFault.2",
+        "text": "The program forgot where its memory ends."
+      }
+    ],
+    "Success": [
+      {
+        "id": "Success.0",
+        "text": "It compiled. Don’t let it go to your head."
+      },
+      {
+        "id": "Success.1",
+        "text": "The tests passed. Suspiciously tidy."
+      },
+      {
+        "id": "Success.2",
+        "text": "That code earned one reluctant nod."
+      }
+    ],
+    "MemoryLabWarning": [
+      {
+        "id": "MemoryLabWarning.0",
+        "text": "Every allocation needs an exit plan."
+      },
+      {
+        "id": "MemoryLabWarning.1",
+        "text": "The heap keeps receipts. Free what you own."
+      },
+      {
+        "id": "MemoryLabWarning.2",
+        "text": "A pointer is not permission to touch everything."
+      }
+    ],
+    "BossPass": [
+      {
+        "id": "BossPass.0",
+        "text": "No leaks. No invalid access. Acceptable."
+      },
+      {
+        "id": "BossPass.1",
+        "text": "The test suite has run out of complaints."
+      },
+      {
+        "id": "BossPass.2",
+        "text": "Clean memory. Open the chest."
+      }
+    ],
+    "BossFailRoast": [
+      {
+        "id": "BossFailRoast.0",
+        "text": "That heap looks like an abandoned warehouse."
+      },
+      {
+        "id": "BossFailRoast.1",
+        "text": "The tests found the shortcut. It was a dead end."
+      },
+      {
+        "id": "BossFailRoast.2",
+        "text": "The allocation escaped. Bring it back and retry."
+      }
+    ]
+  }
+}
