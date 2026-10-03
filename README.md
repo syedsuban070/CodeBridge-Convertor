@@ -1,6 +1,6 @@
 # CodeBridge Android — Learn, build, explore
 
-**0.7.1 extends the original 0.7 interface.** No Flutter replacement. See [release notes](RELEASE_NOTES.md) for new stage bosses, language selection, editor controls and upgrade compatibility.
+**0.7.2 extends the original 0.7 interface.** No Flutter replacement. See [release notes](RELEASE_NOTES.md) for stage bosses, circular learning path, compact editor controls and upgrade compatibility.
 
 **Android 0.7:** compact Run/Stop dock, four-direction animated Bit, offline developer typography, PCM sound cues, cosmetic store with a transaction ledger, After-Action Reports and an instrumented Memory Lab preset. [Implementation and scope](docs/design/IMPLEMENTATION_0_7.md).
 
@@ -37,7 +37,7 @@ Get a matching package from [Releases](https://github.com/syedsuban070/CodeBridg
 
 | Device | Package | Notes |
 | --- | --- | --- |
-| Android 8+ | `CodeBridge-0.7.1-Android.apk` | Test-signed APK. Use an updated Android System WebView. Keep your existing installation if Android reports a signing mismatch; export projects and progress before updating. |
+| Android 8+ | `CodeBridge-0.7.2-Android.apk` | Test-signed APK. Use an updated Android System WebView. Keep your existing installation if Android reports a signing mismatch; export projects and progress before updating. |
 | Windows x64 | `…win-x64-setup.exe` or `…win-x64-portable.exe` | Installer or portable executable. The unsigned beta may trigger Windows reputation prompts. |
 | Mac with Apple silicon | `…mac-arm64.dmg` | Unsigned beta; macOS may require approval under Privacy & Security. |
 | Mac with Intel processor | `…mac-x64.dmg` | Same unsigned-beta limitation. |

@@ -15,3 +15,5 @@ app/game/assets/*.woff2
 
 app/game/assets/bit-*.svg
 app/upgrade/fonts/*.ttf
+
+android/app/*.keystore

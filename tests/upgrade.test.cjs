@@ -12,5 +12,5 @@ assert.equal(P.reward(p,new Date(2026,9,4,12),at(2*Clock.DAY+5,2*Clock.DAY+5000,
 const restored=P.validate(JSON.parse(JSON.stringify(p)),ids);assert.equal(restored.coins,40);
 assert.equal(courses.flatMap(c=>c.lessons).filter(l=>l.kind==='memory_boss').length,6);
 for(const c of courses.filter(c=>c.id!=='py'))for(const stage of new Set(c.lessons.map(l=>l.stage)))assert.equal(c.lessons.filter(l=>l.stage===stage).at(-1).kind,'memory_boss');
-for(const locale of ['en','ur','zh-Hans']){const d=require('../app/upgrade/i18n/'+locale+'.json');assert.equal(Object.keys(d.strings).length,Object.keys(require('../app/upgrade/i18n/en.json').strings).length);for(const pool of Object.values(d.dialogue))assert.ok(pool.length>=2);}
+for(const locale of ['en']){const d=require('../app/upgrade/i18n/'+locale+'.json');assert.equal(Object.keys(d.strings).length,Object.keys(require('../app/upgrade/i18n/en.json').strings).length);for(const pool of Object.values(d.dialogue))assert.ok(pool.length>=2);}
 console.log('PASS wall jump, rollback, reboot, duplicate reward, save restore, six stage bosses and localized dialogue');

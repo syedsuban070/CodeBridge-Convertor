@@ -20,10 +20,10 @@ const {serve}=require('../desktop/server.cjs');
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.resolve(__dirname,'../.artifacts/mobile.png')});
 
  // Learning uses real workers, with quiz gating and no completion on incorrect output.
- await page.click('[data-view=home]');await page.setViewportSize({width:390,height:844});
+ await page.evaluate(()=>CodeBridgeAcademy.navigate('home'));await page.setViewportSize({width:390,height:844});
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-home.png')});
  await page.click('#daily-reward');assert.equal(await page.evaluate(()=>CodeBridgeAcademy.getProgress().coins),20);assert.equal(await page.locator('#daily-reward').isDisabled(),true);
- await page.click('[data-view=learn]');await page.click('[data-course=py]');
+ await page.evaluate(()=>CodeBridgeAcademy.navigate('learn'));await page.click('[data-course=py]');
  assert.equal(await page.locator('[data-lesson="py-2"]').isDisabled(),true);
  await page.click('[data-lesson="py-1"]');await page.click('#check-lesson');assert.match(await page.textContent('#lesson-feedback'),/Answer the concept/);
  await page.click('[data-answer="1"]');assert.match(await page.textContent('#quiz-feedback'),/Not quite/);
@@ -33,10 +33,10 @@ const {serve}=require('../desktop/server.cjs');
  await page.evaluate(()=>document.querySelector('.lesson-editor .CodeMirror').CodeMirror.setValue('print("Hello, explorer!")'));
  await page.click('#check-lesson');await page.waitForFunction(()=>document.querySelector('#lesson-feedback').classList.contains('success'),{},{timeout:120000});assert.equal(await page.evaluate(()=>CodeBridgeAcademy.getProgress().xp),40);
  await page.click('#check-lesson');await page.waitForFunction(()=>document.querySelector('#lesson-feedback').classList.contains('success'),{},{timeout:120000});assert.equal(await page.evaluate(()=>CodeBridgeAcademy.getProgress().xp),40);
- await page.click('[data-view=quests]');await page.click('[data-claim=practice]');assert.equal(await page.evaluate(()=>CodeBridgeAcademy.getProgress().xp),65);
+ await page.evaluate(()=>CodeBridgeAcademy.navigate('quests'));await page.click('[data-claim=practice]');assert.equal(await page.evaluate(()=>CodeBridgeAcademy.getProgress().xp),65);
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-quests.png')});
  await page.reload();await page.waitForFunction(()=>!!window.CodeBridgeAcademy);assert.equal(await page.evaluate(()=>CodeBridgeAcademy.getProgress().xp),65);
- await page.click('[data-view=learn]');await page.click('[data-course=py]');assert.equal(await page.locator('[data-lesson="py-2"]').isDisabled(),false);
+ await page.evaluate(()=>CodeBridgeAcademy.navigate('learn'));await page.click('[data-course=py]');assert.equal(await page.locator('[data-lesson="py-2"]').isDisabled(),false);
  await page.click('[data-lesson="py-1"]');assert.match(await page.evaluate(()=>document.querySelector('.lesson-editor .CodeMirror').CodeMirror.getValue()),/Hello, explorer/);
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-lesson.png')});
  // Navigation must fit the narrow Android viewport without horizontal overflow.
@@ -55,14 +55,14 @@ const {serve}=require('../desktop/server.cjs');
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);assert.equal(await page.locator('#editor-area').isVisible(),false);assert.equal(await page.locator('#console').isVisible(),true);
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-console-paper.png')});
  await page.click('#back-editor');await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-editor-paper.png')});
- await page.click('#settings-open');await page.click('[data-setting=theme][data-value=forest]');await page.click('[data-setting=editorTheme][data-value=ocean]');await page.click('#settings-close');await page.click('[data-view=home]');
+ await page.click('#settings-open');await page.click('[data-setting=theme][data-value=forest]');await page.click('[data-setting=editorTheme][data-value=ocean]');await page.click('#settings-close');await page.evaluate(()=>CodeBridgeAcademy.navigate('home'));
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-home-forest.png')});
  await page.click('#settings-open');await page.click('[data-setting=theme][data-value=violet]');await page.click('#settings-close');await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-home-violet.png')});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.click('#settings-open');await page.click('#reset-settings');await page.click('#settings-close');
 
- await page.click('[data-view=code]');const oldSize=await page.evaluate(()=>CBSettings.get().fontSize);await page.click('#zoom-in');assert.ok(await page.evaluate(()=>CBSettings.get().fontSize)>oldSize);await page.click('#zoom-out');
- await page.evaluate(()=>editor.setValue('pri'));await page.click('#suggest-code');assert.match(await page.textContent('.CodeMirror-hints'),/print/);await page.keyboard.press('Escape');
+ await page.click('[data-view=code]');const oldSize=await page.evaluate(()=>CBSettings.get().fontSize);await page.click('#menu-toggle');await page.click('#zoom-in');assert.ok(await page.evaluate(()=>CBSettings.get().fontSize)>oldSize);await page.click('#menu-toggle');await page.click('#zoom-out');
+ await page.evaluate(()=>editor.setValue('pri'));await page.click('#menu-toggle');await page.click('#suggest-code');assert.match(await page.textContent('.CodeMirror-hints'),/print/);await page.keyboard.press('Escape');
  await page.evaluate(()=>{CBSettings.set({roast:true});project.files=[{name:'bad.py',content:'print(1/0)'}];project.active='bad.py';loading=true;editor.setValue(current().content);loading=false;select('bad.py');});
  await page.click('#run');await page.waitForFunction(()=>!document.querySelector('#bit-reaction').hidden,{},{timeout:120000});await page.click('#bit-error-button');assert.match(await page.textContent('#bit-title'),/Division by zero/);assert.equal(await page.locator('#bit-roast').isVisible(),true);assert.equal(await page.locator('#bit-ask').isEnabled(),true);
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-bit-guide.png')});await page.click('#bit-close');

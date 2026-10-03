@@ -60,8 +60,14 @@ jobs:
         with: {gradle-version: '8.9'}
       - uses: actions/cache@v4
         with:
-          path: ~/.android/debug.keystore
-          key: codebridge-test-signing-v2
+          path: android/app/codebridge-beta.keystore
+          key: codebridge-beta-signing-file-v3
+      - name: Ensure cached beta signing key
+        run: |
+          if [ ! -f android/app/codebridge-beta.keystore ]; then
+            keytool -genkeypair -keystore android/app/codebridge-beta.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname 'CN=Android Debug,O=Android,C=US'
+          fi
+          chmod 600 android/app/codebridge-beta.keystore
       - run: |
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
       - run: gradle :app:assembleDebug :app:assembleDebugAndroidTest --stacktrace
@@ -87,7 +93,7 @@ jobs:
             adb exec-out screencap -p > android-screen.png
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.1-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.2-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -99,7 +105,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.7.1-Android.apk
+          path: CodeBridge-0.7.2-Android.apk
           if-no-files-found: error
   publish:
     needs: [android, validation]
@@ -118,10 +124,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.7.1-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.7.2-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.1 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.2 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
           fi
