@@ -1,6 +1,6 @@
 @font-face{font-family:Orbitron;src:url(fonts/Orbitron.ttf) format('truetype');font-display:swap}
 .CodeMirror,#editor-area,#output,#diagnostics,#variables,#stdin,#terminal-line,#memory-map,#memory-source,pre,.case{direction:ltr;unicode-bidi:isolate;text-align:left}
-#upgrade-splash svg{width:220px;height:80px;margin:auto}#upgrade-splash path{fill:none;stroke:var(--accent,#b9ff66);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:180;stroke-dashoffset:180;animation:cbStroke .65s ease forwards}#upgrade-splash strong{font:900 clamp(22px,6vw,34px) Orbitron,JetBrains,monospace;letter-spacing:2px;margin-top:20px}
+#upgrade-splash svg{width:220px;height:80px;margin:auto}#upgrade-splash path{fill:none;stroke:var(--accent,#b9ff66);stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:180;stroke-dashoffset:180;animation:cbStroke .65s ease forwards}#upgrade-splash strong{font:900 clamp(28px,7.6vw,46px) Orbitron,JetBrains,monospace;letter-spacing:2px;margin-top:20px}
 @keyframes cbStroke{to{stroke-dashoffset:0}}
 #editor-home{display:none}body:has(#app:not(.academy-mode)) #editor-home{display:block;min-height:34px;padding:4px 8px;font-size:11px}body:has(#app:not(.academy-mode)) .bottom-nav{display:none}#app:not(.academy-mode){padding-bottom:0;height:min(var(--cb-vh,100dvh),100dvh)}
 #app:not(.academy-mode)>header{height:36px;gap:4px;padding:0 6px}#app:not(.academy-mode)>header .brand{font-size:13px;gap:4px}#app:not(.academy-mode)>header .brand-icon,#app:not(.academy-mode)>header .offline{display:none}#app:not(.academy-mode)>header #menu-toggle{margin-left:auto}#app:not(.academy-mode)>footer{display:none}#app:not(.academy-mode) #editor-tools{display:none}#app:not(.academy-mode) #tabs{height:30px;min-height:30px}#app:not(.academy-mode) #tabs button{padding:5px 10px;font-size:11px}
@@ -15,3 +15,28 @@ body.focus-editor #app:not(.academy-mode)>header{display:none}body.focus-editor 
 @media(max-width:360px){.path-caption{font-size:11px;max-width:120px}.path-stop{width:120px}}
 
 .path-caption{background:var(--bg);padding:2px 5px;border-radius:5px}.path-stop small{background:var(--bg);padding:1px 4px;border-radius:4px}
+
+/* Viewport-contained editor panels and one compact keyboard accessory row. */
+#app:not(.academy-mode) #execution-tools{position:fixed;left:auto;right:10px;top:auto;bottom:64px;width:min(310px,calc(100vw - 20px));height:auto;max-height:calc(min(var(--cb-vh,100dvh),100dvh) - 80px);overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px;border-radius:20px;z-index:110}
+#app:not(.academy-mode) #execution-tools[hidden]{display:none}
+#app:not(.academy-mode) #execution-tools button{position:static!important;min-width:0;width:100%;white-space:normal;min-height:44px;border-radius:12px}
+#app:not(.academy-mode) #execution-tools button:last-child{grid-column:1/-1}
+#app:not(.academy-mode) #menu{position:fixed;top:40px;right:8px;left:auto;width:min(310px,calc(100vw - 16px));min-width:0;max-height:calc(min(var(--cb-vh,100dvh),100dvh) - 48px);z-index:120}
+#drawer-close{display:none}
+@media(max-width:700px){#app:not(.academy-mode) #sidebar.visible{position:fixed;inset:0;width:100%;height:min(var(--cb-vh,100dvh),100dvh);padding:16px;z-index:130;border:0;box-shadow:0 12px 40px #0008}#drawer-close{display:block;align-self:flex-end;min-height:40px;margin-bottom:8px;border:1px solid var(--border);background:var(--raised)}#sidebar .sidebar-foot{margin-top:12px}}
+.editor-typing #app:not(.academy-mode) #edit-actions{display:none!important}
+.editor-typing #app:not(.academy-mode) #symbols{display:flex!important;align-items:center;gap:4px;height:38px;min-height:38px;padding:0 6px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain}
+#symbols::-webkit-scrollbar{display:none}
+.editor-typing #symbols button{flex:0 0 auto;min-width:36px;min-height:32px;height:32px;padding:3px 8px;border-radius:7px;background:var(--raised);font:600 16px JetBrains,monospace}
+.editor-typing #app:not(.academy-mode) #execution-dock{bottom:46px}
+.editor-typing #app:not(.academy-mode) #execution-tools{bottom:100px}
+.node-map .path-node{position:relative;background:linear-gradient(155deg,var(--raised),var(--surface));border-width:3px;box-shadow:inset 0 2px 0 #ffffff20,0 6px 0 #080c1480,0 9px 18px #0003;transition:transform .2s,box-shadow .2s}
+.node-map .path-node.next{background:linear-gradient(150deg,#dcffad,var(--accent) 65%,#87ba40);box-shadow:inset 0 2px 0 #fff6,0 6px 0 #60952f,0 0 22px #b9ff6630}
+.node-map .path-node.done{background:linear-gradient(150deg,#ffe9a4,#eac668 65%,#bd9237);box-shadow:inset 0 2px 0 #fff7,0 6px 0 #98772c,0 0 22px #eac66830}
+.node-map .path-node:not(:disabled):active{transform:translateY(4px)}
+.path-link.mastered{stroke:#eac668;filter:drop-shadow(0 0 4px #eac66888)}
+@media(prefers-reduced-motion:no-preference){html:not([data-motion=off]) .path-node.next{animation:cbNodeBreathe 3s ease-in-out infinite}html:not([data-motion=off]) .path-node.just-completed{animation:cbNodeFill 1.1s ease-out both}html:not([data-motion=off]) .path-link.just-completed{stroke-dasharray:1;stroke-dashoffset:1;animation:cbLinkFill 1.1s ease-out forwards,cbLinkGlow 2.6s ease-in-out 1.1s 2}}
+@keyframes cbNodeBreathe{50%{box-shadow:inset 0 2px 0 #fff6,0 6px 0 #60952f,0 0 28px #b9ff6660}}
+@keyframes cbNodeFill{0%{clip-path:circle(12%);transform:scale(.8)}70%{clip-path:circle(75%);transform:scale(1.12)}100%{clip-path:circle(80%);transform:scale(1)}}
+@keyframes cbLinkFill{to{stroke-dashoffset:0}}
+@keyframes cbLinkGlow{50%{filter:drop-shadow(0 0 9px #ffdb79);stroke:#fff0b1}}

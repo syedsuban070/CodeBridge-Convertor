@@ -22,6 +22,13 @@
  area.addEventListener('touchend',e=>{if(e.touches.length<2)pinch=null;});area.addEventListener('touchcancel',()=>pinch=null);
  // Preserve focus when tapping edit commands so the software keyboard stays open.
  $('edit-actions').addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault();});
+ const symbols=$('symbols');symbols.setAttribute('aria-label','Coding symbols');
+ symbols.replaceChildren();
+ for(const text of ['    ','{','}','(',')','[',']',';',':','"',"'",'<','>','=','+','-','*','/','\\','_','&','|','!','%','#',',','.','?']){const b=document.createElement('button');b.textContent=text==='    '?'⇥':text;b.setAttribute('aria-label',text==='    '?'Indent':`Insert ${text}`);b.dataset.insert=text;b.onclick=()=>CBEditor.insert(text);symbols.append(b);}
+ for(const [label,command] of [['↶','undo'],['↷','redo']]){const b=document.createElement('button');b.textContent=label;b.setAttribute('aria-label',command);b.onclick=()=>{editor.focus();editor.execCommand(command);};symbols.append(b);}
+ symbols.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault();});
+ const close=document.createElement('button');close.id='drawer-close';close.textContent='Close files ✕';close.onclick=()=>$('sidebar').classList.remove('visible');$('sidebar').prepend(close);
+ const previousBack=window.codebridgeBack;window.codebridgeBack=()=>{if($('sidebar').classList.contains('visible')){$('sidebar').classList.remove('visible');return true;}if(!$('menu').hidden){$('menu').hidden=true;return true;}return previousBack();};
  // Locally selected, non-repeating dialogue; never diagnoses a compile error as a segfault.
  const status=document.createElement('p');status.id='bit-status';status.setAttribute('role','status');status.dataset.noTranslate='';$('execution-dock').before(status);
  function reaction(kind){const pool=locales[locale].dialogue[kind]||locales[locale].dialogue.idle;const key=locale+':'+kind;let i=Math.floor(Math.random()*pool.length);if(i===lastLines[key])i=(i+1)%pool.length;lastLines[key]=i;status.textContent=pool[i];status.dataset.reaction=kind;window.CBFeedback?.mood(kind==='success'||kind==='bossPass'?'celebrate':kind==='memoryWarning'?'thinking':'idle',900);}

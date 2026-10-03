@@ -93,7 +93,7 @@ jobs:
             adb exec-out screencap -p > android-screen.png
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.2-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.3-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.7.2-Android.apk
+          path: CodeBridge-0.7.3-Android.apk
           if-no-files-found: error
   publish:
     needs: [android, validation]
@@ -124,10 +124,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.7.2-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.7.3-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.2 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.3 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
           fi
