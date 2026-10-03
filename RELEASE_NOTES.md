@@ -25,3 +25,6 @@ Uses the same cached beta signing certificate as 0.7.2–0.7.4. Build checks cov
 ## v0.8 development — M1
 
 Unified overlay lifecycle and app Back routing; keyboard-aware, preview-driven two-tap project creation, inline validation, 48px controls, larger text and pseudo-locale coverage. All 32 visual configurations and original project/editor regressions pass. See docs/V0_8_AUDIT.md and docs/V0_8_M1.md for scope and measurement assumptions.
+
+### v0.8 M2 — editor and recovery
+Upgraded the existing local CodeMirror editor with lazy-loaded commands and folding, language snippets and identifiers, safe find/replace, per-file undo histories, real diagnostic gutters and squiggles, indentation guides, whitespace settings, mobile symbol arrows and crash recovery journaling. Safe formatting preserves tokens; Python formatting trims trailing whitespace outside strings.

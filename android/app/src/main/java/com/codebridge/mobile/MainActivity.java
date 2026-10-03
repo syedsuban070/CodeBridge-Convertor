@@ -74,6 +74,7 @@ public final class MainActivity extends Activity {
         new java.io.File(getFilesDir(),"bit-qwen-0.5b-q4.gguf").delete();
         root.addView(editor,new FrameLayout.LayoutParams(-1,-1));setContentView(root);editor.loadUrl(ORIGIN);
     }
+    @Override protected void onPause(){if(editor!=null)editor.evaluateJavascript("window.CBProjects?.flush()",null);super.onPause();}
     @Override protected void onDestroy(){terminal.close();editor.destroy();super.onDestroy();}
     @Override public void onBackPressed() {
         editor.evaluateJavascript("window.codebridgeBack ? window.codebridgeBack() : false", result -> {

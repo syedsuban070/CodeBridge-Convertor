@@ -18,6 +18,7 @@ jobs:
       - run: python scripts/prepare_upgrade.py && python scripts/prepare_game.py && python scripts/prepare_assets.py && python scripts/prepare_power.py
       - run: npx playwright install --with-deps chromium
       - run: node tests/projects.test.cjs && node tests/learning.test.cjs && node tests/upgrade.test.cjs && npm test
+      - run: node tests/v08-editor.test.cjs && node tests/v08-editor-ui.test.cjs
       - run: node tests/v08-overlays.test.cjs
       - run: node tests/projects-ui.test.cjs && node tests/upgrade-ui.test.cjs
       - uses: actions/upload-artifact@v4
