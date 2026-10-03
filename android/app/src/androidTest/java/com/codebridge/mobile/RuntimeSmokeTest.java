@@ -10,7 +10,7 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
     private void waitFor(String condition,int seconds)throws Exception{for(int i=0;i<seconds;i++){if("true".equals(js(condition)))return;Thread.sleep(1000);}fail("Timed out: "+condition+" status="+js("document.getElementById('status').textContent")+" log="+js("document.getElementById('diagnostics').textContent"));}
     private void setCode(String name,String source)throws Exception{js("project={name:'Test',active:"+JSONObject.quote(name)+",files:[{name:"+JSONObject.quote(name)+",content:"+JSONObject.quote(source)+"}],breakpoints:{}};loading=true;editor.setValue(project.files[0].content);loading=false;select(project.active);true");}
     public void testOfflineRuntimes()throws Exception{
-        getActivity();waitFor("typeof execute==='function'",30);
+        getActivity();waitFor("typeof execute==='function' && typeof CBExperience==='object' && typeof CBUpgrade==='object' && !document.documentElement.classList.contains('booting')",30);
         js("CodeBridgeAcademy.navigate('code');CBSettings.set({theme:'forest',wrap:true});true");
         assertTrue(js("editor.getOption('lineWrapping')").contains("true"));
         setCode("main.cpp","#include <iostream>\n#include <vector>\nint main(){std::vector<int> n={2,3,4};for(auto x:n)std::cout<<x<<\" \";}");
