@@ -94,7 +94,7 @@ def execute(source, language, stdin, native_dir, work_dir, abi, mode, callback):
         lib=root/'sysroot/usr/lib'/triple/'26'
         command=[native/'liblld8.so','-flavor','gnu','-shared','--no-undefined','-o',program,lib/'crtbegin_so.o',obj,'-L'+str(lib)]
         if ext=='cpp':command+=[native/'libc++_shared.so']
-        command+=['-lc','-lm','-ldl',root/'builtins.a',lib/'crtend_so.o']
+        command+=['--exclude-libs=libgcc.a','--start-group',root/'builtins.a',root/'libgcc.a','-lc','-lm','-ldl','--end-group',lib/'crtend_so.o']
         rc=process(command)
         if rc or mode=='build':return rc
         program.chmod(0o400)

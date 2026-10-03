@@ -7,6 +7,8 @@ with zipfile.ZipFile(p) as z:
   for lib in ['libclang8.so','liblld8.so','libcb_runner.so','libpython3.12.so']:
    assert f'lib/{abi}/{lib}' in names,(abi,lib)
   assert f'assets/toolchain-{abi}.zip' in names
+  for lib in ['libclang8.so','liblld8.so']:
+   assert z.getinfo(f'lib/{abi}/{lib}').file_size < 150_000_000, (abi,lib,'debug bloat')
  for asset in ['animations/bit.riv','fonts/NotoNastaliqUrdu.ttf','fonts/NotoSansSC.ttf','i18n/en.json','i18n/ur.json','i18n/zh-Hans.json']:
   assert 'assets/flutter_assets/assets/'+asset in names,asset
  # Binary Android manifest string-pool still contains permission name as ASCII or UTF-16.

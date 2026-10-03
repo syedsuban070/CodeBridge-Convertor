@@ -34,7 +34,7 @@ class RuntimeTest {
    }
    execute("python","import sys\nassert sys.version_info[:2] == (3,12)\na=int(input())\nb=int(input())\nprint(a+b)","19\n23\n","42")
    execute("c","#include <stdio.h>\n#if __clang_major__ != 8\n#error Wrong clang\n#endif\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);printf(\"%d\\n\",a+b);return 0;}","19 23\n","42")
-   execute("cpp","#include <iostream>\n#include <optional>\n#include <vector>\nint main(){std::optional<int> x=42;std::vector<int> v{*x};std::cout<<v[0]<<std::endl;return 0;}","","42")
+   execute("cpp","#include <iostream>\n#include <optional>\n#include <vector>\nint main(){std::optional<int> x=42;std::vector<int> v{*x};try { throw v[0]; } catch (int result) { std::cout<<result<<std::endl; } return 0;}","","42")
   }finally{context.unbindService(connection)}
  }
 }

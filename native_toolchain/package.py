@@ -15,7 +15,12 @@ for abi,triple,arch in [('arm64-v8a','aarch64-linux-android','aarch64'),('x86_64
         if hashlib.sha256((src/name).read_bytes()).hexdigest()!=digest: raise RuntimeError(name+' checksum mismatch')
         shutil.copy2(src/name,libs/name)
         # Strip only the packaged copy; retain the verified source artifact.
-        subprocess.run([str(tool/"bin/llvm-strip"),"--strip-unneeded",str(libs/name)],check=True)
+        subprocess.run([str(tool/"bin/llvm-strip"),"--strip-debug","--strip-unneeded",str(libs/name)],check=True)
+        sections=subprocess.check_output([str(tool/'bin/llvm-readelf'),'-SW',str(libs/name)],text=True)
+        if '.debug_' in sections or '.zdebug_' in sections:
+            raise RuntimeError(f'Debug sections remain in {abi}/{name}')
+        if (libs/name).stat().st_size > 150_000_000:
+            raise RuntimeError(f'Oversized packaged compiler: {abi}/{name}')
         print(f"Packaged {abi}/{name}: {(libs/name).stat().st_size} bytes",flush=True)
     cpp=a.ndk/'sources/cxx-stl/llvm-libc++/libs'/abi/'libc++_shared.so'
     shutil.copy2(cpp,libs/cpp.name)
@@ -33,6 +38,10 @@ for abi,triple,arch in [('arm64-v8a','aarch64-linux-android','aarch64'),('x86_64
         builtins=list((tool/'lib64/clang').glob(f'*/lib/linux/libclang_rt.builtins-{arch}-android.a'))
         if len(builtins)!=1: raise RuntimeError('Expected one builtins library: '+str(builtins))
         z.write(builtins[0],'builtins.a')
+        # NDK r20 uses libgcc's unwinder for both supported 64-bit ABIs.
+        gcc=tool/'lib/gcc'/triple/'4.9.x/libgcc.a'
+        if not gcc.is_file(): raise RuntimeError('Missing NDK unwinder: '+str(gcc))
+        z.write(gcc,'libgcc.a')
         z.write(src/'LLVM-LICENSE.txt','LLVM-LICENSE.txt')
         for name in ['NOTICE','NOTICE.toolchain']:
             if (a.ndk/name).exists(): z.write(a.ndk/name,name)
