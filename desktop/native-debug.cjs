@@ -9,7 +9,7 @@ async function start(config,emit){
  if(!compiler||!debuggerPath)throw new Error('Native debugging needs Clang/G++ and GDB/LLDB installed. The bundled offline Run command does not need these tools.');
  folder=await fs.mkdtemp(path.join(os.tmpdir(),'codebridge-debug-'));
  for(const file of config.files){if(file.name.includes('..')||path.isAbsolute(file.name))throw new Error('Invalid file path');const dest=path.join(folder,file.name);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.writeFile(dest,file.content);}
- const sources=config.files.filter(f=>/\.(c|cc|cpp|cxx)$/.test(f.name)).map(f=>f.name);
+ const sources=config.files.filter(f=>/\.(c|cc|cpp|cxx)$/.test(f.name)&&(config.buildScope!=='file'||f.name===config.entry)).map(f=>f.name);
  if(!sources.length)throw new Error('No C/C++ source files.');
  const exe=path.join(folder,process.platform==='win32'?'program.exe':'program');
  const sourceArgs=sources.flatMap(name=>['-x',name.endsWith('.c')?'c':'c++',name]);

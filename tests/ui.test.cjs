@@ -3,7 +3,7 @@ const {serve}=require('../desktop/server.cjs');
 (async()=>{const hosted=await serve(path.resolve(__dirname,'../app'));const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||undefined,headless:true,args:['--no-sandbox']});try{
  const page=await browser.newPage({viewport:{width:1280,height:850}});global.testPage=page;const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(hosted.url);await page.waitForFunction(()=>typeof execute==='function');
- await page.click('[data-view=code]');
+ await page.click('[data-view=code]');await page.click('#open-editor');
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/3 7 19 42/);
  await page.evaluate(()=>{project.files=[{name:'main.py',content:'print(6 * 7)\n'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);
@@ -49,7 +49,7 @@ const {serve}=require('../desktop/server.cjs');
  await page.screenshot({path:path.resolve(__dirname,'../.artifacts/android-settings.png')});
  await page.click('#settings-close');await page.reload();await page.waitForFunction(()=>!!window.CBExperience);
  assert.equal(await page.evaluate(()=>CBSettings.get().theme),'paper');assert.equal(await page.evaluate(()=>CBSettings.get().indent),2);assert.equal(await page.evaluate(()=>editor.getOption('lineWrapping')),true);
- await page.click('[data-view=code]');assert.equal(await page.locator('#console').isVisible(),false);assert.equal(await page.locator('#editor-area').isVisible(),true);
+ await page.click('[data-view=code]');await page.click('#open-editor');assert.equal(await page.locator('#console').isVisible(),false);assert.equal(await page.locator('#editor-area').isVisible(),true);
  await page.click('#tools-toggle');await page.click('#input-open');assert.equal(await page.locator('#editor-area').isVisible(),false);await page.fill('#stdin','12 30');await page.click('#back-editor');
  await page.evaluate(()=>{project.files=[{name:'main.py',content:'a,b=map(int,input().split())\nprint(a+b)'}];project.active='main.py';loading=true;editor.setValue(current().content);loading=false;select('main.py');});
  await page.click('#run');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Completed successfully',{},{timeout:120000});assert.match(await page.textContent('#output'),/42/);assert.equal(await page.locator('#editor-area').isVisible(),false);assert.equal(await page.locator('#console').isVisible(),true);
@@ -61,7 +61,7 @@ const {serve}=require('../desktop/server.cjs');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.click('#settings-open');await page.click('#reset-settings');await page.click('#settings-close');
 
- await page.click('[data-view=code]');const oldSize=await page.evaluate(()=>CBSettings.get().fontSize);await page.click('#menu-toggle');await page.click('#zoom-in');assert.ok(await page.evaluate(()=>CBSettings.get().fontSize)>oldSize);await page.click('#menu-toggle');await page.click('#zoom-out');
+ await page.click('[data-view=code]');await page.click('#open-editor');const oldSize=await page.evaluate(()=>CBSettings.get().fontSize);await page.click('#menu-toggle');await page.click('#zoom-in');assert.ok(await page.evaluate(()=>CBSettings.get().fontSize)>oldSize);await page.click('#menu-toggle');await page.click('#zoom-out');
  await page.evaluate(()=>editor.setValue('pri'));await page.click('#menu-toggle');await page.click('#suggest-code');assert.match(await page.textContent('.CodeMirror-hints'),/print/);await page.keyboard.press('Escape');
  await page.evaluate(()=>{CBSettings.set({roast:true});project.files=[{name:'bad.py',content:'print(1/0)'}];project.active='bad.py';loading=true;editor.setValue(current().content);loading=false;select('bad.py');});
  await page.click('#run');await page.waitForFunction(()=>!document.querySelector('#bit-reaction').hidden,{},{timeout:120000});await page.click('#bit-error-button');assert.match(await page.textContent('#bit-title'),/Division by zero/);assert.equal(await page.locator('#bit-roast').isVisible(),true);assert.equal(await page.locator('#bit-ask').isEnabled(),true);

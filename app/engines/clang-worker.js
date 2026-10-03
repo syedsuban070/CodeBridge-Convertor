@@ -1,4 +1,4 @@
-importScripts('../vendor/clang/shared-adapted.js','terminal-input.js');
+importScripts('../vendor/clang/shared-adapted.js','terminal-input.js','../projects/model.js');
 const send = (event, data={}) => postMessage({event, ...data});
 const strip = text => text.replace(/\x1b\[[0-9;]*m/g, '');
 self.onmessage = async ({data}) => {
@@ -27,8 +27,8 @@ self.onmessage = async ({data}) => {
       for(const part of parts) { dir=dir ? dir+'/'+part:part; if(!directories.has(dir)){api.memfs.addDirectory(dir);directories.add(dir);} }
       api.memfs.addFile(file.name,new TextEncoder().encode(file.content));
     }
-    const units=data.files.filter(f=>/\.(c|cc|cpp|cxx)$/.test(f.name));
-    if(data.files.some(f=>f.content.includes('cJSON.h'))){api.memfs.addFile('__cb_cjson.c',jsonSource);units.push({name:'__cb_cjson.c',content:jsonSource});}
+    const units=CBProjectsModel.units(data.files,data.entry,data.buildScope||'project');
+    if([...units,...data.files.filter(f=>/\.(h|hpp)$/.test(f.name))].some(f=>f.content.includes('cJSON.h'))){api.memfs.addFile('__cb_cjson.c',jsonSource);units.push({name:'__cb_cjson.c',content:jsonSource});}
     if(!units.length) throw new Error('Project has no C or C++ source files.');
     if(data.inputBuffer||data.nativeInput){
       const source='#include <stdio.h>\n__attribute__((constructor)) static void cb_terminal_init(void){setvbuf(stdout,0,_IONBF,0);setvbuf(stderr,0,_IONBF,0);}';

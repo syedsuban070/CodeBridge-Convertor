@@ -29,6 +29,8 @@ jobs:
       - run: node tests/terminal.test.cjs
       - run: node tests/learning.test.cjs
       - run: node tests/game.test.cjs
+      - run: node tests/projects.test.cjs
+      - run: node tests/projects-ui.test.cjs
       - run: node tests/upgrade.test.cjs
       - run: node tests/upgrade-ui.test.cjs
       - run: node tests/game-ui.test.cjs
@@ -89,6 +91,7 @@ jobs:
             curl --fail --location --retry 3 -o previous.apk https://github.com/syedsuban070/CodeBridge-Convertor/releases/download/v0.7.2-beta.16/CodeBridge-0.7.2-Android.apk
             "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs previous.apk
             "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+            adb shell settings put secure show_ime_with_hard_keyboard 1
             adb install previous.apk
             adb shell am start -n com.codebridge.mobile/.MainActivity
             sleep 3
@@ -108,7 +111,7 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 android/app/build/outputs/apk/debug/app-debug.apk
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.4-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.5-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -120,7 +123,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.7.4-Android.apk
+          path: CodeBridge-0.7.5-Android.apk
           if-no-files-found: error
   publish:
     needs: [android, validation]
@@ -139,10 +142,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.7.4-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.7.5-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.4 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.5 — project studio and guided learning paths" --notes-file RELEASE_NOTES.md --prerelease
           fi

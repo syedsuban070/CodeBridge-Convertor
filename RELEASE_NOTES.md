@@ -1,13 +1,23 @@
-# CodeBridge 0.7.4
+# CodeBridge 0.7.5
 
-Keeps the original 0.7 studio and improves the editor and learning path.
+## Project studio
 
-- Tools and More actions stay inside the screen. Project files open as a full-height mobile panel with a Close button.
-- A horizontally scrollable syntax bar appears above the coding keyboard: brackets, semicolon, quotes, operators, indent and undo/redo. Symbol taps preserve editor focus and bracket pairing.
-- Larger Orbitron splash title with bold animated code strokes.
-- Adaptive Android launcher icon fills the launcher mask with a dark background and lime code mark.
-- Dimensional learning nodes, softly glowing mastered connections, and a node-fill / line-trace animation on return from a newly completed mission. Motion settings are respected.
+Code in the bottom navigation opens a dedicated project library. Create separate C, C++ and Python projects, choose a language standard and optimization level, manage files, import, duplicate, rename, export and share without hunting through editor menus. The shipped runtimes are Clang 8 and Python 3.12; no network is required to run code.
 
-This uses the cached 0.7.2 beta signing key. Export projects and learning progress before replacing older beta installations if Android reports a signing conflict.
+Existing workspace files migrate automatically. Each project saves independently with a recoverable previous snapshot. Back up all projects as .cbworkspace or export one .cbproj; import adds projects without replacing existing work.
 
-Installation compatibility: explicit APK signature schemes v1, v2 and v3; legacy launcher-icon fallback. Build verification checks signatures, alignment, and an Android 16 update from 0.7.2 with retained app data before publishing.
+## Compilation and saving fixes
+
+Run current file is the default: another file containing main() no longer gets linked into it. Select Link project sources for genuine multi-file C/C++ programs with one main(). Headers and Python helper modules remain available in the project. Compiler choices are saved per project.
+
+Source exports use .c, .cpp and .py filename/MIME handling; Android corrects an added .txt/.bin extension when the document provider supports rename. Android Share source/project uses a read-only granted content URI. Save cancellation leaves the local project intact.
+
+## Learning and editor
+
+Local Nunito typography, concise labels, colored unit banners, progress counters, raised star/code/challenge nodes, a clear Start here marker and completed-connection glow. CodeBridge artwork and dark palettes remain. Motion settings are respected.
+
+The scrollable bracket/operator/semicolon/quote bar follows Android keyboard visibility as well as browser viewport resizing, preserves code focus, and works with bracket pairing. A compact project/saved indicator and visible source export button are in the editor.
+
+## Installation
+
+Uses the same cached beta signing certificate as 0.7.2–0.7.4. Build checks cover signatures, alignment, Android 16 installation over 0.7.2 with retained private data, real C/C++ and Python execution, and project regressions before publishing. Export a backup outside the app to protect local work.

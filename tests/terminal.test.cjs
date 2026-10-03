@@ -1,7 +1,7 @@
 const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path');
 const {serve}=require('../desktop/server.cjs');
 (async()=>{const hosted=await serve(path.resolve(__dirname,'../app'));const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||undefined,headless:true,args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:740}});try{
- await page.goto(hosted.url);await page.waitForFunction(()=>!!window.CBTerminal);await page.click('[data-view=code]');
+ await page.goto(hosted.url);await page.waitForFunction(()=>!!window.CBTerminal);await page.click('[data-view=code]');await page.click('#open-editor');
  async function code(name,content){await page.evaluate(({name,content})=>{project={name:'Terminal test',active:name,files:[{name,content}],breakpoints:{}};loading=true;editor.setValue(content);loading=false;select(name);document.getElementById('stdin').value='';CBSettings.set({roast:false});},{name,content});}
  async function waiting(){await page.waitForFunction(()=>CBTerminal.waiting,{},{timeout:120000});}
  async function send(text){await page.fill('#terminal-line',text);await page.press('#terminal-line','Enter');}
