@@ -91,6 +91,11 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         waitFor("document.body.classList.contains('editor-typing') && getComputedStyle(document.getElementById('symbols')).display==='flex'",30);
         assertTrue(js("document.getElementById('symbols').scrollWidth>document.getElementById('symbols').clientWidth").contains("true"));
         assertEquals("Contenteditable input must be recognized on Android","\"contenteditable\"",js("editor.getOption('inputStyle')"));
+        waitFor("AndroidFiles.isKeyboardVisible()",10);Thread.sleep(500);
+        int[] visibleBounds=new int[2];getInstrumentation().runOnMainSync(()->{android.view.View view=getActivity().getEditorForTesting();int[] location=new int[2];view.getLocationOnScreen(location);visibleBounds[0]=location[1];visibleBounds[1]=getActivity().getWindow().getDecorView().getHeight()-view.getRootWindowInsets().getInsets(android.view.WindowInsets.Type.ime()).bottom;});
+        double symbolBottom=Double.parseDouble(js("document.getElementById('symbols').getBoundingClientRect().bottom*devicePixelRatio"))+visibleBounds[0];
+        assertTrue("Syntax bar is covered by keyboard: bottom="+symbolBottom+" keyboardTop="+visibleBounds[1],symbolBottom<=visibleBounds[1]+3);
+
         try(android.os.ParcelFileDescriptor capture=getInstrumentation().getUiAutomation().executeShellCommand("screencap -p /sdcard/Download/codebridge-keyboard.png");java.io.FileInputStream stream=new java.io.FileInputStream(capture.getFileDescriptor())){while(stream.read()!=-1){}}
 
         js("editor.setValue('');CBEditor.insert('{');CBEditor.insert(';');true");assertTrue(js("editor.getValue()").contains("{;}"));

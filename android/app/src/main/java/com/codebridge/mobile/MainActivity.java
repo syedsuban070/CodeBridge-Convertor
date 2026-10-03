@@ -38,12 +38,14 @@ public final class MainActivity extends Activity {
     private static final String ORIGIN="https://codebridge.local/";
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        if(Build.VERSION.SDK_INT>=30)getWindow().setDecorFitsSystemWindows(false);
         FrameLayout root=new FrameLayout(this);root.setBackgroundColor(Color.rgb(13,20,35));
         root.setOnApplyWindowInsetsListener((view,insets)->{
             if(Build.VERSION.SDK_INT>=30){
                 Insets bars=insets.getInsets(WindowInsets.Type.systemBars());
-                view.setPadding(bars.left,bars.top,bars.right,bars.bottom);
                 boolean visible=insets.isVisible(WindowInsets.Type.ime());
+                int bottom=Math.max(bars.bottom,insets.getInsets(WindowInsets.Type.ime()).bottom);
+                view.setPadding(bars.left,bars.top,bars.right,bottom);
                 if(visible!=keyboardVisible){keyboardVisible=visible;if(editor!=null)editor.post(()->editor.evaluateJavascript("window.CBExperience?.nativeKeyboard("+visible+")",null));}
             }else view.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getStableInsetBottom());
             return insets;
