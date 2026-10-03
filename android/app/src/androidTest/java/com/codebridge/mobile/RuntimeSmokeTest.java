@@ -86,6 +86,9 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         getActivity().runOnUiThread(()->{getActivity().getEditorForTesting().requestFocus();android.view.inputmethod.InputMethodManager ime=(android.view.inputmethod.InputMethodManager)getActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);ime.showSoftInput(getActivity().getEditorForTesting(),android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);});
         waitFor("document.body.classList.contains('editor-typing') && getComputedStyle(document.getElementById('symbols')).display==='flex'",30);
         assertTrue(js("document.getElementById('symbols').scrollWidth>document.getElementById('symbols').clientWidth").contains("true"));
+        assertEquals("Contenteditable input must be recognized on Android","\"contenteditable\"",js("editor.getOption('inputStyle')"));
+        try(android.os.ParcelFileDescriptor capture=getInstrumentation().getUiAutomation().executeShellCommand("screencap -p /sdcard/Download/codebridge-keyboard.png");java.io.FileInputStream stream=new java.io.FileInputStream(capture.getFileDescriptor())){while(stream.read()!=-1){}}
+
         js("editor.setValue('');CBEditor.insert('{');CBEditor.insert(';');true");assertTrue(js("editor.getValue()").contains("{;}"));
         getActivity().runOnUiThread(()->{android.view.inputmethod.InputMethodManager ime=(android.view.inputmethod.InputMethodManager)getActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);ime.hideSoftInputFromWindow(getActivity().getEditorForTesting().getWindowToken(),0);});
     }
