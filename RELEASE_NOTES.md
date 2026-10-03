@@ -31,3 +31,6 @@ Upgraded the existing local CodeMirror editor with lazy-loaded commands and fold
 
 ### v0.8 M3 — Bit and effects
 Layered SVG Bit replaces sprite sheets, with eleven interruptible/queued states, eye tracking, speech, adaptive transform/opacity effects and Mascot Lab. Reduced-motion uses static feedback. Cosmetic ownership is retained.
+
+### v0.8 M4 — identity
+Matching Bit-inspired launcher, in-app logo and splash. Adaptive foreground/background and Android 13 monochrome layers include round resources. Splash and path effects now animate transform/opacity only.
