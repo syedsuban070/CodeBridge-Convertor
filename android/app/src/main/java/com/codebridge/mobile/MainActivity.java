@@ -43,8 +43,8 @@ public final class MainActivity extends Activity {
             if(Build.VERSION.SDK_INT>=30){
                 Insets bars=insets.getInsets(WindowInsets.Type.systemBars());
                 view.setPadding(bars.left,bars.top,bars.right,bars.bottom);
-                keyboardVisible=insets.isVisible(WindowInsets.Type.ime());
-                if(editor!=null)editor.post(()->editor.evaluateJavascript("window.CBExperience?.nativeKeyboard("+keyboardVisible+")",null));
+                boolean visible=insets.isVisible(WindowInsets.Type.ime());
+                if(visible!=keyboardVisible){keyboardVisible=visible;if(editor!=null)editor.post(()->editor.evaluateJavascript("window.CBExperience?.nativeKeyboard("+visible+")",null));}
             }else view.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getStableInsetBottom());
             return insets;
         });

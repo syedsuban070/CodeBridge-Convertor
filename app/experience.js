@@ -28,7 +28,7 @@ let fullHeight=innerHeight;let viewportRaf=0,nativeIme=false;
 function nativeKeyboard(open){nativeIme=!!open;keyboard();}
 function keyboard(){
  cancelAnimationFrame(viewportRaf);viewportRaf=requestAnimationFrame(()=>{
-  const height=window.visualViewport?.height||innerHeight;const focused=/^(TEXTAREA|INPUT)$/.test(document.activeElement?.tagName||'');
+  const height=window.visualViewport?.height||innerHeight;const input=document.activeElement;const focused=editor.hasFocus()||input?.isContentEditable||/^(TEXTAREA|INPUT)$/.test(input?.tagName||'');
   if(!focused)fullHeight=Math.max(fullHeight,innerHeight,height);
   const open=focused&&(nativeIme||fullHeight-height>100);
   document.body.classList.toggle('keyboard-open',open);document.body.classList.toggle('editor-typing',open&&editor.hasFocus());

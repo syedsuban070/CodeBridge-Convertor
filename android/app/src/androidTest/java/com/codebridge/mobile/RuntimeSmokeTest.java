@@ -82,6 +82,7 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         assertTrue(js("document.getElementById('output').textContent").contains("SECOND"));
         assertFalse(js("document.getElementById('diagnostics').textContent").contains("duplicate symbol"));
         js("document.getElementById('back-editor').click();editor.focus();true");
+        waitFor("editor.hasFocus()",10);
         getActivity().runOnUiThread(()->{getActivity().getEditorForTesting().requestFocus();android.view.inputmethod.InputMethodManager ime=(android.view.inputmethod.InputMethodManager)getActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);ime.showSoftInput(getActivity().getEditorForTesting(),android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);});
         waitFor("document.body.classList.contains('editor-typing') && getComputedStyle(document.getElementById('symbols')).display==='flex'",30);
         assertTrue(js("document.getElementById('symbols').scrollWidth>document.getElementById('symbols').clientWidth").contains("true"));
