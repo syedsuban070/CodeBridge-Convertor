@@ -16,7 +16,7 @@ for abi,triple,arch in [('arm64-v8a','aarch64-linux-android','aarch64'),('x86_64
         shutil.copy2(src/name,libs/name)
         # Strip only the packaged copy; retain the verified source artifact.
         subprocess.run([str(tool/"bin/llvm-strip"),"--strip-debug","--strip-unneeded",str(libs/name)],check=True)
-        sections=subprocess.check_output([str(tool/'bin/llvm-readelf'),'-SW',str(libs/name)],text=True)
+        sections=subprocess.check_output(['readelf','-SW',str(libs/name)],text=True)
         if '.debug_' in sections or '.zdebug_' in sections:
             raise RuntimeError(f'Debug sections remain in {abi}/{name}')
         if (libs/name).stat().st_size > 150_000_000:
