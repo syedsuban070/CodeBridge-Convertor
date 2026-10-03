@@ -7,7 +7,7 @@ import org.json.JSONObject;
 public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<MainActivity>{
     public RuntimeSmokeTest(){super(MainActivity.class);}
     private String js(String script)throws Exception{CountDownLatch done=new CountDownLatch(1);AtomicReference<String> value=new AtomicReference<>();getActivity().runOnUiThread(()->getActivity().getEditorForTesting().evaluateJavascript(script,v->{value.set(v);done.countDown();}));assertTrue("JavaScript callback timed out",done.await(10,TimeUnit.SECONDS));return value.get();}
-    private void waitFor(String condition,int seconds)throws Exception{for(int i=0;i<seconds;i++){if("true".equals(js(condition)))return;Thread.sleep(1000);}fail("Timed out: "+condition+" status="+js("document.getElementById('status').textContent")+" log="+js("document.getElementById('diagnostics').textContent"));}
+    private void waitFor(String condition,int seconds)throws Exception{for(int i=0;i<seconds;i++){if("true".equals(js(condition)))return;Thread.sleep(1000);}fail("Timed out: "+condition+" status="+js("document.getElementById('status').textContent")+" log="+js("document.getElementById('diagnostics').textContent")+" keyboard="+js("JSON.stringify({classes:document.body.className,focus:editor.hasFocus(),tag:document.activeElement.tagName,editable:document.activeElement.isContentEditable,ime:AndroidFiles.isKeyboardVisible(),height:innerHeight,viewport:visualViewport.height})"));}
     private void setCode(String name,String source)throws Exception{js("project={name:'Test',active:"+JSONObject.quote(name)+",files:[{name:"+JSONObject.quote(name)+",content:"+JSONObject.quote(source)+"}],breakpoints:{}};loading=true;editor.setValue(project.files[0].content);loading=false;select(project.active);true");}
     public void testOfflineRuntimes()throws Exception{
         getActivity();waitFor("typeof execute==='function' && typeof CBExperience==='object' && typeof CBUpgrade==='object' && typeof CBProjects==='object' && !document.documentElement.classList.contains('booting')",30);
@@ -83,7 +83,11 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         assertFalse(js("document.getElementById('diagnostics').textContent").contains("duplicate symbol"));
         js("document.getElementById('back-editor').click();editor.focus();true");
         waitFor("editor.hasFocus()",10);
-        getActivity().runOnUiThread(()->{getActivity().getEditorForTesting().requestFocus();android.view.inputmethod.InputMethodManager ime=(android.view.inputmethod.InputMethodManager)getActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);ime.showSoftInput(getActivity().getEditorForTesting(),android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);});
+        // A real tap establishes WebView's editable input connection, unlike focusing the WebView itself.
+        JSONObject point=new JSONObject(js("(()=>{const r=editor.getWrapperElement().getBoundingClientRect();return {x:(r.left+80)*devicePixelRatio,y:(r.top+30)*devicePixelRatio};})()"));
+        int[] origin=new int[2];getInstrumentation().runOnMainSync(()->getActivity().getEditorForTesting().getLocationOnScreen(origin));
+        float tapX=origin[0]+(float)point.getDouble("x"),tapY=origin[1]+(float)point.getDouble("y");long down=android.os.SystemClock.uptimeMillis();
+        android.view.MotionEvent press=android.view.MotionEvent.obtain(down,down,android.view.MotionEvent.ACTION_DOWN,tapX,tapY,0),release=android.view.MotionEvent.obtain(down,down+80,android.view.MotionEvent.ACTION_UP,tapX,tapY,0);getInstrumentation().sendPointerSync(press);getInstrumentation().sendPointerSync(release);press.recycle();release.recycle();
         waitFor("document.body.classList.contains('editor-typing') && getComputedStyle(document.getElementById('symbols')).display==='flex'",30);
         assertTrue(js("document.getElementById('symbols').scrollWidth>document.getElementById('symbols').clientWidth").contains("true"));
         assertEquals("Contenteditable input must be recognized on Android","\"contenteditable\"",js("editor.getOption('inputStyle')"));
