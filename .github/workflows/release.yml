@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: npm ci
+      - run: python scripts/prepare_upgrade.py
       - run: python scripts/prepare_game.py
       - run: python scripts/prepare_assets.py
       - run: python scripts/prepare_power.py
@@ -28,6 +29,8 @@ jobs:
       - run: node tests/terminal.test.cjs
       - run: node tests/learning.test.cjs
       - run: node tests/game.test.cjs
+      - run: node tests/upgrade.test.cjs
+      - run: node tests/upgrade-ui.test.cjs
       - run: node tests/game-ui.test.cjs
       - run: node tests/curriculum-wasm.test.cjs
       - run: python scripts/check_curriculum.py
@@ -49,6 +52,7 @@ jobs:
       - uses: actions/setup-java@v4
         with: {distribution: temurin, java-version: '17'}
       - run: npm ci --ignore-scripts
+      - run: python scripts/prepare_upgrade.py
       - run: python scripts/prepare_game.py
       - run: python scripts/prepare_assets.py
       - run: python scripts/prepare_power.py
@@ -83,7 +87,7 @@ jobs:
             adb exec-out screencap -p > android-screen.png
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.0-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.1-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -95,7 +99,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.7.0-Android.apk
+          path: CodeBridge-0.7.1-Android.apk
           if-no-files-found: error
   publish:
     needs: [android, validation]
@@ -114,10 +118,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.7.0-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.7.1-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge Android 0.7 — animated studio and cosmetic progression" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.1 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
           fi

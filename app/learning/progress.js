@@ -1,6 +1,7 @@
 (function(root){
 'use strict';
 const E=typeof module!=='undefined'?require('../game/economy.js'):root.CBEconomy;
+const Clock=typeof module!=='undefined'?require('../game/reward-clock.js'):root.CBRewardClock;
 const day=(date=new Date())=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 function previous(date=new Date()){const d=new Date(date);d.setDate(d.getDate()-1);return day(d);}
 const fresh=()=>({version:1,name:'Explorer',completed:[],quiz:[],xp:0,coins:0,streak:0,lastActive:null,lastReward:null,days:{},claims:[],drafts:{},lastLesson:'c-1'});
@@ -20,7 +21,7 @@ function validate(p,ids){
 }
 function activity(p,date=new Date()) {const today=day(date); if(p.lastActive!==today){p.streak=p.lastActive===previous(date)?p.streak+1:1;p.lastActive=today;}return p.days[today]||(p.days[today]={lessons:0,runs:0});}
 function complete(p,lesson,date=new Date()){if(p.completed.includes(lesson.id))return false;E.credit(p,'mission:'+lesson.id,10,lesson.xp,lesson.id);p.completed.push(lesson.id);activity(p,date).lessons++;return true;}
-function reward(p,date=new Date()){E.init(p);const today=day(date);if(p.lastReward&&p.lastReward>=today)return false;activity(p,date);p.lastReward=today;E.credit(p,'daily:'+today,20,0,'daily-discovery');return true;}
+function reward(p,date=new Date(),sample=Clock.sample()){E.init(p);const today=day(date);if(p.lastReward&&p.lastReward>=today)return false;if(!Clock.observe(p,sample))return false;Clock.consume(p);activity(p,date);p.lastReward=today;E.credit(p,'daily:'+today,20,0,'daily-discovery');return true;}
 function claim(p,type,date=new Date()){E.init(p);const today=day(date),key=today+':'+type,stats=p.days[today]||{};if(p.claims.includes(key))return false;const ok=type==='lesson'?stats.lessons>=1:type==='practice'?stats.runs>=2:type==='explorer'?stats.lessons>=3:type==='memory'?stats.memory===1:false;if(!ok)return false;p.claims.push(key);E.credit(p,'quest:'+key,15,25,type);return true;}
 const api={day,previous,fresh,validate,activity,complete,reward,claim};if(typeof module!=='undefined')module.exports=api;else root.CBProgress=api;
 })(globalThis);

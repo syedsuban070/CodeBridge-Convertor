@@ -1,4 +1,4 @@
-/* Offline curriculum: explanations, quizzes, executable exercises and reference solutions. */
+/* Existing 0.7 mission IDs and drafts are preserved. */
 (function(root){const courses=[
   {
     "id": "c",
@@ -113,6 +113,42 @@
         "starter": "#include <stdio.h>\n\n// Read an integer. Print even when it is divisible by 2; otherwise print odd.\nint main() {\n    // Your code here\n    return 0;\n}\n",
         "stage": "Foundations",
         "xp": 40
+      },
+      {
+        "id": "c-memory-1",
+        "kind": "memory_boss",
+        "title": "Memory Lab 1",
+        "topic": "Stage boss · checked memory",
+        "stage": "Foundations",
+        "xp": 200,
+        "explanation": "Bit: Every allocation needs an exit plan. Use cb_alloc(n), cb_set(handle,index,value), cb_get(handle,index), cb_free(handle). The grader checks unreleased allocations, invalid or stale handles and out-of-bounds access through this teaching API. It does not inspect raw pointers or malloc/new.",
+        "task": "Fill an arena with 1..n, return the sum, and release it.",
+        "question": "When should an arena allocation be released?",
+        "options": [
+          "After its last use, exactly once.",
+          "Before every read.",
+          "Never."
+        ],
+        "answer": 0,
+        "starter": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        sum += cb_get(h, i);\n    }\n    // Release every arena allocation here.\n    return sum;\n}\n",
+        "solution": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n",
+        "prefix": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n",
+        "suffix": "int main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n",
+        "cases": [
+          {
+            "input": "1\n",
+            "output": "1"
+          },
+          {
+            "input": "3\n",
+            "output": "6"
+          },
+          {
+            "input": "8\n",
+            "output": "36"
+          }
+        ],
+        "referenceSource": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n\nint solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n\nint main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n"
       },
       {
         "id": "c-5",
@@ -239,6 +275,42 @@
         "xp": 60
       },
       {
+        "id": "c-memory-2",
+        "kind": "memory_boss",
+        "title": "Memory Lab 2",
+        "topic": "Stage boss · checked memory",
+        "stage": "Explorer",
+        "xp": 200,
+        "explanation": "Bit: Every allocation needs an exit plan. Use cb_alloc(n), cb_set(handle,index,value), cb_get(handle,index), cb_free(handle). The grader checks unreleased allocations, invalid or stale handles and out-of-bounds access through this teaching API. It does not inspect raw pointers or malloc/new.",
+        "task": "Store squares of 1..n, return their sum, and release the arena.",
+        "question": "When should an arena allocation be released?",
+        "options": [
+          "After its last use, exactly once.",
+          "Before every read.",
+          "Never."
+        ],
+        "answer": 0,
+        "starter": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, (i+1)*(i+1));\n        sum += cb_get(h, i);\n    }\n    // Release every arena allocation here.\n    return sum;\n}\n",
+        "solution": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, (i+1)*(i+1));\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n",
+        "prefix": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n",
+        "suffix": "int main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n",
+        "cases": [
+          {
+            "input": "1\n",
+            "output": "1"
+          },
+          {
+            "input": "3\n",
+            "output": "14"
+          },
+          {
+            "input": "8\n",
+            "output": "204"
+          }
+        ],
+        "referenceSource": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n\nint solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, (i+1)*(i+1));\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n\nint main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n"
+      },
+      {
         "id": "c-9",
         "title": "Recursive stairs",
         "topic": "Recursion",
@@ -329,6 +401,42 @@
         "starter": "// Define a struct Player with integer health. Read health and damage. Use a pointer to update health, clamping at zero, and print the result.\n",
         "stage": "Advanced",
         "xp": 120
+      },
+      {
+        "id": "c-memory-3",
+        "kind": "memory_boss",
+        "title": "Memory Lab 3",
+        "topic": "Stage boss · checked memory",
+        "stage": "Advanced",
+        "xp": 200,
+        "explanation": "Bit: Every allocation needs an exit plan. Use cb_alloc(n), cb_set(handle,index,value), cb_get(handle,index), cb_free(handle). The grader checks unreleased allocations, invalid or stale handles and out-of-bounds access through this teaching API. It does not inspect raw pointers or malloc/new.",
+        "task": "Fill an arena with 1..n, copy its values into a second arena, sum the copy, and release both.",
+        "question": "When should an arena allocation be released?",
+        "options": [
+          "After its last use, exactly once.",
+          "Before every read.",
+          "Never."
+        ],
+        "answer": 0,
+        "starter": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    cb_handle copy = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        cb_set(copy, i, cb_get(h, i));\n        sum += cb_get(copy, i);\n    }\n    // Release every arena allocation here.\n    return sum;\n}\n",
+        "solution": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    cb_handle copy = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        cb_set(copy, i, cb_get(h, i));\n        sum += cb_get(copy, i);\n    }\n    cb_free(h);\n    cb_free(copy);\n    return sum;\n}\n",
+        "prefix": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n",
+        "suffix": "int main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n",
+        "cases": [
+          {
+            "input": "1\n",
+            "output": "1"
+          },
+          {
+            "input": "3\n",
+            "output": "6"
+          },
+          {
+            "input": "8\n",
+            "output": "36"
+          }
+        ],
+        "referenceSource": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n\nint solve(int n) {\n    cb_handle h = cb_alloc(n);\n    cb_handle copy = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        cb_set(copy, i, cb_get(h, i));\n        sum += cb_get(copy, i);\n    }\n    cb_free(h);\n    cb_free(copy);\n    return sum;\n}\n\nint main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n"
       }
     ]
   },
@@ -445,6 +553,42 @@
         "starter": "#include <iostream>\n#include <vector>\n#include <algorithm>\n#include <string>\nusing namespace std;\n\n// Read an integer. Print even when it is divisible by 2; otherwise print odd.\nint main() {\n    // Your code here\n    return 0;\n}\n",
         "stage": "Foundations",
         "xp": 40
+      },
+      {
+        "id": "cpp-memory-1",
+        "kind": "memory_boss",
+        "title": "Memory Lab 1",
+        "topic": "Stage boss · checked memory",
+        "stage": "Foundations",
+        "xp": 200,
+        "explanation": "Bit: Every allocation needs an exit plan. Use cb_alloc(n), cb_set(handle,index,value), cb_get(handle,index), cb_free(handle). The grader checks unreleased allocations, invalid or stale handles and out-of-bounds access through this teaching API. It does not inspect raw pointers or malloc/new.",
+        "task": "Fill an arena with 1..n, return the sum, and release it.",
+        "question": "When should an arena allocation be released?",
+        "options": [
+          "After its last use, exactly once.",
+          "Before every read.",
+          "Never."
+        ],
+        "answer": 0,
+        "starter": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        sum += cb_get(h, i);\n    }\n    // Release every arena allocation here.\n    return sum;\n}\n",
+        "solution": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n",
+        "prefix": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n",
+        "suffix": "int main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n",
+        "cases": [
+          {
+            "input": "1\n",
+            "output": "1"
+          },
+          {
+            "input": "3\n",
+            "output": "6"
+          },
+          {
+            "input": "8\n",
+            "output": "36"
+          }
+        ],
+        "referenceSource": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n\nint solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n\nint main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n"
       },
       {
         "id": "cpp-5",
@@ -571,6 +715,42 @@
         "xp": 60
       },
       {
+        "id": "cpp-memory-2",
+        "kind": "memory_boss",
+        "title": "Memory Lab 2",
+        "topic": "Stage boss · checked memory",
+        "stage": "Explorer",
+        "xp": 200,
+        "explanation": "Bit: Every allocation needs an exit plan. Use cb_alloc(n), cb_set(handle,index,value), cb_get(handle,index), cb_free(handle). The grader checks unreleased allocations, invalid or stale handles and out-of-bounds access through this teaching API. It does not inspect raw pointers or malloc/new.",
+        "task": "Store squares of 1..n, return their sum, and release the arena.",
+        "question": "When should an arena allocation be released?",
+        "options": [
+          "After its last use, exactly once.",
+          "Before every read.",
+          "Never."
+        ],
+        "answer": 0,
+        "starter": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, (i+1)*(i+1));\n        sum += cb_get(h, i);\n    }\n    // Release every arena allocation here.\n    return sum;\n}\n",
+        "solution": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, (i+1)*(i+1));\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n",
+        "prefix": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n",
+        "suffix": "int main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n",
+        "cases": [
+          {
+            "input": "1\n",
+            "output": "1"
+          },
+          {
+            "input": "3\n",
+            "output": "14"
+          },
+          {
+            "input": "8\n",
+            "output": "204"
+          }
+        ],
+        "referenceSource": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n\nint solve(int n) {\n    cb_handle h = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, (i+1)*(i+1));\n        sum += cb_get(h, i);\n    }\n    cb_free(h);\n    return sum;\n}\n\nint main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n"
+      },
+      {
         "id": "cpp-9",
         "title": "Recursive stairs",
         "topic": "Recursion",
@@ -661,6 +841,42 @@
         "starter": "// Define a Player class with private health and a damage method. Read initial health and damage; print the remaining health clamped at zero.\n",
         "stage": "Advanced",
         "xp": 120
+      },
+      {
+        "id": "cpp-memory-3",
+        "kind": "memory_boss",
+        "title": "Memory Lab 3",
+        "topic": "Stage boss · checked memory",
+        "stage": "Advanced",
+        "xp": 200,
+        "explanation": "Bit: Every allocation needs an exit plan. Use cb_alloc(n), cb_set(handle,index,value), cb_get(handle,index), cb_free(handle). The grader checks unreleased allocations, invalid or stale handles and out-of-bounds access through this teaching API. It does not inspect raw pointers or malloc/new.",
+        "task": "Fill an arena with 1..n, copy its values into a second arena, sum the copy, and release both.",
+        "question": "When should an arena allocation be released?",
+        "options": [
+          "After its last use, exactly once.",
+          "Before every read.",
+          "Never."
+        ],
+        "answer": 0,
+        "starter": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    cb_handle copy = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        cb_set(copy, i, cb_get(h, i));\n        sum += cb_get(copy, i);\n    }\n    // Release every arena allocation here.\n    return sum;\n}\n",
+        "solution": "int solve(int n) {\n    cb_handle h = cb_alloc(n);\n    cb_handle copy = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        cb_set(copy, i, cb_get(h, i));\n        sum += cb_get(copy, i);\n    }\n    cb_free(h);\n    cb_free(copy);\n    return sum;\n}\n",
+        "prefix": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n",
+        "suffix": "int main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n",
+        "cases": [
+          {
+            "input": "1\n",
+            "output": "1"
+          },
+          {
+            "input": "3\n",
+            "output": "6"
+          },
+          {
+            "input": "8\n",
+            "output": "36"
+          }
+        ],
+        "referenceSource": "/* Checked arena only: not a general-purpose heap sanitizer. */\n#include <stdio.h>\n#include <stdlib.h>\ntypedef int cb_handle;\nstatic int cb_data[32][64],cb_size[32],cb_live[32],cb_generation[32],cb_error,cb_allocations;\nstatic void cb_problem(const char *message){fprintf(stderr,\"Memory Lab: %s\\n\",message);cb_error=1;}\nstatic cb_handle cb_alloc(int n){\n if(n<1||n>64){cb_problem(\"allocation must be 1..64 integers\");return -1;}\n for(int i=0;i<32;i++)if(!cb_live[i]){cb_live[i]=1;cb_size[i]=n;cb_allocations++;cb_generation[i]++;return cb_generation[i]*32+i;}\n cb_problem(\"arena full\");return -1;\n}\nstatic int cb_valid(cb_handle h,int index){\n if(h<0){cb_problem(\"invalid handle\");return 0;}\n int slot=h%32;\n if(!cb_live[slot]||h/32!=cb_generation[slot]){cb_problem(\"invalid or freed handle\");return 0;}\n if(index<0||index>=cb_size[slot]){cb_problem(\"out-of-bounds access\");return 0;}\n return 1;\n}\nstatic void cb_set(cb_handle h,int index,int value){if(cb_valid(h,index))cb_data[h%32][index]=value;}\nstatic int cb_get(cb_handle h,int index){return cb_valid(h,index)?cb_data[h%32][index]:0;}\nstatic void cb_free(cb_handle h){if(cb_valid(h,0))cb_live[h%32]=0;}\nstatic int cb_check(void){\n if(!cb_allocations)cb_problem(\"challenge requires an arena allocation\");\n for(int i=0;i<32;i++)if(cb_live[i]){cb_problem(\"unreleased arena allocation\");break;}\n return cb_error?86:0;\n}\n\nint solve(int n) {\n    cb_handle h = cb_alloc(n);\n    cb_handle copy = cb_alloc(n);\n    int sum = 0;\n    for (int i=0; i<n; ++i) {\n        cb_set(h, i, i+1);\n        cb_set(copy, i, cb_get(h, i));\n        sum += cb_get(copy, i);\n    }\n    cb_free(h);\n    cb_free(copy);\n    return sum;\n}\n\nint main(void){int n=0;if(scanf(\"%d\",&n)!=1)return 64;int result=solve(n);int status=cb_check();if(status)return status;printf(\"%d\\n\",result);return 0;}\n"
       }
     ]
   },

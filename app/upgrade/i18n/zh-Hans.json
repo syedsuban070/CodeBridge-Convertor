@@ -1,0 +1,114 @@
+{
+  "locale": "zh-Hans",
+  "direction": "ltr",
+  "strings": {
+    "Home": "首页",
+    "Learn": "学习",
+    "Code": "代码",
+    "Quests": "任务",
+    "Profile": "个人资料",
+    "Run": "运行",
+    "Build": "构建",
+    "Debug": "调试",
+    "Save": "保存",
+    "Input": "输入",
+    "Console": "控制台",
+    "Memory Lab": "内存实验室",
+    "Undo": "撤销",
+    "Redo": "重做",
+    "Indent": "缩进",
+    "Outdent": "减少缩进",
+    "Find": "查找",
+    "Select all": "全选",
+    "Reindent": "整理缩进",
+    "Snippet": "代码片段",
+    "Suggest": "建议",
+    "Settings": "设置",
+    "Claim": "领取",
+    "Claimed": "已领取",
+    "TOTAL XP": "总经验",
+    "DAY STREAK": "连续天数",
+    "COINS": "金币",
+    "Choose your path": "选择学习路线",
+    "Your next breakthrough.": "下一次突破。",
+    "Your daily discovery": "每日发现",
+    "Make something yours": "创造属于你的作品",
+    "Continue adventure →": "继续冒险 →",
+    "Explore all →": "查看全部 →",
+    "Open code studio ↗": "打开代码工作室 ↗",
+    "One mission at a time.": "一次完成一个任务。",
+    "Your quest board.": "你的任务面板。",
+    "Daily quests": "每日任务",
+    "Daily challenge": "每日挑战",
+    "Adventure badges": "冒险徽章",
+    "Earned": "已获得",
+    "Locked": "未解锁",
+    "Make it yours.": "打造你的风格。",
+    "App appearance": "应用外观",
+    "Editor palette": "编辑器配色",
+    "Your coding space": "你的编程空间",
+    "Sound & motion": "声音与动画",
+    "Font size": "字体大小",
+    "Line numbers": "行号",
+    "Wrap long lines": "自动换行",
+    "Animations & celebrations": "动画与庆祝",
+    "Reward sounds": "奖励音效",
+    "Language": "语言",
+    "Choose your language": "选择语言",
+    "Focus editor": "专注编辑",
+    "Exit focus": "退出专注",
+    "Memory badges": "内存徽章",
+    "Stage challenge cleared": "阶段挑战完成",
+    "Continue": "继续",
+    "Try again": "重试",
+    "Memory Lab practice": "内存实验室练习",
+    "Cosmetic store": "外观商店",
+    "Equipped": "已装备",
+    "Equip": "装备",
+    "Owned": "已拥有",
+    "Reset code": "重置代码",
+    "▶ Check solution": "▶ 检查答案",
+    "1. Discover": "1. 探索",
+    "2. Check your understanding": "2. 检查理解",
+    "3. Build it yourself": "3. 自己编写",
+    "Study a worked example": "查看示例解答",
+    "Ready": "就绪",
+    "Clear": "清空",
+    "OFFLINE": "离线",
+    "Close": "关闭"
+  },
+  "dialogue": {
+    "idle": [
+      "编译器已就绪。轮到你了。",
+      "一个小程序，一次真实进步。"
+    ],
+    "pythonSyntax": [
+      "冒号又不见了。",
+      "先修复语法，逻辑才能运行。"
+    ],
+    "compileFailed": [
+      "编译器找到了问题。先看第一条错误。",
+      "运行前，再检查一遍代码。"
+    ],
+    "memoryFault": [
+      "这次访问越界了。",
+      "指针不是通行证。检查它的边界。"
+    ],
+    "success": [
+      "运行成功。再试一个输入。",
+      "编译通过。继续检查输出。"
+    ],
+    "memoryWarning": [
+      "每次分配都需要释放计划。",
+      "使用检查接口，释放所有分配。"
+    ],
+    "bossPass": [
+      "输出正确，内存清理完成。徽章属于你。",
+      "没有遗留分配。这就是进步。"
+    ],
+    "bossFail": [
+      "检查接口发现了问题。修复后重试。",
+      "那块内存还在等待释放。"
+    ]
+  }
+}

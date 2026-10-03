@@ -9,7 +9,7 @@ with tempfile.TemporaryDirectory() as tmp:
     for course in courses:
         lang=course['id']
         for lesson in course['lessons']:
-            source=root/('main.'+lang);source.write_text(lesson['solution'])
+            source=root/('main.'+lang);source.write_text(lesson.get('referenceSource',lesson['solution']))
             if lang=='py': command=[sys.executable,str(source)]
             else:
                 binary=root/'lesson'
@@ -19,4 +19,4 @@ with tempfile.TemporaryDirectory() as tmp:
                 result=subprocess.run(command,input=case['input']+'\n',text=True,capture_output=True,timeout=5,check=True)
                 assert result.stdout.split()==case['output'].split(),(lesson['id'],case,result.stdout)
                 checks+=1
-print(f'PASS {checks} curriculum cases across 33 reference programs')
+print(f'PASS {checks} curriculum cases across 39 reference programs')

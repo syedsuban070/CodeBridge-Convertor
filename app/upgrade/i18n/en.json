@@ -1,0 +1,114 @@
+{
+  "locale": "en",
+  "direction": "ltr",
+  "strings": {
+    "Home": "Home",
+    "Learn": "Learn",
+    "Code": "Code",
+    "Quests": "Quests",
+    "Profile": "Profile",
+    "Run": "Run",
+    "Build": "Build",
+    "Debug": "Debug",
+    "Save": "Save",
+    "Input": "Input",
+    "Console": "Console",
+    "Memory Lab": "Memory Lab",
+    "Undo": "Undo",
+    "Redo": "Redo",
+    "Indent": "Indent",
+    "Outdent": "Outdent",
+    "Find": "Find",
+    "Select all": "Select all",
+    "Reindent": "Reindent",
+    "Snippet": "Snippet",
+    "Suggest": "Suggest",
+    "Settings": "Settings",
+    "Claim": "Claim",
+    "Claimed": "Claimed",
+    "TOTAL XP": "TOTAL XP",
+    "DAY STREAK": "DAY STREAK",
+    "COINS": "COINS",
+    "Choose your path": "Choose your path",
+    "Your next breakthrough.": "Your next breakthrough.",
+    "Your daily discovery": "Your daily discovery",
+    "Make something yours": "Make something yours",
+    "Continue adventure →": "Continue adventure →",
+    "Explore all →": "Explore all →",
+    "Open code studio ↗": "Open code studio ↗",
+    "One mission at a time.": "One mission at a time.",
+    "Your quest board.": "Your quest board.",
+    "Daily quests": "Daily quests",
+    "Daily challenge": "Daily challenge",
+    "Adventure badges": "Adventure badges",
+    "Earned": "Earned",
+    "Locked": "Locked",
+    "Make it yours.": "Make it yours.",
+    "App appearance": "App appearance",
+    "Editor palette": "Editor palette",
+    "Your coding space": "Your coding space",
+    "Sound & motion": "Sound & motion",
+    "Font size": "Font size",
+    "Line numbers": "Line numbers",
+    "Wrap long lines": "Wrap long lines",
+    "Animations & celebrations": "Animations & celebrations",
+    "Reward sounds": "Reward sounds",
+    "Language": "Language",
+    "Choose your language": "Choose your language",
+    "Focus editor": "Focus editor",
+    "Exit focus": "Exit focus",
+    "Memory badges": "Memory badges",
+    "Stage challenge cleared": "Stage challenge cleared",
+    "Continue": "Continue",
+    "Try again": "Try again",
+    "Memory Lab practice": "Memory Lab practice",
+    "Cosmetic store": "Cosmetic store",
+    "Equipped": "Equipped",
+    "Equip": "Equip",
+    "Owned": "Owned",
+    "Reset code": "Reset code",
+    "▶ Check solution": "▶ Check solution",
+    "1. Discover": "1. Discover",
+    "2. Check your understanding": "2. Check your understanding",
+    "3. Build it yourself": "3. Build it yourself",
+    "Study a worked example": "Study a worked example",
+    "Ready": "Ready",
+    "Clear": "Clear",
+    "OFFLINE": "OFFLINE",
+    "Close": "Close"
+  },
+  "dialogue": {
+    "idle": [
+      "The compiler is ready. Your move.",
+      "One small program. One real step."
+    ],
+    "pythonSyntax": [
+      "That colon has gone missing again.",
+      "The syntax needs a repair before the logic can run."
+    ],
+    "compileFailed": [
+      "The compiler found the problem. Follow its first error.",
+      "That code needs another pass before it can run."
+    ],
+    "memoryFault": [
+      "That access went beyond the boundary.",
+      "A pointer is not a permission slip. Check its bounds."
+    ],
+    "success": [
+      "It ran. Now test another input.",
+      "It compiled. Keep the confidence; check the output."
+    ],
+    "memoryWarning": [
+      "Every allocation needs an exit plan.",
+      "Use the checked arena. Release everything you allocate."
+    ],
+    "bossPass": [
+      "Clean output. Clean memory. You earned that badge.",
+      "No abandoned allocations. That is progress."
+    ],
+    "bossFail": [
+      "The arena caught that bug. Fix it and retry.",
+      "That allocation is still waiting for a release."
+    ]
+  }
+}

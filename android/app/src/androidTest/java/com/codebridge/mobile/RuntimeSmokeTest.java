@@ -60,6 +60,17 @@ public final class RuntimeSmokeTest extends ActivityInstrumentationTestCase2<Mai
         waitFor("!!document.querySelector('.bit-sprite')",10);
         js("window.spriteProbe=new Image();spriteProbe.src='game/assets/bit-lime.svg';true");
         waitFor("spriteProbe.complete&&spriteProbe.naturalWidth===1152",20);
+        assertEquals("Native monotonic clock missing","true",js("JSON.parse(AndroidFiles.clockSample()).elapsed>0"));
+        js("CBUpgrade.chooseLocale('ur');true");
+        assertEquals("RTL locale missing","\"rtl\"",js("document.documentElement.dir"));
+        assertEquals("Code direction changed","\"ltr\"",js("editor.getOption('direction')"));
+        js("CBUpgrade.chooseLocale('en');CodeBridgeAcademy.transact(p=>{for(const id of ['c-2','c-3','c-4'])if(!p.completed.includes(id))p.completed.push(id);});CodeBridgeAcademy.navigate('learn');CodeBridgeAcademy.openLesson('c-memory-1');document.querySelector('[data-answer=\"0\"]').click();document.getElementById('check-lesson').click();true");
+        waitFor("document.getElementById('lesson-feedback').classList.contains('failure')",180);
+        assertEquals("Leaking boss awarded mastery","false",js("CodeBridgeAcademy.getProgress().completed.includes('c-memory-1')"));
+        js("document.querySelector('.lesson-editor .CodeMirror').CodeMirror.setValue(CBCourses[0].lessons.find(l=>l.id==='c-memory-1').solution);document.getElementById('check-lesson').click();true");
+        waitFor("document.getElementById('boss-chest').open",180);
+        assertEquals("Boss mastery missing","true",js("CodeBridgeAcademy.getProgress().completed.includes('c-memory-1')"));
+        js("document.getElementById('boss-chest').close();true");
         assertEquals("External AI bridge must be absent","true",js("typeof BitNative==='undefined'"));
         js("CodeBridgeAcademy.navigate('home');true");
     }

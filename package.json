@@ -1,6 +1,6 @@
 {
   "name": "codebridge-studio",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "description": "Offline C, C++ and Python studio for desktop and Android",
   "author": "CodeBridge contributors",

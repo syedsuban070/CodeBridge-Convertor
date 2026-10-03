@@ -14,3 +14,4 @@ app/game/assets/*.wav
 app/game/assets/*.woff2
 
 app/game/assets/bit-*.svg
+app/upgrade/fonts/*.ttf

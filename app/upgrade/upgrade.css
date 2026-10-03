@@ -1,0 +1,20 @@
+/* Additions to 0.7. No replacement of its navigation, palettes, home or editor. */
+@font-face{font-family:Nastaliq;src:url(fonts/NotoNastaliqUrdu.ttf) format('truetype');font-display:swap}
+@font-face{font-family:NotoSC;src:url(fonts/NotoSansSC.ttf) format('truetype');font-display:swap}
+html[lang=ur] body{font-family:Nastaliq,sans-serif;line-height:2}html[lang=zh-Hans] body{font-family:NotoSC,sans-serif}
+html[lang=ur] .page-title{line-height:1.9}html[lang=ur] button{line-height:1.8}html[dir=rtl] .brand{direction:ltr}
+.CodeMirror,#editor-area,#output,#diagnostics,#variables,#stdin,#terminal-line,#memory-map,#memory-source,pre,.case{direction:ltr;unicode-bidi:isolate;text-align:left}
+.upgrade-language{padding:16px;margin:0 0 18px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}.language-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.language-options button{min-height:44px;border:1px solid var(--border);padding:8px 12px}.language-options button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.language-options [lang=ur]{font-family:Nastaliq;line-height:2}.language-options [lang=zh-Hans]{font-family:NotoSC}
+#bit-status{padding:8px 14px;margin:0;border-top:1px solid var(--border);color:var(--muted);font-size:12px;background:var(--surface)}#bit-status[data-reaction=bossFail],#bit-status[data-reaction=memoryFault]{color:#ffa1ac}#bit-status[data-reaction=bossPass]{color:var(--accent)}.academy-mode #bit-status{display:none}
+#upgrade-splash{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-content:center;pointer-events:none;animation:cbSplash .9s ease both}#upgrade-splash svg{width:220px;height:80px}#upgrade-splash path{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:180;stroke-dashoffset:180;animation:cbStroke .65s ease forwards}#upgrade-splash strong{text-align:center;font:600 22px system-ui;letter-spacing:1px}
+@keyframes cbStroke{to{stroke-dashoffset:0}}@keyframes cbSplash{0%,75%{opacity:1}100%{opacity:0;visibility:hidden}}
+body.focus-editor #app:not(.academy-mode)>header,body.focus-editor #app:not(.academy-mode)>footer,body.focus-editor #app:not(.academy-mode) #editor-tools{display:none}#focus-exit{display:none}body.focus-editor #app:not(.academy-mode) #focus-exit{display:inline-block}
+#edit-actions{transition:opacity .16s,transform .16s}.editor-typing #edit-actions{display:flex!important;animation:cbToolbar .16s ease-out}#edit-actions button{min-height:40px}@media(pointer:coarse){body:not(.editor-typing) #edit-actions{display:none}.editor-typing #symbols{display:none}.editor-typing #bit-status{display:none}}
+@keyframes cbToolbar{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.level-row.memory-boss .level-number{border:2px solid #eec976;color:#eec976}.level-row.memory-boss.done .level-number{background:#eec976;color:#171923}.level-row.memory-boss small{color:#eec976}.boss-badges{display:flex;flex-wrap:wrap;gap:8px}.boss-badges span{border:1px solid #eec97666;border-radius:12px;padding:10px;font-size:12px;color:#eec976}
+#boss-chest{max-width:min(420px,90vw);border:1px solid #eec976;border-radius:24px;text-align:center;padding:24px;background:var(--surface);color:var(--ink)}.chest-icon{font-size:56px;display:block;animation:cbChest .5s ease-out}@keyframes cbChest{from{transform:scale(.5) rotate(-12deg)}to{transform:scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){#upgrade-splash{display:none}.chest-icon,.editor-typing #edit-actions{animation:none}}
+html[data-motion=off] #upgrade-splash{display:none}html[data-motion=off] .chest-icon{animation:none}
+
+#symbols{direction:ltr}.CodeMirror,#output,#terminal-line,.memory-cell{font-family:JetBrains,Nastaliq,NotoSC,monospace!important}#bit-status{line-height:1.7;font-family:system-ui,Nastaliq,NotoSC,sans-serif}html[lang=ur] #bit-status{font-family:Nastaliq,system-ui;line-height:2}

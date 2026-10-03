@@ -1,15 +1,19 @@
-# CodeBridge Android 0.7 — animated studio and cosmetic progression
+# CodeBridge 0.7.1 — the original app, extended
 
-- Compact execution dock: Run becomes Stop while active. Build, Debug, Console, Input and Memory Lab sit in an expandable tool menu with a bottom-sheet fallback on small screens. Save and conversion move into the file menu.
-- Offline JetBrains Mono font, Midnight/Night styling and lime accents. Editor, terminal and touch input retain the 0.6 functionality.
-- Original four-direction Bit sprite atlases with idle, thinking and celebration clips. Three colour skins, capped canvas particles, and 22,050 Hz 16-bit mono PCM cues for syntax failures, builds and coin claims. Sound remains opt-in; reduced motion is respected.
-- Cosmetic store: editor palettes (60 coins), border (100), Bit skins (180). Preview cards, permanent ownership and free switching. No coding tools are paywalled.
-- Transaction ledger, idempotent purchases/rewards, pre-migration backup, and atomic balance/ownership saves. Existing missions, drafts, coins and XP are preserved. Economy JSON export and schema included.
-- After-Action Reports: first warm-up then three measured executions per test case, with correctness, execution medians and comparisons tied to this installation/runtime/test suite. Compilation and loading excluded. No unsupported Big-O grades; operation counting for general mission code is not implemented.
-- Memory Lab prototype: a real compiled C/C++ preset with array cells, pointer writes, heap allocation, free and live stepping. Shows actual Wasm offsets and explicitly identified uninitialized/freed values. Completing the exercise unlocks a daily memory quest.
+This is an update to the original CodeBridge 0.7 Android app, not the separate Flutter preview. The home screen, five-tab navigation, Midnight/Night palettes, editor, terminal, Bit sprites and store remain.
 
-## Scope and upgrade
+## Added
 
-Memory Lab supports its bundled instrumented exercise only. Arbitrary user-source instrumentation, C++ object lifetime tracing and general C/C++ source debugging remain future work. The underlying Clang 8/WASI runtime limits from 0.6 remain. Bit is scripted; no external AI model is bundled.
+- Six stage-final Memory Lab bosses (39 missions total), 200 XP each and earned badges. Output cases plus checked-arena allocation, bounds, stale-handle and release checks. Practice remains separate and ungraded.
+- English, Urdu and Simplified Chinese interface selection, saved locally, with bundled Nastaliq/CJK fonts. Code and terminal stay LTR. Lessons and advanced explanatory text remain English; this is not a fully translated curriculum.
+- Two-finger editor font zoom, optional focus mode, keyboard-aware editing actions, and Snippets in the overflow menu. The familiar layout remains the default.
+- Local, non-repeating Bit reaction dialogue, stage reward animation and short reduced-motion-aware splash.
+- Daily coin protection using Android monotonic time and boot identity. Clock jumps cannot grant extra coins; after reboot, unverified downtime is not counted.
 
-Install over the previous beta to retain local data. Do not uninstall first; export projects/progress as a backup. The application ID and beta signing-key cache are unchanged. Old releases remain available. This is a test-signed beta, not a Play Store release.
+## Update compatibility
+
+Application ID remains `com.codebridge.mobile`; version code increases from 7 to 8. The existing beta signing-key cache and all project/settings/progress keys are retained. Existing completed missions remain accessible when new bosses are inserted. Export projects/progress before installing; do not uninstall 0.7 to update. If Android reports a signature mismatch, keep the installed app and your data.
+
+This remains a test-signed beta using 0.7's offline WebView/Wasm Clang 8 and Python 3.12 runtimes, including live terminal input. It does not use Flutter. The bundled checked arena is an educational grader, not general malloc/new leak detection. Native OS libraries and C++ exceptions retain the original runtime limitations. There are no cloud execution services or analytics.
+
+CI validates original UI/runtime regressions, save compatibility, language switching, reward clocks, bosses, and Android offline runtime/input flows before publishing the APK.
