@@ -79,21 +79,34 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 36
           arch: x86_64
           target: google_apis
           profile: pixel_6
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 4096 -partition-size 4096
           disable-animations: true
           script: |
-            cd android && gradle :app:connectedDebugAndroidTest --stacktrace
+            curl --fail --location --retry 3 -o previous.apk https://github.com/syedsuban070/CodeBridge-Convertor/releases/download/v0.7.2-beta.16/CodeBridge-0.7.2-Android.apk
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs previous.apk
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+            adb install previous.apk
+            adb shell am start -n com.codebridge.mobile/.MainActivity
+            sleep 3
+            adb shell am force-stop com.codebridge.mobile
+            adb shell run-as com.codebridge.mobile touch files/upgrade-sentinel.txt
             adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+            adb shell run-as com.codebridge.mobile ls files/upgrade-sentinel.txt
+            cd android && gradle :app:connectedDebugAndroidTest --stacktrace
             adb shell am start -n com.codebridge.mobile/.MainActivity
             sleep 3
             adb exec-out screencap -p > android-screen.png
+      - name: Verify APK signatures and alignment
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 android/app/build/outputs/apk/debug/app-debug.apk
       - name: Prepare APK
         if: success()
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.3-Android.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk CodeBridge-0.7.4-Android.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,7 +118,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
-          path: CodeBridge-0.7.3-Android.apk
+          path: CodeBridge-0.7.4-Android.apk
           if-no-files-found: error
   publish:
     needs: [android, validation]
@@ -124,10 +137,10 @@ jobs:
       - name: Publish beta downloads
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.7.3-beta.${{ github.run_number }}
+          RELEASE_TAG: v0.7.4-beta.${{ github.run_number }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-files/* --clobber
           else
-            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.3 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
+            gh release create "$RELEASE_TAG" release-files/* --target "$GITHUB_SHA" --title "CodeBridge 0.7.4 — original UI, new learning features" --notes-file RELEASE_NOTES.md --prerelease
           fi

@@ -11,10 +11,15 @@ android {
         minSdk 26
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
         targetSdk 35
-        versionCode 10
-        versionName '0.7.3'
+        versionCode 11
+        versionName '0.7.4'
     }
-    signingConfigs { debug { storeFile file('codebridge-beta.keystore') } }
+    signingConfigs { debug {
+        storeFile file('codebridge-beta.keystore')
+        enableV1Signing true
+        enableV2Signing true
+        enableV3Signing true
+    } }
     androidResources { noCompress += ['wasm', 'tar', 'whl', 'zip'] }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
